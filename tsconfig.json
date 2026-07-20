@@ -21,6 +21,43 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "paths": {}
+    "paths": {
+      "@app/common": [
+        "libs/common/src"
+      ],
+      "@app/common/*": [
+        "libs/common/src/*"
+      ],
+      "@app/database": [
+        "libs/database/src"
+      ],
+      "@app/database/*": [
+        "libs/database/src/*"
+      ],
+      "@app/grpc": [
+        "libs/grpc/src"
+      ],
+      "@app/grpc/*": [
+        "libs/grpc/src/*"
+      ],
+      "@app/kafka": [
+        "libs/kafka/src"
+      ],
+      "@app/kafka/*": [
+        "libs/kafka/src/*"
+      ],
+      "@app/proto": [
+        "libs/proto/src"
+      ],
+      "@app/proto/*": [
+        "libs/proto/src/*"
+      ],
+      "@app/redis": [
+        "libs/redis/src"
+      ],
+      "@app/redis/*": [
+        "libs/redis/src/*"
+      ]
+    }
   }
 }
