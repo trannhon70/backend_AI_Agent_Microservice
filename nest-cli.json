@@ -10,6 +10,24 @@
   "monorepo": true,
   "root": "apps/crm-backend",
   "projects": {
+    "ai-service": {
+      "type": "application",
+      "root": "apps/ai-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/ai-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/ai-service/tsconfig.app.json"
+      }
+    },
+    "analytics-service": {
+      "type": "application",
+      "root": "apps/analytics-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/analytics-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/analytics-service/tsconfig.app.json"
+      }
+    },
     "auth-service": {
       "type": "application",
       "root": "apps/auth-service",
@@ -17,6 +35,15 @@
       "sourceRoot": "apps/auth-service/src",
       "compilerOptions": {
         "tsConfigPath": "apps/auth-service/tsconfig.app.json"
+      }
+    },
+    "chat-service": {
+      "type": "application",
+      "root": "apps/chat-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/chat-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/chat-service/tsconfig.app.json"
       }
     },
     "conversation-service": {
@@ -37,6 +64,33 @@
         "tsConfigPath": "apps/crm-backend/tsconfig.app.json"
       }
     },
+    "fan-page-service": {
+      "type": "application",
+      "root": "apps/fan-page-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/fan-page-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/fan-page-service/tsconfig.app.json"
+      }
+    },
+    "fanpage-service": {
+      "type": "application",
+      "root": "apps/fanpage-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/fanpage-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/fanpage-service/tsconfig.app.json"
+      }
+    },
+    "file-service": {
+      "type": "application",
+      "root": "apps/file-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/file-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/file-service/tsconfig.app.json"
+      }
+    },
     "gateway": {
       "type": "application",
       "root": "apps/gateway",
@@ -44,6 +98,15 @@
       "sourceRoot": "apps/gateway/src",
       "compilerOptions": {
         "tsConfigPath": "apps/gateway/tsconfig.app.json"
+      }
+    },
+    "notification-service": {
+      "type": "application",
+      "root": "apps/notification-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/notification-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/notification-service/tsconfig.app.json"
       }
     }
   }
