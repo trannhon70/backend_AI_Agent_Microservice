@@ -99,3 +99,9 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 
 ## lệnh start từng service, gateway là 1 service
 npm run start gateway
+
+## lệnh tạo libs
+nest g library proto  
+
+## lệnh tạo monorepo apps service
+nest g app analytics-service     
