@@ -5,6 +5,8 @@ import { AuthServiceController } from './auth-service.controller';
 import { AuthServiceService } from './auth-service.service';
 import { DatabaseModule } from 'libs/database/typeorm.module';
 import { RedisModule } from 'libs/redis/redis.module';
+import { RolesModule } from './roles/roles.module';
+import { JwtCommonModule } from 'libs/common/jwt/jwt-common.module';
 
 @Module({
   imports: [
@@ -16,7 +18,8 @@ import { RedisModule } from 'libs/redis/redis.module';
       urlEnvKey: 'AUTH_GRPC_URL',
     }),
     DatabaseModule,
-    RedisModule
+    RedisModule,
+    RolesModule
 
   ],
   controllers: [AuthServiceController],
