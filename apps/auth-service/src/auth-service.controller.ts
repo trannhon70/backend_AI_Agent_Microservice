@@ -6,10 +6,6 @@ import { GrpcMethod } from '@nestjs/microservices';
 export class AuthServiceController {
   constructor(private readonly authServiceService: AuthServiceService) { }
 
-  @Get()
-  getHello(): string {
-    return this.authServiceService.getHello();
-  }
 
   @GrpcMethod('AuthService', 'Create')
   create(data: { name: string }) {

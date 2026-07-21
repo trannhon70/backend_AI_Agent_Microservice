@@ -1,12 +1,19 @@
 import { Controller, Get } from '@nestjs/common';
 import { GatewayService } from './gateway.service';
+import { lastValueFrom } from 'rxjs';
 
 @Controller()
 export class GatewayController {
-  constructor(private readonly gatewayService: GatewayService) {}
+  constructor(private readonly gatewayService: GatewayService) { }
 
   @Get()
-  getHello(): string {
-    return this.gatewayService.getHello();
+  async hello() {
+
+    return await lastValueFrom(
+
+      this.gatewayService.Create("Nhơn")
+
+    );
+
   }
 }
