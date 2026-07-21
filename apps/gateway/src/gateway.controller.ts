@@ -8,11 +8,8 @@ export class GatewayController {
 
   @Get()
   async hello() {
-
     return await lastValueFrom(
-
-      this.gatewayService.Create("Nhơn")
-
+      this.gatewayService.Create("Nhơn ádas")
     );
 
   }

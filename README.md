@@ -105,3 +105,12 @@ nest g library proto
 
 ## lệnh tạo monorepo apps service
 nest g app analytics-service     
+
+## các bước thực hiện backup database và import database
+1. Copy file backup.dump vào container: 
+  - docker cp ./backup.dump postgres:/tmp/backup.dump
+2. Restore vào database livechat: 
+  - docker exec -t postgres pg_restore -U postgres -d livechat --clean --if-exists /tmp/backup.dump
+3. Nếu database livechat chưa tồn tại, tạo trước:
+  - docker exec -t postgres createdb -U postgres livechat
+  - docker exec -t postgres pg_restore -U postgres -d livechat /tmp/backup.dump
