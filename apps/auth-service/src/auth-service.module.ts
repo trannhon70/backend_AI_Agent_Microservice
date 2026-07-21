@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { DatabaseModule } from '@app/database/typeorm.module';
 import { GrpcClientModule } from 'libs/grpc-clients/src/grpc-client.module';
+import { RedisModule } from 'libs/redis/redis.module';
 import { AuthServiceController } from './auth-service.controller';
 import { AuthServiceService } from './auth-service.service';
-import { DatabaseModule } from 'libs/database/typeorm.module';
-import { RedisModule } from 'libs/redis/redis.module';
 import { RolesModule } from './roles/roles.module';
-import { JwtCommonModule } from 'libs/common/jwt/jwt-common.module';
 
 @Module({
   imports: [

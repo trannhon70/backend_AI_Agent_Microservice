@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package auth;
+
+service RolesService {
+    rpc Create(CreateRoleRequest) returns (CreateRoleResponse);
+}
+
+message CreateRoleRequest {
+    string name = 1;
+}
+
+message CreateRoleResponse {
+    string message = 1;
+}

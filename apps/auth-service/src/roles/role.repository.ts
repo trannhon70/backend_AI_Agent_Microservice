@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BaseRepository } from 'libs/database/base.repository';
+import { BaseRepository } from '@app/database/base.repository';
 import { DataSource } from 'typeorm';
 
 @Injectable()
