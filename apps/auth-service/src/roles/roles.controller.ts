@@ -10,7 +10,11 @@ export class RolesController {
   @GrpcMethod('RolesService', 'FindAll')
   async findAll() {
     const roles = await this.rolesService.findAll();
-    return { roles };
+    return {
+      code: 200,
+      message: 'get all role successfully',
+      data: roles,
+    };
   }
 
 

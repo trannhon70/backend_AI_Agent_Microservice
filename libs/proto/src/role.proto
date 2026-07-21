@@ -3,19 +3,15 @@ syntax = "proto3";
 package auth;
 
 service RolesService {
-    rpc Create(CreateRoleRequest) returns (CreateRoleResponse);
+    rpc Create(CreateRoleRequest) returns (RoleActionResponse);
     rpc FindAll(FindAllRolesRequest) returns (RolesListResponse);
-    rpc FindOne(FindOneRoleRequest) returns (RoleResponse);
-    rpc Update(UpdateRoleRequest) returns (RoleResponse);
+    rpc FindOne(FindOneRoleRequest) returns (RoleActionResponse);
+    rpc Update(UpdateRoleRequest) returns (RoleActionResponse);
     rpc Delete(DeleteRoleRequest) returns (DeleteRoleResponse);
 }
 
 message CreateRoleRequest {
     string name = 1;
-}
-
-message CreateRoleResponse {
-    string message = 1;
 }
 
 message FindAllRolesRequest {
@@ -34,16 +30,29 @@ message DeleteRoleRequest {
     int32 id = 1;
 }
 
-message DeleteRoleResponse {
-    string message = 1;
-}
-
+// Data thuần — dùng lại cho cả list và action response
 message RoleResponse {
     int32 id = 1;
     string name = 2;
     int64 created_at = 3;
 }
 
+// Wrapper cho action đơn (Create/Update/FindOne) — có code/message
+message RoleActionResponse {
+    int32 code = 1;
+    string message = 2;
+    RoleResponse data = 3;
+}
+
+// Wrapper cho delete — không cần trả RoleResponse
+message DeleteRoleResponse {
+    int32 code = 1;
+    string message = 2;
+}
+
+// List — mỗi item chỉ là data thuần, không lặp code/message
 message RolesListResponse {
-    repeated RoleResponse roles = 1;
+    int32 code = 1;
+    string message = 2;
+    repeated RoleResponse data  = 3;
 }
