@@ -9,11 +9,13 @@ import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 
 @Controller('roles')
 export class RolesController {
-    constructor(private readonly rolesService: RolesService) { }
+    constructor(
+        private readonly rolesService: RolesService
+    ) { }
 
     @Get()
     // @Roles(RoleEnum.OWNER, RoleEnum.ADMIN_MANAGE)
-    @UseGuards(JwtAuthGuard)
+    // @UseGuards(JwtAuthGuard)
     findAll() {
         return this.rolesService.findAll();
     }

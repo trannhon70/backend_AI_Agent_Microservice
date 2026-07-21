@@ -16,7 +16,10 @@ async function bootstrap() {
         join(process.cwd(), 'libs/proto/src/role.proto'),
       ],
       url: grpcUrl,
-      loader: { keepCase: true },
+      loader: {
+        keepCase: true,
+        longs: Number,
+      },
     },
   });
 

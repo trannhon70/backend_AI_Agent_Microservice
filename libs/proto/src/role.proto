@@ -4,6 +4,10 @@ package auth;
 
 service RolesService {
     rpc Create(CreateRoleRequest) returns (CreateRoleResponse);
+    rpc FindAll(FindAllRolesRequest) returns (RolesListResponse);
+    rpc FindOne(FindOneRoleRequest) returns (RoleResponse);
+    rpc Update(UpdateRoleRequest) returns (RoleResponse);
+    rpc Delete(DeleteRoleRequest) returns (DeleteRoleResponse);
 }
 
 message CreateRoleRequest {
@@ -12,4 +16,34 @@ message CreateRoleRequest {
 
 message CreateRoleResponse {
     string message = 1;
+}
+
+message FindAllRolesRequest {
+}
+
+message FindOneRoleRequest {
+    int32 id = 1;
+}
+
+message UpdateRoleRequest {
+    int32 id = 1;
+    string name = 2;
+}
+
+message DeleteRoleRequest {
+    int32 id = 1;
+}
+
+message DeleteRoleResponse {
+    string message = 1;
+}
+
+message RoleResponse {
+    int32 id = 1;
+    string name = 2;
+    int64 created_at = 3;
+}
+
+message RolesListResponse {
+    repeated RoleResponse roles = 1;
 }

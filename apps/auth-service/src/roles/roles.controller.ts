@@ -7,9 +7,10 @@ import { GrpcMethod } from '@nestjs/microservices';
 export class RolesController {
   constructor(private readonly rolesService: RolesService) { }
 
-  @GrpcMethod('RolesService', 'Create')
-  create(data: { name: string }) {
-    return { message: `Role ${data.name} created` };
+  @GrpcMethod('RolesService', 'FindAll')
+  async findAll() {
+    const roles = await this.rolesService.findAll();
+    return { roles };
   }
 
 
