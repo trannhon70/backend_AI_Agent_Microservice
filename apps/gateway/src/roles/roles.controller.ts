@@ -13,21 +13,23 @@ export class RolesController {
         private readonly rolesService: RolesService
     ) { }
 
-    @Get()
+    @Get('get-all')
     @UseGuards(JwtAuthGuard)
-    // @Roles(RoleEnum.OWNER, RoleEnum.ADMIN_MANAGE)
+    @Roles(RoleEnum.OWNER)
     findAll() {
         return this.rolesService.findAll();
     }
 
     @Post()
+    @UseGuards(JwtAuthGuard)
     @Roles(RoleEnum.OWNER)
     create(@Body() dto: CreateRoleDto) {
         return this.rolesService.create(dto);
     }
 
     @Put(':id')
-    @Roles(RoleEnum.OWNER, RoleEnum.ADMIN_MANAGE)
+    @UseGuards(JwtAuthGuard)
+    @Roles(RoleEnum.OWNER)
     update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateRoleDto) {
         return this.rolesService.update(id, dto);
     }

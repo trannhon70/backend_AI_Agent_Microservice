@@ -8,7 +8,7 @@ import type { ClientGrpc } from '@nestjs/microservices';
 interface RolesGrpcService {
     create(data: CreateRoleDto): any;
     update(data: UpdateRoleDto & { id: number }): any;
-    FindAll(data: {}): any;
+    findAll(data: {}): any;
 }
 
 @Injectable()
@@ -22,7 +22,7 @@ export class RolesService implements OnModuleInit {
     }
 
     async create(dto: CreateRoleDto) {
-        return firstValueFrom(this.rolesGrpcService.create(dto) as any);
+        return firstValueFrom(this.rolesGrpcService.create(dto));
     }
 
     async update(id: number, dto: UpdateRoleDto) {
@@ -30,6 +30,6 @@ export class RolesService implements OnModuleInit {
     }
 
     async findAll() {
-        return firstValueFrom(this.rolesGrpcService.FindAll({}) as any);
+        return firstValueFrom(this.rolesGrpcService.findAll({}) as any);
     }
 }

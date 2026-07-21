@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { RoleRepository } from './role.repository';
 import { currentTimestamp } from 'libs/common/utils/date.util';
@@ -14,11 +14,6 @@ export class RolesService {
 
   async create(body: any) {
     try {
-      const dataRef = {
-        name: body.name,
-        created_at: currentTimestamp()
-      }
-      // check tồn tại
       const existing = await this.dataSource.query(
         `SELECT id FROM roles WHERE name = $1 LIMIT 1`,
         [body.name],
@@ -26,14 +21,29 @@ export class RolesService {
 
       if (existing.length > 0) {
         return {
-          code: 0,
+          code: HttpStatus.BAD_REQUEST,
           message: 'Role name already exists',
+          data: null,
         };
       }
-      return await this.roleRepo.create(dataRef);
+
+      const role = await this.roleRepo.create({
+        name: body.name,
+        created_at: currentTimestamp(),
+      });
+
+      return {
+        code: HttpStatus.OK,
+        message: 'Role created successfully',
+        data: role,
+      };
     } catch (error) {
       console.error(error);
-      throw error;
+      return {
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Internal server error',
+        data: null,
+      };
     }
   }
 

@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Body, Controller } from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { GrpcMethod } from '@nestjs/microservices';
 
@@ -15,6 +15,11 @@ export class RolesController {
       message: 'get all role successfully',
       data: roles,
     };
+  }
+
+  @GrpcMethod('RolesService', 'Create')
+  async create(body: any) {
+    return this.rolesService.create(body);
   }
 
 
