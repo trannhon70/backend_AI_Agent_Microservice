@@ -4,6 +4,7 @@ import { GatewayService } from './gateway.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { join } from 'path';
+import { RolesModule } from './roles/roles.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -15,7 +16,8 @@ import { join } from 'path';
         protoPath: join(process.cwd(), 'libs/proto/src/auth.proto'),
         url: "localhost:50051"
       }
-    }
+    },
+      RolesModule
     ])
   ],
   controllers: [GatewayController],
