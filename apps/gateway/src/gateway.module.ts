@@ -8,6 +8,7 @@ import { RolesModule } from './roles/roles.module';
 import { JwtCommonModule } from 'libs/common/jwt/jwt-common.module';
 import { RedisModule } from 'libs/redis/redis.module';
 import { LoggerMiddleware } from 'libs/common/middlewares/logger.middleware';
+import { UsersModule } from './users/users.module';
 @Global()
 @Module({
   imports: [
@@ -30,7 +31,8 @@ import { LoggerMiddleware } from 'libs/common/middlewares/logger.middleware';
       }
     }]),
     RedisModule,
-    RolesModule
+    RolesModule,
+    UsersModule
   ],
   controllers: [GatewayController],
   providers: [GatewayService],
