@@ -14,7 +14,7 @@ export class RolesController {
     ) { }
 
     @Get()
-    // @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     // @Roles(RoleEnum.OWNER, RoleEnum.ADMIN_MANAGE)
     findAll() {
         return this.rolesService.findAll();
