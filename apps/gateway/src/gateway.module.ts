@@ -1,4 +1,4 @@
-import { Global, Module } from '@nestjs/common';
+import { Global, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { GatewayController } from './gateway.controller';
 import { GatewayService } from './gateway.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -7,6 +7,7 @@ import { join } from 'path';
 import { RolesModule } from './roles/roles.module';
 import { JwtCommonModule } from 'libs/common/jwt/jwt-common.module';
 import { RedisModule } from 'libs/redis/redis.module';
+import { LoggerMiddleware } from 'libs/common/middlewares/logger.middleware';
 @Global()
 @Module({
   imports: [
@@ -36,4 +37,8 @@ import { RedisModule } from 'libs/redis/redis.module';
   exports: [ClientsModule],
 
 })
-export class GatewayModule { }
+export class GatewayModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*'); // áp dụng cho mọi route
+  }
+}
