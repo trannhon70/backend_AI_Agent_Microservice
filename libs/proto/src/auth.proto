@@ -3,20 +3,36 @@ syntax = "proto3";
 package auth;
 
 service AuthService {
-
-    rpc Create(CreateRequest)
-        returns (CreateResponse);
-
+    rpc Login(LoginRequest) returns (LoginResponse);
 }
 
-message CreateRequest{
-
-    string name=1;
-
+message LoginRequest {
+    string email = 1;
+    string password = 2;
 }
 
-message CreateResponse{
+message Role {
+    int32 id = 1;
+    string name = 2;
+    int64 created_at = 3;
+}
 
-    string message=1;
+message User {
+    int32 id = 1;
+    string full_name = 2;
+    string email = 3;
+    string avatar = 4;
+    bool is_online = 5;
+    int64 created_at = 6;
+    Role role = 7;
+}
 
+message LoginResponse {
+    int32 code = 1;
+    string message = 2;
+    string access_token = 3;
+    string refresh_token = 4;
+    User user = 5;
+    int64 startTime = 6;
+    int64 endTime = 7;
 }

@@ -114,3 +114,10 @@ nest g app analytics-service
 3. Nếu database livechat chưa tồn tại, tạo trước:
   - docker exec -t postgres createdb -U postgres livechat
   - docker exec -t postgres pg_restore -U postgres -d livechat /tmp/backup.dump
+
+ ## Trường hợp	HTTP Status
+Email không tồn tại	404 NOT_FOUND hoặc 401 UNAUTHORIZED (để tránh lộ thông tin)
+Sai mật khẩu	401 UNAUTHORIZED
+Tài khoản đã bị xóa	403 FORBIDDEN
+Tài khoản bị khóa	403 FORBIDDEN
+Dữ liệu gửi lên sai định dạng	400 BAD_REQUEST

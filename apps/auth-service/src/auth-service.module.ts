@@ -6,10 +6,13 @@ import { RedisModule } from 'libs/redis/redis.module';
 import { AuthServiceController } from './auth-service.controller';
 import { AuthServiceService } from './auth-service.service';
 import { RolesModule } from './roles/roles.module';
+import { UsersModule } from './users/users.module';
+import { JwtCommonModule } from 'libs/common/jwt/jwt-common.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    JwtCommonModule,
     GrpcClientModule.forFeature({
       name: 'auth',
       package: 'auth',
@@ -18,7 +21,8 @@ import { RolesModule } from './roles/roles.module';
     }),
     DatabaseModule,
     RedisModule,
-    RolesModule
+    RolesModule,
+    UsersModule
 
   ],
   controllers: [AuthServiceController],

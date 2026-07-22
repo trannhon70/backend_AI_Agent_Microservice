@@ -27,6 +27,10 @@ export class GrpcClientModule {
                                 package: options.package,
                                 protoPath: join(process.cwd(), `libs/proto/src/${options.protoFile}`),
                                 url: config.get<string>(options.urlEnvKey, options.defaultUrl ?? 'localhost:50051'),
+                                loader: {
+                                    keepCase: true,
+                                    longs: Number,
+                                },
                             },
                         }),
                         inject: [ConfigService],
