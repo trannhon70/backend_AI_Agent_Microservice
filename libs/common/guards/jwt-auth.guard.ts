@@ -46,7 +46,7 @@ export class JwtAuthGuard implements CanActivate {
                 );
             }
 
-            if (session.token !== token) {
+            if (session.access_token !== token) {
                 throw new UnauthorizedException(
                     'Tài khoản đã đăng nhập nơi khác',
                 );
