@@ -35,10 +35,7 @@ export class JwtAuthGuard implements CanActivate {
         try {
             const decoded = this.jwtService.verify(token);
 
-            const session =
-                await this.redisService.get(
-                    `user:${decoded.id}:session`,
-                );
+            const session = await this.redisService.get(`user:${decoded.id}:session`);
 
             if (!session) {
                 throw new UnauthorizedException(

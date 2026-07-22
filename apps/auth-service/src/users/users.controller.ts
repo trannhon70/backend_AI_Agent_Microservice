@@ -16,9 +16,7 @@ export class UsersController {
             message: 'Đăng nhập thành công!',
             access_token: data.access_token,
             refresh_token: data.refresh_token,
-            user: data.user,
-            startTime: data.startTime,
-            endTime: data.endTime
+
         };
     }
 

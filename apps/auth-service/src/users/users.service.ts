@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { expirationTime } from 'libs/common/utils';
 import { LoginDto } from 'apps/gateway/src/users/dto/login-users.dto';
 import { RpcException } from '@nestjs/microservices';
-
+const REFRESH_TTL = 30 * 24 * 60 * 60; // 30 ngày, khớp expiresIn refresh token
 @Injectable()
 export class UsersService {
 
@@ -66,20 +66,17 @@ export class UsersService {
         };
 
         // Access Token (1 giờ)
-        const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
+        const accessToken = this.jwtService.sign(payload, { secret: process.env.JWT_SECRET, expiresIn: '1h' });
 
         // Refresh Token (30 ngày)
         const refreshToken = this.jwtService.sign(payload, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '30d' });
         const accessExpire = 60 * 60; // 1 giờ (giây)
 
         // Lưu session vào Redis
-        await this.redisService.set(`user:${user.id}:session`,
-            {
-                access_token: accessToken,
-                refresh_token: refreshToken,
-                expires_at: currentTimestamp() + accessExpire,
-            },
-            accessExpire,
+        await this.redisService.set(
+            `user:${user.id}:session`,
+            { access_token: accessToken, refresh_token: refreshToken, expires_at: currentTimestamp() + accessExpire },
+            REFRESH_TTL, // ← sửa ở cả login và refresh
         );
 
         // ✅ Cập nhật trạng thái online
@@ -88,9 +85,6 @@ export class UsersService {
         const result = {
             access_token: accessToken,
             refresh_token: refreshToken,
-            user: payload,
-            startTime: currentTimestamp(),
-            endTime: currentTimestamp() + Math.floor(expirationTime / 1000),
         };
 
         return result;

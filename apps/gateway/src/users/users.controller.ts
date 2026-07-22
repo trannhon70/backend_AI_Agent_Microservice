@@ -1,9 +1,10 @@
 // apps/gateway/src/roles/roles.controller.ts
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ClientInfo } from 'libs/common/decorators/client-info.decorator';
 import { LoginDto } from './dto/login-users.dto';
-
+import type { Request, Response } from 'express';
+const REFRESH_TOKEN_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
 @Controller('users')
 export class UsersController {
     constructor(
@@ -11,7 +12,35 @@ export class UsersController {
     ) { }
 
     @Post('login')
-    login(@Body() body: LoginDto, @ClientInfo() option: any) {
-        return this.usersService.login(body, option);
+    async login(@Body() body: LoginDto, @ClientInfo() option: any, @Res({ passthrough: true }) res: Response) {
+        const result: any = await this.usersService.login(body, option);
+        res.cookie('refresh_token', result.refresh_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // true khi chạy HTTPS
+            sameSite: 'none' as const,
+            maxAge: REFRESH_TOKEN_MAX_AGE,
+        });
+
+        return result
+    }
+
+    @Post('refresh')
+    async refresh(
+        @Req() req: Request,
+        @Res({ passthrough: true }) res: Response,
+    ) {
+        const refreshToken = req.cookies?.refresh_token;
+        if (!refreshToken) {
+            throw new UnauthorizedException('Refresh token not found');
+        }
+        const result: any = await this.usersService.refresh(refreshToken);
+        res.cookie('refresh_token', result.refresh_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'none' as const,
+            maxAge: REFRESH_TOKEN_MAX_AGE,
+        });
+
+        return { access_token: result.access_token };
     }
 }
