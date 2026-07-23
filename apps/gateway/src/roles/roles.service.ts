@@ -1,9 +1,9 @@
 // apps/gateway/src/roles/roles.service.ts
 import { Injectable, Inject, OnModuleInit } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
-import { CreateRoleDto } from './dto/create-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
 import type { ClientGrpc } from '@nestjs/microservices';
+import { CreateRoleDto } from 'libs/common/dto/role/create-role.dto';
+import { UpdateRoleDto } from 'libs/common/dto/role/update-role.dto';
 
 interface RolesGrpcService {
     create(data: CreateRoleDto): any;

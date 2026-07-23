@@ -76,14 +76,6 @@ services:
     networks:
       - app-network
 
-  # redis:
-  #   image: redis:7-alpine
-  #   container_name: redis
-  #   restart: unless-stopped
-  #   ports:
-  #     - "6379:6379"
-  #   networks:
-  #     - app-network
 
   # ================= MICROSERVICES =================
   auth-service:
@@ -100,7 +92,6 @@ services:
     depends_on:
       - postgres
       - kafka
-      # - redis
     networks:
       - app-network
 
@@ -118,7 +109,6 @@ services:
   #   depends_on:
   #     - postgres
   #     - kafka
-  #     - redis
   #   networks:
   #     - app-network
 
@@ -209,7 +199,7 @@ services:
     environment:
       AUTH_GRPC_URL: "auth-service:50051"
       # CHAT_GRPC_URL: "chat-service:50052"
-      # FANPAGE_GRPC_URL: "fanpage-service:50053"
+      FANPAGE_GRPC_URL: "fanpage-service:50053"
       # FILE_GRPC_URL: "file-service:50054"
       # AI_GRPC_URL: "ai-service:50055"
       # ANALYTICS_GRPC_URL: "analytics-service:50056"
@@ -217,7 +207,7 @@ services:
     depends_on:
       - auth-service
       # - chat-service
-      # - fanpage-service
+      - fanpage-service
       # - file-service
       # - ai-service
       # - analytics-service

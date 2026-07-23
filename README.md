@@ -121,3 +121,10 @@ Sai mật khẩu	401 UNAUTHORIZED
 Tài khoản đã bị xóa	403 FORBIDDEN
 Tài khoản bị khóa	403 FORBIDDEN
 Dữ liệu gửi lên sai định dạng	400 BAD_REQUEST
+
+## Lệnh chạy docker
+- docker-compose up -d --build
+- docker-compose down
+
+## Link xem log kafka
+- http://localhost:9000/

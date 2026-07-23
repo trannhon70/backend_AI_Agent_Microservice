@@ -2,7 +2,7 @@ import { Injectable, Inject, OnModuleInit, UnauthorizedException } from '@nestjs
 import { firstValueFrom, Observable } from 'rxjs';
 
 import type { ClientGrpc } from '@nestjs/microservices';
-import { LoginDto } from './dto/login-users.dto';
+import { LoginDto } from '../../../../libs/common/dto/user/login-users.dto';
 import { JwtService } from '@nestjs/jwt';
 import { RedisService } from 'libs/redis/redis.service';
 import { currentTimestamp } from 'libs/common/utils/date.util';

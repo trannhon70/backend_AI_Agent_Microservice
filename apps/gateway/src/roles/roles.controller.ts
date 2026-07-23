@@ -2,10 +2,10 @@
 import { Controller, Get, Post, Put, Body, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { Roles } from 'libs/common/decorators/roles.decorator';
 import { RoleEnum } from 'libs/common/enums/role.enum';
-import { CreateRoleDto } from './dto/create-role.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
 import { RolesService } from './roles.service';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
+import { CreateRoleDto } from 'libs/common/dto/role/create-role.dto';
+import { UpdateRoleDto } from 'libs/common/dto/role/update-role.dto';
 
 @Controller('auth-service/roles')
 export class RolesController {

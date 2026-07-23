@@ -2,7 +2,7 @@
 import { Body, Controller, Get, Post, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ClientInfo } from 'libs/common/decorators/client-info.decorator';
-import { LoginDto } from './dto/login-users.dto';
+import { LoginDto } from '../../../../libs/common/dto/user/login-users.dto';
 import type { Request, Response } from 'express';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 const REFRESH_TOKEN_MAX_AGE = 30 * 24 * 60 * 60 * 1000;

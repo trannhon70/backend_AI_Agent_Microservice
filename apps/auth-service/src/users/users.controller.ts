@@ -1,7 +1,7 @@
 import { Body, Controller, HttpStatus } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { UsersService } from './users.service';
-import { LoginDto } from 'apps/gateway/src/users/dto/login-users.dto';
+import { LoginDto } from 'libs/common/dto/user/login-users.dto';
 
 
 @Controller('users')

@@ -3,8 +3,9 @@ import { AppModule } from './app.module';
 import { Transport } from '@nestjs/microservices';
 import { join } from 'path';
 import { Logger } from '@nestjs/common';
+export const grpcUrlFanPage = '0.0.0.0:50053';
+
 async function bootstrap() {
-  const grpcUrl = '0.0.0.0:50053';
   const app = await NestFactory.createMicroservice(AppModule,
     {
       name: 'FANPAGE_PACKAGE',
@@ -14,7 +15,7 @@ async function bootstrap() {
         protoPath: [
           join(process.cwd(), 'libs/proto/src/user_page.proto'),
         ],
-        url: grpcUrl,
+        url: grpcUrlFanPage,
         loader: {
           keepCase: true,
           longs: Number,
@@ -25,6 +26,6 @@ async function bootstrap() {
 
   app.enableShutdownHooks();
   await app.listen();
-  Logger.debug(`🚀 Fanpage Service (gRPC) running on: ${grpcUrl}`);
+  Logger.debug(`🚀 Fanpage Service (gRPC) running on: ${grpcUrlFanPage}`);
 }
 bootstrap();

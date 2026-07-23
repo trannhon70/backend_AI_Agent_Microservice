@@ -8,7 +8,7 @@ import * as bcrypt from 'bcryptjs';
 import { RedisService } from 'libs/redis/redis.service';
 import { JwtService } from '@nestjs/jwt';
 import { accessExpire, REFRESH_TTL } from 'libs/common/utils';
-import { LoginDto } from 'apps/gateway/src/users/dto/login-users.dto';
+import { LoginDto } from 'libs/common/dto/user/login-users.dto';
 import { RpcException } from '@nestjs/microservices';
 @Injectable()
 export class UsersService implements OnModuleInit, OnModuleDestroy {
