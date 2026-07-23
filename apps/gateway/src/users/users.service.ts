@@ -1,5 +1,5 @@
 import { Injectable, Inject, OnModuleInit, UnauthorizedException } from '@nestjs/common';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
 import type { ClientGrpc } from '@nestjs/microservices';
 import { LoginDto } from './dto/login-users.dto';
@@ -7,9 +7,11 @@ import { JwtService } from '@nestjs/jwt';
 import { RedisService } from 'libs/redis/redis.service';
 import { currentTimestamp } from 'libs/common/utils/date.util';
 import { accessExpire, REFRESH_TTL } from 'libs/common/utils';
+import { GetByIdUserRequest, UserResponse } from 'libs/common/interfaces/users.interface';
 
 interface UsersGrpcService {
     Login(data: LoginDto): any;
+    GetByIdUser(data: GetByIdUserRequest): Observable<any>;
 }
 
 @Injectable()
@@ -71,6 +73,10 @@ export class UsersService implements OnModuleInit {
             refresh_token: refreshToken,
         };
 
+    }
+
+    async GetByIdUser(user_id: number) {
+        return firstValueFrom(this.usersGrpcService.GetByIdUser({ user_id }));
     }
 
 }

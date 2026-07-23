@@ -20,5 +20,17 @@ export class UsersController {
         };
     }
 
+    @GrpcMethod('AuthService', 'GetByIdUser')
+    async GetByIdUser(dto: any) {
+        const data = await this.usersService.GetByIdUser(dto);
+
+        return {
+            code: HttpStatus.OK,
+            message: 'get by id success!',
+            data: data
+
+        };
+    }
+
 
 }

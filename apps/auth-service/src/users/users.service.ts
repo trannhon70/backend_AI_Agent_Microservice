@@ -7,7 +7,7 @@ import { ProviderEnum } from 'libs/common/enums/role.enum';
 import * as bcrypt from 'bcryptjs';
 import { RedisService } from 'libs/redis/redis.service';
 import { JwtService } from '@nestjs/jwt';
-import { accessExpire, expirationTime, REFRESH_TTL } from 'libs/common/utils';
+import { accessExpire, REFRESH_TTL } from 'libs/common/utils';
 import { LoginDto } from 'apps/gateway/src/users/dto/login-users.dto';
 import { RpcException } from '@nestjs/microservices';
 @Injectable()
@@ -87,5 +87,36 @@ export class UsersService {
         };
 
         return result;
+    }
+
+    async GetByIdUser(dto: any) {
+        const { user_id } = dto
+        const cacheKey = `user:${user_id}`;
+
+        const cacheUser = await this.redisService.get(cacheKey);
+        if (cacheUser) {
+            return cacheUser;
+        }
+
+        const user = await this.dataSource.query(`
+      SELECT 
+        (to_jsonb(u) - 'password') || jsonb_build_object(
+          'role', to_jsonb(r)
+        ) AS user
+      FROM users u
+      LEFT JOIN roles r ON u.role_id = r.id
+      WHERE u.id = $1
+      LIMIT 1
+    `, [user_id]);
+
+        if (!user.length) {
+            throw new Error('User not found');
+        }
+
+        const userData = user[0].user;
+        //Lưu redis 1 tiếng
+        await this.redisService.set(cacheKey, userData, 3600);
+
+        return userData;
     }
 }

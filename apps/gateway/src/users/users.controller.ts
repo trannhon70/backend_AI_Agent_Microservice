@@ -1,9 +1,10 @@
 // apps/gateway/src/roles/roles.controller.ts
-import { Body, Controller, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ClientInfo } from 'libs/common/decorators/client-info.decorator';
 import { LoginDto } from './dto/login-users.dto';
 import type { Request, Response } from 'express';
+import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 const REFRESH_TOKEN_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
 @Controller('users')
 export class UsersController {
@@ -42,5 +43,12 @@ export class UsersController {
         });
 
         return { access_token: result.access_token };
+    }
+
+    @Get('get-by-id-user')
+    @UseGuards(JwtAuthGuard)
+    async GetByIdUser(@Req() req: any) {
+        return this.usersService.GetByIdUser(req.user.id);
+
     }
 }
