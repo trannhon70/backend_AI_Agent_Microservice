@@ -6,7 +6,8 @@ import { LoginDto } from './dto/login-users.dto';
 import { JwtService } from '@nestjs/jwt';
 import { RedisService } from 'libs/redis/redis.service';
 import { currentTimestamp } from 'libs/common/utils/date.util';
-const REFRESH_TTL = 30 * 24 * 60 * 60; // 30 ngày, khớp expiresIn refresh token
+import { accessExpire, REFRESH_TTL } from 'libs/common/utils';
+
 interface UsersGrpcService {
     Login(data: LoginDto): any;
 }
@@ -48,7 +49,7 @@ export class UsersService implements OnModuleInit {
         if (session.refresh_token !== refreshToken) {
             // refresh token này không khớp với token mới nhất đang lưu
             // → có thể là token cũ đã bị thay thế, hoặc bị đánh cắp dùng lại (replay attack)
-            await this.redisService.del(`user:${payload.id}:session`); // hủy luôn session cho an toàn
+            // await this.redisService.del(`user:${payload.id}:session`); 
             throw new UnauthorizedException('Refresh token đã bị thu hồi');
         }
 
@@ -57,7 +58,7 @@ export class UsersService implements OnModuleInit {
 
         const newAccessToken = this.jwtService.sign(cleanPayload, { secret: process.env.JWT_SECRET, expiresIn: '1h' });
 
-        const accessExpire = 60 * 60;
+
         // ✅ Ghi đè lại session mới vào Redis
         await this.redisService.set(
             `user:${cleanPayload.id}:session`,

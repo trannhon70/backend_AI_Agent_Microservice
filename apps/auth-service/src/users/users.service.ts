@@ -7,10 +7,9 @@ import { ProviderEnum } from 'libs/common/enums/role.enum';
 import * as bcrypt from 'bcryptjs';
 import { RedisService } from 'libs/redis/redis.service';
 import { JwtService } from '@nestjs/jwt';
-import { expirationTime } from 'libs/common/utils';
+import { accessExpire, expirationTime, REFRESH_TTL } from 'libs/common/utils';
 import { LoginDto } from 'apps/gateway/src/users/dto/login-users.dto';
 import { RpcException } from '@nestjs/microservices';
-const REFRESH_TTL = 30 * 24 * 60 * 60; // 30 ngày, khớp expiresIn refresh token
 @Injectable()
 export class UsersService {
 
@@ -70,7 +69,7 @@ export class UsersService {
 
         // Refresh Token (30 ngày)
         const refreshToken = this.jwtService.sign(payload, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '30d' });
-        const accessExpire = 60 * 60; // 1 giờ (giây)
+
 
         // Lưu session vào Redis
         await this.redisService.set(

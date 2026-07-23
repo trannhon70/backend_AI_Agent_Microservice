@@ -1,6 +1,5 @@
-//thời gian hết hạn redis
-export const expirationTime = 12 * 60 * 60 * 1000; // 8 giờ (milliseconds)
-export const expiresIn = '12h'
 
-// export const expirationTime = 30 * 1000; // 30 giây (milliseconds)
-// export const expiresIn = '30s'; // 30 giây
+
+export const REFRESH_TTL = 30 * 24 * 60 * 60; // 30 ngày, khớp expiresIn refresh token
+
+export const accessExpire = 60 * 60; // 1 giờ (giây)
