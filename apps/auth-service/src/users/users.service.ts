@@ -1,4 +1,4 @@
-import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { currentTimestamp } from 'libs/common/utils/date.util';
 import { User } from '@app/database/entities/user.entity';
@@ -11,8 +11,16 @@ import { accessExpire, REFRESH_TTL } from 'libs/common/utils';
 import { LoginDto } from 'apps/gateway/src/users/dto/login-users.dto';
 import { RpcException } from '@nestjs/microservices';
 @Injectable()
-export class UsersService {
+export class UsersService implements OnModuleInit, OnModuleDestroy {
+    private readonly logger = new Logger(UsersService.name);
+    private readonly handleExpired = (key: string) => {
+        const match = key.match(/^user:(\d+):session$/);
+        if (!match) return;
 
+        const userId = parseInt(match[1], 10);
+        this.logger.debug(`⏳ Key expired: ${userId}`);
+        // this.kafkaService.publish(DomainEvents.UserUpdateIsOnlne, { userId });
+    };
     constructor(
         @InjectRepository(User)
         private userRepo: Repository<User>,
@@ -20,7 +28,14 @@ export class UsersService {
 
         private readonly jwtService: JwtService,
         private readonly redisService: RedisService,
-    ) {
+    ) { }
+
+    onModuleInit() {
+        this.redisService.expiredKeys$.on('expired', this.handleExpired);
+    }
+
+    onModuleDestroy() {
+        this.redisService.expiredKeys$.off('expired', this.handleExpired);
     }
 
     async login(body: LoginDto) {

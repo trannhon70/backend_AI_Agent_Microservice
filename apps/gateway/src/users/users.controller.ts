@@ -6,7 +6,7 @@ import { LoginDto } from './dto/login-users.dto';
 import type { Request, Response } from 'express';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 const REFRESH_TOKEN_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
-@Controller('users')
+@Controller('auth-service/users')
 export class UsersController {
     constructor(
         private readonly usersService: UsersService

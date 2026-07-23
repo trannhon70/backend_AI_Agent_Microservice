@@ -23,7 +23,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-  app.setGlobalPrefix('api/auth-service');
+  app.setGlobalPrefix('api');
   await app.listen(process.env.port ?? 5000);
   Logger.debug(
     `🚀 start gateway is running on ${process.env.PORT}`,

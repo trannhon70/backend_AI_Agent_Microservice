@@ -7,7 +7,7 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { RolesService } from './roles.service';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 
-@Controller('roles')
+@Controller('auth-service/roles')
 export class RolesController {
     constructor(
         private readonly rolesService: RolesService

@@ -9,6 +9,7 @@ import { JwtCommonModule } from 'libs/common/jwt/jwt-common.module';
 import { RedisModule } from 'libs/redis/redis.module';
 import { LoggerMiddleware } from 'libs/common/middlewares/logger.middleware';
 import { UsersModule } from './users/users.module';
+import { FanpageModule } from './fanpage/fanpage.module';
 @Global()
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { UsersModule } from './users/users.module';
     }]),
     RedisModule,
     RolesModule,
-    UsersModule
+    UsersModule,
+    FanpageModule
   ],
   controllers: [GatewayController],
   providers: [GatewayService],
