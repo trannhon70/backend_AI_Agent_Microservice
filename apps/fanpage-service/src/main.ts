@@ -6,21 +6,21 @@ import { Logger } from '@nestjs/common';
 async function bootstrap() {
   const grpcUrl = '0.0.0.0:50053';
   const app = await NestFactory.createMicroservice(AppModule,
-    //   {
-    //   name: 'auth',
-    //   transport: Transport.GRPC,
-    //   options: {
-    //     package: 'auth',
-    //     protoPath: [
-    //       join(process.cwd(), 'libs/proto/src/auth.proto'),
-    //     ],
-    //     url: grpcUrl,
-    //     loader: {
-    //       keepCase: true,
-    //       longs: Number,
-    //     },
-    //   },
-    // }
+    {
+      name: 'FANPAGE_PACKAGE',
+      transport: Transport.GRPC,
+      options: {
+        package: 'FANPAGE_PACKAGE',
+        protoPath: [
+          join(process.cwd(), 'libs/proto/src/user_page.proto'),
+        ],
+        url: grpcUrl,
+        loader: {
+          keepCase: true,
+          longs: Number,
+        },
+      },
+    }
   );
 
   app.enableShutdownHooks();

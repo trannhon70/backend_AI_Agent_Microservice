@@ -1,4 +1,4 @@
-
+export const expiresIn = '12h'
 
 export const REFRESH_TTL = 30 * 24 * 60 * 60; // 30 ngày, khớp expiresIn refresh token
 

@@ -10,6 +10,7 @@ import { RedisModule } from 'libs/redis/redis.module';
 import { LoggerMiddleware } from 'libs/common/middlewares/logger.middleware';
 import { UsersModule } from './users/users.module';
 import { FanpageModule } from './fanpage/fanpage.module';
+import { UserPageModule } from './user_page/user_page.module';
 @Global()
 @Module({
   imports: [
@@ -31,10 +32,27 @@ import { FanpageModule } from './fanpage/fanpage.module';
         },
       }
     }]),
+    ClientsModule.register([{
+      name: "FANPAGE_PACKAGE",
+      transport: Transport.GRPC,
+      options: {
+        package: ['FANPAGE_PACKAGE'],
+        protoPath: [
+          join(process.cwd(), 'libs/proto/src/user_page.proto'),
+
+        ],
+        url: "localhost:50053",
+        loader: {
+          keepCase: true,
+          longs: Number,
+        },
+      }
+    }]),
     RedisModule,
     RolesModule,
     UsersModule,
-    FanpageModule
+    FanpageModule,
+    UserPageModule
   ],
   controllers: [GatewayController],
   providers: [GatewayService],

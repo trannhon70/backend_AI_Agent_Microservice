@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package FANPAGE_PACKAGE;
+
+service UserPageService {
+    rpc GetCountProvider(GetCountProviderRequest) returns (GetCountProviderResponse);
+   
+}
+
+message GetCountProviderRequest {
+    int64 user_id = 1;
+}
+
+message ProviderCount {
+    string provider = 1;
+    int32 count = 2;
+}
+
+message GetCountProviderResponse {
+    int32 code = 1;
+    string message = 2;
+    repeated ProviderCount data = 3;
+}
