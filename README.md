@@ -126,6 +126,10 @@ Dữ liệu gửi lên sai định dạng	400 BAD_REQUEST
 - docker-compose up -d --build
 - docker-compose down
 
+# Lệnh build lên docker và chạy api trên docker
+  - docker compose up -d --build gateway
+  - xem log của docker:  docker compose logs -f gateway || docker compose logs -f auth-service
+
 ## Link xem log kafka
 - http://localhost:9000/
 

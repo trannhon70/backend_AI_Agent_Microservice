@@ -52,7 +52,7 @@ export class UsersService implements OnModuleInit {
         if (session.refresh_token !== refreshToken) {
             // refresh token này không khớp với token mới nhất đang lưu
             // → có thể là token cũ đã bị thay thế, hoặc bị đánh cắp dùng lại (replay attack)
-            // await this.redisService.del(`user:${payload.id}:session`); 
+            await this.redisService.del(`user:${payload.id}:session`);
             throw new UnauthorizedException('Refresh token đã bị thu hồi');
         }
 
