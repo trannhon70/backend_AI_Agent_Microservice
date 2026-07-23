@@ -49,6 +49,5 @@ export class UsersController {
     @UseGuards(JwtAuthGuard)
     async GetByIdUser(@Req() req: any) {
         return this.usersService.GetByIdUser(req.user.id);
-
     }
 }

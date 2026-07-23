@@ -122,21 +122,21 @@ services:
   #   networks:
   #     - app-network
 
-  # fanpage-service:
-  #   build:
-  #     context: .
-  #     dockerfile: apps/fanpage-service/Dockerfile
-  #   container_name: fanpage-service
-  #   restart: unless-stopped
-  #   environment:
-  #     FANPAGE_GRPC_URL: "0.0.0.0:50053"
-  #     DATABASE_URL: "postgresql://postgres:1q2w3e4r@postgres:5432/livechat"
-  #     KAFKA_BROKER: "kafka:29092"
-  #   depends_on:
-  #     - postgres
-  #     - kafka
-  #   networks:
-  #     - app-network
+  fanpage-service:
+    build:
+      context: .
+      dockerfile: apps/fanpage-service/Dockerfile
+    container_name: fanpage-service
+    restart: unless-stopped
+    environment:
+      FANPAGE_GRPC_URL: "0.0.0.0:50053"
+      DATABASE_URL: "postgresql://postgres:1q2w3e4r@postgres:5432/livechat"
+      KAFKA_BROKER: "kafka:29092"
+    depends_on:
+      - postgres
+      - kafka
+    networks:
+      - app-network
 
   # file-service:
   #   build:

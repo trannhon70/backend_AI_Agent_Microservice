@@ -3,9 +3,9 @@ import { Transport } from '@nestjs/microservices';
 import { join } from 'path';
 import { AuthServiceModule } from './auth-service.module';
 import { Logger } from '@nestjs/common';
-
+export const grpcUrlAuth = '0.0.0.0:50051';
 async function bootstrap() {
-  const grpcUrl = '0.0.0.0:50051';
+
   const app = await NestFactory.createMicroservice(AuthServiceModule, {
     name: 'auth',
     transport: Transport.GRPC,
@@ -15,7 +15,7 @@ async function bootstrap() {
         join(process.cwd(), 'libs/proto/src/auth.proto'),
         join(process.cwd(), 'libs/proto/src/role.proto'),
       ],
-      url: grpcUrl,
+      url: grpcUrlAuth,
       loader: {
         keepCase: true,
         longs: Number,
@@ -25,7 +25,7 @@ async function bootstrap() {
 
   app.enableShutdownHooks();
   await app.listen();
-  Logger.debug(`🚀 Auth Service (gRPC) running on: ${grpcUrl}`);
+  Logger.debug(`🚀 Auth Service (gRPC) running on: ${grpcUrlAuth}`);
 }
 
 bootstrap();

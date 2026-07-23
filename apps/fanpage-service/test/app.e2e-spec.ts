@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { FanpageServiceModule } from './../src/fanpage-service.module';
+import { FanpageServiceModule } from '../src/app.module';
 
 describe('FanpageServiceController (e2e)', () => {
   let app: INestApplication;

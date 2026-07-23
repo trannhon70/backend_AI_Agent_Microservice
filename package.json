@@ -17,6 +17,8 @@
     "start:gateway:debug": "nest start gateway --debug --watch",
     "start:auth-service": "nest start auth-service --watch",
     "start:auth-service:debug": "nest start auth-service --debug --watch",
+    "start:fanpage-service": "nest start fanpage-service --watch",
+    "start:fanpage-service:debug": "nest start fanpage-service --debug --watch",
     "start:crm-backend": "nest start crm-backend --watch",
     "start:crm-backend:debug": "nest start crm-backend --debug --watch",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

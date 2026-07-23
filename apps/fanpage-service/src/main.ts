@@ -1,8 +1,30 @@
 import { NestFactory } from '@nestjs/core';
-import { FanpageServiceModule } from './fanpage-service.module';
-
+import { AppModule } from './app.module';
+import { Transport } from '@nestjs/microservices';
+import { join } from 'path';
+import { Logger } from '@nestjs/common';
 async function bootstrap() {
-  const app = await NestFactory.create(FanpageServiceModule);
-  await app.listen(process.env.port ?? 3000);
+  const grpcUrl = '0.0.0.0:50053';
+  const app = await NestFactory.createMicroservice(AppModule,
+    //   {
+    //   name: 'auth',
+    //   transport: Transport.GRPC,
+    //   options: {
+    //     package: 'auth',
+    //     protoPath: [
+    //       join(process.cwd(), 'libs/proto/src/auth.proto'),
+    //     ],
+    //     url: grpcUrl,
+    //     loader: {
+    //       keepCase: true,
+    //       longs: Number,
+    //     },
+    //   },
+    // }
+  );
+
+  app.enableShutdownHooks();
+  await app.listen();
+  Logger.debug(`🚀 Fanpage Service (gRPC) running on: ${grpcUrl}`);
 }
 bootstrap();
