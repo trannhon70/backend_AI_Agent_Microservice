@@ -128,3 +128,17 @@ Dữ liệu gửi lên sai định dạng	400 BAD_REQUEST
 
 ## Link xem log kafka
 - http://localhost:9000/
+
+# Cách đăng ký server đúng cho pgAdmin trong Docker Trong trang localhost:5050/browser/:
+
+1. Chuột phải vào Servers → Register → Server...
+2. Tab General: 
+  - Name: đặt tên tùy ý, ví dụ AI_Agent Local
+3. Tab Connection:
+  - Host name/address: postgres ← dùng tên service trong compose, KHÔNG phải localhost
+  - Port: 5432 ← port nội bộ trong Docker network, KHÔNG phải 5431
+  - Maintenance database: postgres (an toàn nhất để connect trước — không phải AI_Agent)
+  - Username: postgres
+  - Password: 1q2w3e4r
+4. Save password?: bật lên cho tiện
+  - Bấm Save

@@ -54,7 +54,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1q2w3e4r
-      POSTGRES_DB: livechat
+      POSTGRES_DB: AI_Agent
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -86,9 +86,14 @@ services:
     restart: unless-stopped
     environment:
       AUTH_GRPC_URL: "0.0.0.0:50051"
-      DATABASE_URL: "postgresql://postgres:1q2w3e4r@postgres:5432/livechat"
+      DB_HOST: "postgres"
+      DB_PORT: "5432"
+      DB_USERNAME: "postgres"
+      DB_PASSWORD: "1q2w3e4r"
+      DB_NAME: "AI_Agent"
       KAFKA_BROKER: "kafka:29092"
-      REDIS_URL: "redis://host.docker.internal:6379"
+      REDIS_HOST: "host.docker.internal"
+      REDIS_PORT: "6379"
     depends_on:
       - postgres
       - kafka
@@ -103,9 +108,9 @@ services:
   #   restart: unless-stopped
   #   environment:
   #     CHAT_GRPC_URL: "0.0.0.0:50052"
-  #     DATABASE_URL: "postgresql://postgres:1q2w3e4r@postgres:5432/livechat"
+  #     DATABASE_URL: "postgresql://postgres:1q2w3e4r@postgres:5432/AI_Agent"
   #     KAFKA_BROKER: "kafka:29092"
-  #     REDIS_URL: "redis://redis:6379"
+  #     
   #   depends_on:
   #     - postgres
   #     - kafka
@@ -120,8 +125,14 @@ services:
     restart: unless-stopped
     environment:
       FANPAGE_GRPC_URL: "0.0.0.0:50053"
-      DATABASE_URL: "postgresql://postgres:1q2w3e4r@postgres:5432/livechat"
+      DB_HOST: "postgres"
+      DB_PORT: "5432"
+      DB_USERNAME: "postgres"
+      DB_PASSWORD: "1q2w3e4r"
+      DB_NAME: "AI_Agent"
       KAFKA_BROKER: "kafka:29092"
+      REDIS_HOST: "host.docker.internal"
+      REDIS_PORT: "6379"
     depends_on:
       - postgres
       - kafka
@@ -136,7 +147,7 @@ services:
   #   restart: unless-stopped
   #   environment:
   #     FILE_GRPC_URL: "0.0.0.0:50054"
-  #     DATABASE_URL: "postgresql://postgres:1q2w3e4r@postgres:5432/livechat"
+  #     DATABASE_URL: "postgresql://postgres:1q2w3e4r@postgres:5432/AI_Agent"
   #   depends_on:
   #     - postgres
   #   networks:
@@ -164,7 +175,7 @@ services:
   #   restart: unless-stopped
   #   environment:
   #     ANALYTICS_GRPC_URL: "0.0.0.0:50056"
-  #     DATABASE_URL: "postgresql://postgres:1q2w3e4r@postgres:5432/livechat"
+  #     DATABASE_URL: "postgresql://postgres:1q2w3e4r@postgres:5432/AI_Agent"
   #     KAFKA_BROKER: "kafka:29092"
   #   depends_on:
   #     - postgres
@@ -180,11 +191,9 @@ services:
   #   restart: unless-stopped
   #   environment:
   #     NOTIFICATION_GRPC_URL: "0.0.0.0:50057"
-  #     KAFKA_BROKER: "kafka:29092"
-  #     REDIS_URL: "redis://redis:6379"
+  #     KAFKA_BROKER: "kafka:29092"    
   #   depends_on:
   #     - kafka
-  #     - redis
   #   networks:
   #     - app-network
 
@@ -204,6 +213,8 @@ services:
       # AI_GRPC_URL: "ai-service:50055"
       # ANALYTICS_GRPC_URL: "analytics-service:50056"
       # NOTIFICATION_GRPC_URL: "notification-service:50057"
+      REDIS_HOST: "host.docker.internal"
+      REDIS_PORT: "6379"
     depends_on:
       - auth-service
       # - chat-service
