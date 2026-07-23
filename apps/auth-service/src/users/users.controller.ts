@@ -32,5 +32,14 @@ export class UsersController {
         };
     }
 
+    @GrpcMethod('AuthService', 'Logout')
+    async Logout(dto: any) {
+        const data = await this.usersService.Logout(dto);
+        return {
+            code: HttpStatus.OK,
+            message: 'Logout success!',
+        };
+    }
+
 
 }

@@ -5,6 +5,12 @@ package auth;
 service AuthService {
     rpc Login(LoginRequest) returns (LoginResponse);
     rpc GetByIdUser(GetByIdUserRequest) returns (UserResponse);
+    rpc Logout(GetByIdUserRequest) returns (LogoutResponse);
+}
+
+message LogoutResponse {
+  int32 code = 1;
+  string message = 2;
 }
 
 message GetByIdUserRequest {

@@ -47,7 +47,13 @@ export class UsersController {
 
     @Get('get-by-id-user')
     @UseGuards(JwtAuthGuard)
-    async GetByIdUser(@Req() req: any) {
+    GetByIdUser(@Req() req: any) {
         return this.usersService.GetByIdUser(req.user.id);
+    }
+
+    @Post('logout')
+    @UseGuards(JwtAuthGuard)
+    logout(@Req() req: any) {
+        return this.usersService.logout(req.user.id);
     }
 }

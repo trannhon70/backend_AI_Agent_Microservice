@@ -119,4 +119,14 @@ export class UsersService {
 
         return userData;
     }
+
+    async Logout(dto: any) {
+        try {
+            const { user_id } = dto
+            await this.userRepo.update({ id: user_id }, { is_online: false });
+            return await this.redisService.del(`user:${user_id}:session`);
+        } catch (error) {
+            throw error
+        }
+    }
 }

@@ -12,6 +12,7 @@ import { GetByIdUserRequest, UserResponse } from 'libs/common/interfaces/users.i
 interface UsersGrpcService {
     Login(data: LoginDto): any;
     GetByIdUser(data: GetByIdUserRequest): Observable<any>;
+    Logout(data: GetByIdUserRequest): Observable<any>;
 }
 
 @Injectable()
@@ -77,6 +78,10 @@ export class UsersService implements OnModuleInit {
 
     async GetByIdUser(user_id: number) {
         return firstValueFrom(this.usersGrpcService.GetByIdUser({ user_id }));
+    }
+
+    async logout(user_id: number) {
+        return firstValueFrom(this.usersGrpcService.Logout({ user_id }));
     }
 
 }
