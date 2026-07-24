@@ -51,14 +51,10 @@ export class UserPageService {
         const search = query.search || '';
         const provider = query.provider || '';
         const user_id = query.user_id;
-        const skip = (pageIndex - 1) * limit;
 
         const qb = this.UserPageRepo.createQueryBuilder('user_page')
             .leftJoinAndSelect('user_page.page', 'page')
             .where('user_page.user_id = :user_id', { user_id })
-            .orderBy('user_page.created_at', 'DESC').addOrderBy('user_page.id', 'DESC')
-            .skip(skip)
-            .take(limit + 1);
 
         if (provider) {
             qb.andWhere('user_page.provider = :provider', {
@@ -67,8 +63,8 @@ export class UserPageService {
         }
 
         if (search?.trim()) {
-            qb.addSelect(`ts_rank_cd(user_page.search_vector, websearch_to_tsquery('simple', unaccent(:search)))`, 'rank')
-                .andWhere(`user_page.search_vector @@ websearch_to_tsquery('simple', unaccent(:search))`, { search: search.trim() })
+            qb.addSelect(`ts_rank_cd(page.search_vector, websearch_to_tsquery('simple', unaccent(:search)))`, 'rank')
+                .andWhere(`page.search_vector @@ websearch_to_tsquery('simple', unaccent(:search))`, { search: search.trim() })
                 .orderBy('rank', 'DESC')
                 .addOrderBy('user_page.created_at', 'DESC')
                 .addOrderBy('user_page.id', 'DESC');

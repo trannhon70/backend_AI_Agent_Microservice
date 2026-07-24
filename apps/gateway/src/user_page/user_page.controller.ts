@@ -19,6 +19,7 @@ export class UserPageController {
     @UseGuards(JwtAuthGuard)
     getpaging(@Req() req: any, @Query() query: GetPagingUserPageDto) {
         return this.UserPageService.getPaging(req.user.id, query)
+
     }
 
 }

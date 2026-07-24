@@ -29,7 +29,7 @@ export class UserPageController {
                 hasMore: result.hasMore,
                 pageIndex: result.pageIndex,
                 limit: result.limit,
-                items: result.data,
+                items: result.data ? result.data : [],
             }
         };
     }
