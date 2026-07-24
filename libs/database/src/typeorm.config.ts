@@ -1,12 +1,16 @@
 // libs/database/src/typeorm.config.ts
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { join } from 'path';
+
+const isTs = __filename.endsWith('.ts');
 
 function requireEnv(configService: ConfigService, key: string): string {
     const value = configService.get<string>(key);
     if (!value) throw new Error(`Missing required env var: ${key}`);
     return value;
 }
+
 
 export const getTypeOrmConfig = (
     configService: ConfigService,
@@ -17,7 +21,12 @@ export const getTypeOrmConfig = (
     username: requireEnv(configService, 'DB_USERNAME'),
     password: requireEnv(configService, 'DB_PASSWORD'),
     database: requireEnv(configService, 'DB_NAME'),
-    entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+    entities: [
+        join(__dirname, isTs ? '../entities/**/*.entity.ts' : '../entities/**/*.entity.js'),
+    ],
+    migrations: [
+        join(__dirname, isTs ? '../migrations/**/*.ts' : '../migrations/**/*.js'),
+    ],
     synchronize: false,
     autoLoadEntities: true,
     // logging: ['error', 'warn'],
