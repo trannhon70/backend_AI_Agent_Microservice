@@ -16,7 +16,6 @@ async function bootstrap() {
   );
 
   app.useGlobalFilters(new HttpExceptionFilter());
-
   app.enableCors({
     origin: [process.env.URL_BACKEND, process.env.URL_FRONTEND, 'https://crm-ai-gent.vercel.app', 'http://192.168.142.1:5173'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',

@@ -146,3 +146,102 @@ Dữ liệu gửi lên sai định dạng	400 BAD_REQUEST
   - Password: 1q2w3e4r
 4. Save password?: bật lên cho tiện
   - Bấm Save
+
+## lệnh backup dữ liệu rồi bỏ dữ liệu vào /wwww
+docker exec -t postgres pg_dump -U postgres livechat > backup.sql
+
+## Bước 1: convert UTF-16 → UTF-8
+iconv -f UTF-16 -t UTF-8 /www/backup.sql -o /www/backup_utf8.sql
+
+## Bước 2: import lại vào PostgreSQL
+cat /www/backup_utf8.sql | docker exec -i postgres psql -U postgres -d livechat
+
+## redis server config lại
+
+maxmemory 1gb
+maxmemory-policy allkeys-lru
+notify-keyspace-events Ex
+
+## lệnh start ngrok
+ngrok http 5000
+
+## google console 
+https://console.cloud.google.com/apis/credentials?project=onbai-449403
+
+## doc facebook
+https://developers.facebook.com/apps/
+
+## doc telegram
+https://my.telegram.org/apps
+
+## Thêm cột search_vector
+npm run typeorm migration:create src/database/migrations/AddConversationSearchVector
+
+## revert lại migration
+npm run typeorm -- migration:revert -d src/database/data-source.ts
+## lệnh chạy migration
+npm run typeorm migration:run -- -d src/database/data-source.ts
+
+## Tạo bảng mới 
+npm run typeorm -- migration:generate src/database/migrations/CreateFilesTable -d src/database/data-source.ts
+
+## 1. Xem toàn bộ index của 1 bảng
+SELECT indexname, indexdef FROM pg_indexes WHERE tablename = 'conversations';
+
+## các kỹ thuật đánh index nâng cao của PostgreSQL
+1. Primary Key Index (luôn có)
+
+2. Unique Index "Cho các field phải duy nhất."
+  - Ví dụ: email username slug code 
+  - SQL: CREATE UNIQUE INDEX idx_users_email ON users(email) hoặc ALTER TABLE users ADD CONSTRAINT unique_email UNIQUE(email);
+
+3. Composite Index (được dùng nhiều nhất) "Đây là loại được dùng nhiều nhất trong doanh nghiệp."
+  - Ví dụ: API: GET /users?page=1 "ORDER BY created_at DESC"
+  - CREATE INDEX idx_users_created ON users(created_at DESC);
+
+4. Partial Index (rất phổ biến)
+  - Ví dụ: API: is_deleted=false "ORDER BY created_at DESC"
+  - CREATE INDEX idx_users_active ON users(created_at DESC) WHERE is_deleted=false; "Index chỉ lưu user active, Nhanh hơn rất nhiều."
+
+5. Covering Index (INCLUDE) "Postgres 11+"
+  - Ví dụ: SELECT id,name,email FROM users WHERE provider='google'.
+  - CREATE INDEX idx_users_provider ON users(provider) INCLUDE(name,email); "Database không cần đọc table. Chỉ đọc index"
+
+6. Full Text Search Index (GIN)
+ - Search tất cả từ (AND): plainto_tsquery()
+ - Search OR: to_tsquery()
+ - Search NOT: websearch_to_tsquery()
+ - Search Phrase (đúng cụm): phraseto_tsquery()
+
+7. Foreign Key Index "Postgres KHÔNG tự tạo index cho foreign key."
+  - Ví dụ: posts.user_id
+  - CREATE INDEX idx_posts_user ON posts(user_id); "Nếu không JOIN sẽ rất chậm"
+
+9. JSONB Index (Nếu dùng JSONB)
+  - metadata jsonb
+  - CREATE INDEX idx_metadata ON products USING GIN(metadata);
+
+10. Expression Index
+  - Ví dụ: LOWER(email) => CREATE INDEX idx_lower_email ON users(LOWER(email));
+  - Query => WHERE LOWER(email)=LOWER($1)
+  
+11. BRIN Index (Cho bảng cực lớn)
+  - Ví dụ log: created_at
+  - CREATE INDEX idx_logs_created ON logs USING BRIN(created_at);
+
+## Thứ tự ưu tiên khi thiết kế index
+1. Tạo các index bắt buộc: Primary Key, Unique và Foreign Key.
+2. Thêm Composite Index dựa trên các câu WHERE, ORDER BY, JOIN và phân trang xuất hiện thường xuyên.
+3. Dùng Partial Index nếu dữ liệu thường được lọc theo một điều kiện cố định như is_deleted = false hoặc status = 'ACTIVE'.
+4. Dùng GIN cho tsvector, jsonb hoặc pg_trgm khi cần tìm kiếm toàn văn, JSON hoặc chuỗi gần đúng.
+5. Theo dõi bằng EXPLAIN ANALYZE để xem truy vấn thực tế có sử dụng index không. Nếu một index không bao giờ được dùng, hãy cân nhắc loại bỏ để giảm chi phí ghi và dung lượng lưu trữ.
+
+## các loại index có giá trị nhất sẽ là:
+- B-tree (mặc định): cho PK, FK, WHERE, ORDER BY, JOIN.
+- Composite Index: tối ưu các truy vấn nhiều điều kiện như (page_id, updated_at DESC, id).
+- Partial Index: cho các điều kiện như is_deleted = false.
+- GIN Index: cho search_vector và nếu dùng jsonb hoặc pg_trgm.
+- Expression Index: nếu thường xuyên tìm kiếm không phân biệt hoa thường (LOWER(email) chẳng hạn).
+
+## store lưu cnd file 
+https://console.cloudinary.com/app/c-45c6bd6465bbb5f74168580c9d2082/home/delivery-reports
