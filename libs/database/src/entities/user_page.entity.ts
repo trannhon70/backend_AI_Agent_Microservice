@@ -7,7 +7,7 @@ import { ProviderEnum, RoleEnumUserPage } from 'libs/common/enums/role.enum';
 @Entity('user_pages')
 @Unique('uq_user_page_user_fanpage', ['user_id', 'fanpage_id'])
 @Index('idx_user_page_user', ['user_id'])
-@Index('idx_user_page_fanpage_created_at_id', ['fanpage_id', 'created_at', 'id'],)
+@Index('idx_user_page_fanpage_created_at_id', ['user_id', 'created_at', 'id'],)
 export class UserPage {
     @PrimaryGeneratedColumn("increment")
     id!: number;

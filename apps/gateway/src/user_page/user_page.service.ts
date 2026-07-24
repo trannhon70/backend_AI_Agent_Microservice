@@ -1,11 +1,13 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { ClientGrpc } from '@nestjs/microservices';
+import { GetPagingUserPageDto } from 'libs/common/dto/user_page/index.dto';
 import { RedisService } from 'libs/redis/redis.service';
 import { firstValueFrom, Observable } from 'rxjs';
 
 interface UserPageGrpcService {
     GetCountProvider(data: any): Observable<any>;
+    GetPaging(data: any): Observable<any>;
 }
 
 @Injectable()
@@ -27,4 +29,11 @@ export class UserPageService implements OnModuleInit {
         return firstValueFrom(this.UserPageGrpcService.GetCountProvider({ user_id }));
     }
 
+    async getPaging(user_id: number, query: GetPagingUserPageDto) {
+        const data = {
+            user_id,
+            ...query
+        }
+        return firstValueFrom(this.UserPageGrpcService.GetPaging(data));
+    }
 }

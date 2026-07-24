@@ -4,6 +4,7 @@ package FANPAGE_PACKAGE;
 
 service UserPageService {
     rpc GetCountProvider(GetCountProviderRequest) returns (GetCountProviderResponse);
+    rpc GetPaging(GetPagingRequest) returns (GetPagingResponse);
    
 }
 
@@ -20,4 +21,49 @@ message GetCountProviderResponse {
     int32 code = 1;
     string message = 2;
     repeated ProviderCount data = 3;
+}
+
+message GetPagingRequest {
+    int64 user_id = 1;
+    int64 pageIndex = 2;
+    int64 limit = 3;
+    string search = 4;
+    string provider = 5;
+}
+
+message Fanpage {
+  int64 id = 1;
+  int64 user_id = 2;
+  string page_id = 3;
+  string page_name = 4;
+  string page_avatar = 5;
+  string access_token = 6;
+  double data_access_expires_at = 7;
+  string syncStatus = 8;
+  int64 created_at = 9;
+}
+
+message UserPage {
+   int64 id = 1;
+  int64 user_id = 2;
+  int64 fanpage_id = 3;
+  string provider = 4;
+  string role = 5;
+  int64 created_at = 6;
+
+  Fanpage page = 7;
+}
+
+message PagingData {
+   bool hasMore = 1;
+    int32 pageIndex = 2;
+    int32 limit = 3;
+    repeated UserPage items = 4;
+ 
+}
+
+message GetPagingResponse {
+    int64 code = 1;
+    string message = 2;
+    PagingData data = 3;
 }
