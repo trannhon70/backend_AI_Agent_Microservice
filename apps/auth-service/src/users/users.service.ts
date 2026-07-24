@@ -7,7 +7,7 @@ import { ProviderEnum } from 'libs/common/enums/role.enum';
 import * as bcrypt from 'bcryptjs';
 import { RedisService } from 'libs/redis/redis.service';
 import { JwtService } from '@nestjs/jwt';
-import { accessExpire, REFRESH_TTL } from 'libs/common/utils';
+import { accessExpire, expiresIn, REFRESH_TTL } from 'libs/common/utils';
 import { LoginDto } from 'libs/common/dto/user/login-users.dto';
 import { RpcException } from '@nestjs/microservices';
 @Injectable()
@@ -82,8 +82,8 @@ export class UsersService implements OnModuleInit, OnModuleDestroy {
         // Access Token (1 giờ)
         const accessToken = this.jwtService.sign(payload, { secret: process.env.JWT_SECRET, expiresIn: '1h' });
 
-        // Refresh Token (30 ngày)
-        const refreshToken = this.jwtService.sign(payload, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: '30d' });
+        // Refresh Token (365 ngày)
+        const refreshToken = this.jwtService.sign(payload, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: expiresIn });
 
 
         // Lưu session vào Redis
