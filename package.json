@@ -26,7 +26,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./apps/crm-backend/test/jest-e2e.json"
+    "test:e2e": "jest --config ./apps/crm-backend/test/jest-e2e.json",
+    "typeorm": "node -r tsconfig-paths/register ./node_modules/typeorm/cli-ts-node-commonjs.js"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.14.4",
@@ -104,6 +105,11 @@
       "^@app/kafka(|/.*)$": "<rootDir>/libs/kafka/src/$1",
       "^@app/proto(|/.*)$": "<rootDir>/libs/proto/src/$1",
       "^@app/redis(|/.*)$": "<rootDir>/libs/redis/src/$1"
+    }
+  },
+  "overrides": {
+    "typeorm": {
+      "yargs": "17.7.2"
     }
   }
 }

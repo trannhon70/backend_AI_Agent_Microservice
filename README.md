@@ -175,15 +175,15 @@ https://developers.facebook.com/apps/
 https://my.telegram.org/apps
 
 ## Thêm cột search_vector
-npm run typeorm migration:create src/database/migrations/AddConversationSearchVector
+npm run typeorm -- migration:create libs/database/src/migrations/AddUserPageSearchVector
 
 ## revert lại migration
-npm run typeorm -- migration:revert -d src/database/data-source.ts
+npm run typeorm -- migration:revert -d libs/database/data-source.ts
 ## lệnh chạy migration
-npm run typeorm migration:run -- -d src/database/data-source.ts
+npm run typeorm migration:run -- -d libs/database/data-source.ts
 
 ## Tạo bảng mới 
-npm run typeorm -- migration:generate src/database/migrations/CreateFilesTable -d src/database/data-source.ts
+npm run typeorm -- migration:generate libs/database/src/migrations/CreateFilesTable -d libs/database/src/data-source.ts
 
 ## 1. Xem toàn bộ index của 1 bảng
 SELECT indexname, indexdef FROM pg_indexes WHERE tablename = 'conversations';
