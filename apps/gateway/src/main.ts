@@ -24,8 +24,6 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
   await app.listen(process.env.port ?? 5000);
-  Logger.debug(
-    `🚀 start gateway is running on ${process.env.PORT}`,
-  );
+  Logger.debug(`🚀 start gateway is running on ${process.env.PORT}`);
 }
 bootstrap();

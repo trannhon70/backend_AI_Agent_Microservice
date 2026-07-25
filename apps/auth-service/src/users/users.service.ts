@@ -1,15 +1,17 @@
-import { BadRequestException, HttpStatus, Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
-import { currentTimestamp } from 'libs/common/utils/date.util';
 import { User } from '@app/database/entities/user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ProviderEnum } from 'libs/common/enums/role.enum';
-import * as bcrypt from 'bcryptjs';
-import { RedisService } from 'libs/redis/redis.service';
+import { status as GrpcStatus } from '@grpc/grpc-js';
+import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { accessExpire, expiresIn, REFRESH_TTL } from 'libs/common/utils';
-import { LoginDto } from 'libs/common/dto/user/login-users.dto';
 import { RpcException } from '@nestjs/microservices';
+import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcryptjs';
+import { LoginDto } from 'libs/common/dto/user/login-users.dto';
+import { ProviderEnum } from 'libs/common/enums/role.enum';
+import { accessExpire, expiresIn, REFRESH_TTL } from 'libs/common/utils';
+import { currentTimestamp } from 'libs/common/utils/date.util';
+import { RedisService } from 'libs/redis/redis.service';
+import { DataSource, Repository } from 'typeorm';
+
 @Injectable()
 export class UsersService implements OnModuleInit, OnModuleDestroy {
     private readonly logger = new Logger(UsersService.name);
@@ -46,16 +48,16 @@ export class UsersService implements OnModuleInit, OnModuleDestroy {
         });
 
         if (!user) {
-            throw new RpcException({ code: HttpStatus.NOT_FOUND, message: 'Email không tồn tại!' });
+            throw new RpcException({ code: GrpcStatus.NOT_FOUND, message: 'Email không tồn tại!' });
         }
         if (user.is_deleted === true) {
-            throw new RpcException({ code: HttpStatus.FORBIDDEN, message: 'Tài khoản này đã bị xóa!' });
+            throw new RpcException({ code: GrpcStatus.PERMISSION_DENIED, message: 'Tài khoản này đã bị xóa!' });
         }
 
         const isMatch = await bcrypt.compare(String(body.password), String(user.password));
 
         if (!isMatch) {
-            throw new RpcException({ code: HttpStatus.UNAUTHORIZED, message: 'Password không đúng!', });
+            throw new RpcException({ code: GrpcStatus.NOT_FOUND, message: 'Password không đúng!', });
         }
 
         // Kiểm tra Redis xem có phiên đăng nhập nào chưa
