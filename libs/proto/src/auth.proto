@@ -6,6 +6,7 @@ service AuthService {
     rpc Login(LoginRequest) returns (LoginResponse);
     rpc GetByIdUser(GetByIdUserRequest) returns (UserResponse);
     rpc Logout(GetByIdUserRequest) returns (LogoutResponse);
+    rpc LoginV1(LoginV1Request) returns (LoginResponse);
 }
 
 message LogoutResponse {
@@ -52,4 +53,11 @@ message LoginResponse {
     User user = 5;
     int64 startTime = 6;
     int64 endTime = 7;
+}
+
+message LoginV1Request {
+    string email = 1;
+    string full_name = 2;
+    string avatar = 3;
+    string provider = 4;
 }

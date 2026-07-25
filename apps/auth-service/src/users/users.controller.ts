@@ -1,7 +1,7 @@
 import { Body, Controller, HttpStatus } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { UsersService } from './users.service';
-import { LoginDto } from 'libs/common/dto/user/login-users.dto';
+import { LoginDto, LoginV1Dto } from 'libs/common/dto/user/login-users.dto';
 
 
 @Controller('users')
@@ -34,10 +34,22 @@ export class UsersController {
 
     @GrpcMethod('AuthService', 'Logout')
     async Logout(dto: any) {
-        const data = await this.usersService.Logout(dto);
+        await this.usersService.Logout(dto);
         return {
             code: HttpStatus.OK,
             message: 'Logout success!',
+        };
+    }
+
+    @GrpcMethod('AuthService', 'LoginV1')
+    async LoginV1(dto: LoginV1Dto) {
+        const data = await this.usersService.LoginV1(dto);
+        return {
+            code: HttpStatus.OK,
+            message: 'Đăng nhập thành công!',
+            access_token: data.access_token,
+            refresh_token: data.refresh_token,
+
         };
     }
 

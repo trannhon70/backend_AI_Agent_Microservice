@@ -2,7 +2,7 @@ import { Injectable, Inject, OnModuleInit, UnauthorizedException } from '@nestjs
 import { firstValueFrom, Observable } from 'rxjs';
 
 import type { ClientGrpc } from '@nestjs/microservices';
-import { LoginDto } from '../../../../libs/common/dto/user/login-users.dto';
+import { LoginDto, LoginV1Dto } from '../../../../libs/common/dto/user/login-users.dto';
 import { JwtService } from '@nestjs/jwt';
 import { RedisService } from 'libs/redis/redis.service';
 import { currentTimestamp } from 'libs/common/utils/date.util';
@@ -13,6 +13,7 @@ interface UsersGrpcService {
     Login(data: LoginDto): any;
     GetByIdUser(data: GetByIdUserRequest): Observable<any>;
     Logout(data: GetByIdUserRequest): Observable<any>;
+    LoginV1(data: LoginV1Dto): Observable<any>;
 }
 
 @Injectable()
@@ -82,6 +83,10 @@ export class UsersService implements OnModuleInit {
 
     async logout(user_id: number) {
         return firstValueFrom(this.usersGrpcService.Logout({ user_id }));
+    }
+
+    async loginV1(dto: LoginV1Dto) {
+        return firstValueFrom(this.usersGrpcService.LoginV1(dto));
     }
 
 }

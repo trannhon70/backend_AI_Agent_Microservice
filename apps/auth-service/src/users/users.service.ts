@@ -6,7 +6,7 @@ import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcryptjs';
 import { LoginDto } from 'libs/common/dto/user/login-users.dto';
-import { ProviderEnum } from 'libs/common/enums/role.enum';
+import { ProviderEnum, RoleEnum } from 'libs/common/enums/role.enum';
 import { accessExpire, expiresIn, REFRESH_TTL } from 'libs/common/utils';
 import { currentTimestamp } from 'libs/common/utils/date.util';
 import { RedisService } from 'libs/redis/redis.service';
@@ -16,13 +16,10 @@ import { DataSource, Repository } from 'typeorm';
 export class UsersService implements OnModuleInit, OnModuleDestroy {
     private readonly logger = new Logger(UsersService.name);
     private readonly handleExpired = (key: string) => {
-
         const match = key.match(/^user:(\d+):session$/);
         if (!match) return;
-
         const user_id = parseInt(match[1], 10);
         this.logger.debug(`⏳ Key expired: ${user_id}`);
-        // this.kafkaService.publish(DomainEvents.UserUpdateIsOnlne, { userId });
         this.Logout({ user_id: user_id })
     };
     constructor(
@@ -147,5 +144,68 @@ export class UsersService implements OnModuleInit, OnModuleDestroy {
         } catch (error) {
             throw error
         }
+    }
+
+    async LoginV1(dto: any) {
+        let user = await this.userRepo.findOne({
+            where: { email: dto.email, provider: dto.provider },
+            relations: { role: true },
+        });
+
+        if (!user) {
+            user = await this.userRepo.save({
+                email: dto.email,
+                full_name: dto.full_name,
+                avatar: dto.avatar,
+                is_online: true,
+                role_id: RoleEnum.ADMIN_MANAGE,
+                provider: dto.provider,
+                created_at: currentTimestamp(),
+            });
+        } else {
+            await this.userRepo.update(
+                { id: user.id },
+                { is_online: true },
+            );
+        }
+
+        await this.redisService.del(`user:${user.id}:session`);
+
+        const payload = {
+            id: user.id,
+            email: user.email,
+            full_name: user.full_name,
+            created_at: user.created_at,
+            is_online: user.is_online,
+            avatar: user.avatar ?? "",
+            role: {
+                id: user.role.id,
+                name: user.role.name,
+                created_at: user.role.created_at,
+            },
+        };
+
+        // Access Token (1 giờ)
+        const accessToken = this.jwtService.sign(payload, { secret: process.env.JWT_SECRET, expiresIn: '1h' });
+
+        // Refresh Token (365 ngày)
+        const refreshToken = this.jwtService.sign(payload, { secret: process.env.JWT_REFRESH_SECRET, expiresIn: expiresIn });
+        // Lưu session vào Redis
+        await this.redisService.set(
+            `user:${user.id}:session`,
+            { access_token: accessToken, refresh_token: refreshToken, expires_at: currentTimestamp() + accessExpire },
+            REFRESH_TTL, // ← sửa ở cả login và refresh
+        );
+
+        // ✅ Cập nhật trạng thái online
+        user.is_online = true;
+        await this.userRepo.save(user);
+        const result = {
+            access_token: accessToken,
+            refresh_token: refreshToken,
+        };
+
+        return result;
+
     }
 }

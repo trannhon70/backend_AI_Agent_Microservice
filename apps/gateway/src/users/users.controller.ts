@@ -2,7 +2,7 @@
 import { Body, Controller, Get, Post, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ClientInfo } from 'libs/common/decorators/client-info.decorator';
-import { LoginDto } from '../../../../libs/common/dto/user/login-users.dto';
+import { LoginDto, LoginV1Dto } from '../../../../libs/common/dto/user/login-users.dto';
 import type { Request, Response } from 'express';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 const REFRESH_TOKEN_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
@@ -55,5 +55,17 @@ export class UsersController {
     @UseGuards(JwtAuthGuard)
     logout(@Req() req: any) {
         return this.usersService.logout(req.user.id);
+    }
+
+    @Post('login-v1')
+    async loginV1(@Body() body: LoginV1Dto, @Res({ passthrough: true }) res: Response) {
+        const result = await this.usersService.loginV1(body);
+        res.cookie('refresh_token', result.refresh_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // true khi chạy HTTPS
+            sameSite: 'none' as const,
+            maxAge: REFRESH_TOKEN_MAX_AGE,
+        });
+        return result
     }
 }
