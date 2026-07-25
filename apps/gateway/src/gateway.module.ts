@@ -11,12 +11,14 @@ import { UsersModule } from './users/users.module';
 import { FanpageModule } from './fanpage/fanpage.module';
 import { UserPageModule } from './user_page/user_page.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { SocketModule } from '@app/socket';
 
 @Global()
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     JwtCommonModule,
+    SocketModule,
     ClientsModule.registerAsync([
       {
         name: "auth",
