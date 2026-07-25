@@ -16,12 +16,14 @@ import { DataSource, Repository } from 'typeorm';
 export class UsersService implements OnModuleInit, OnModuleDestroy {
     private readonly logger = new Logger(UsersService.name);
     private readonly handleExpired = (key: string) => {
+
         const match = key.match(/^user:(\d+):session$/);
         if (!match) return;
 
-        const userId = parseInt(match[1], 10);
-        this.logger.debug(`⏳ Key expired: ${userId}`);
+        const user_id = parseInt(match[1], 10);
+        this.logger.debug(`⏳ Key expired: ${user_id}`);
         // this.kafkaService.publish(DomainEvents.UserUpdateIsOnlne, { userId });
+        this.Logout({ user_id: user_id })
     };
     constructor(
         @InjectRepository(User)
