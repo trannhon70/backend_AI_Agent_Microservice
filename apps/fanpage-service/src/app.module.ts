@@ -7,6 +7,7 @@ import { GrpcClientModule } from 'libs/grpc-clients/src/grpc-client.module';
 import { DatabaseModule } from '@app/database/typeorm.module';
 import { RedisModule } from 'libs/redis/redis.module';
 import { UserPageModule } from './user_page/user_page.module';
+import { FanPageModule } from './fanpage/fanpage.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { UserPageModule } from './user_page/user_page.module';
     }),
     DatabaseModule,
     RedisModule,
-    UserPageModule
+    UserPageModule,
+    FanPageModule
   ],
   controllers: [AppController],
   providers: [AppService],

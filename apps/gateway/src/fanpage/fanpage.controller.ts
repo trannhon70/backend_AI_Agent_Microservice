@@ -1,8 +1,9 @@
 // apps/gateway/src/roles/roles.controller.ts
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 import { FanpageService } from './fanpage.service';
-@Controller('fanpage-service/fanpage')
+import { CreateConnectFanPageFacebookDto } from 'libs/common/dto/fanpage/index.dto';
+@Controller('fanpage-service/fanpages')
 export class FanpageController {
     constructor(
         private readonly fanpageService: FanpageService
@@ -10,10 +11,14 @@ export class FanpageController {
 
 
 
-    @Get('get-by-id-user')
+    @Post('connect-page-facebook')
     @UseGuards(JwtAuthGuard)
-    GetByIdUser(@Req() req: any) {
-
+    createConnectPageFacebook(@Req() req: any, @Body() body: any) {
+        const payload: CreateConnectFanPageFacebookDto = {
+            ...body,
+            user_id: req.user.id
+        }
+        return this.fanpageService.createConnectPageFacebook(payload)
     }
 
 }

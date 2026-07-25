@@ -51,6 +51,7 @@ import { SocketModule } from '@app/socket';
             package: ['FANPAGE_PACKAGE'],
             protoPath: [
               join(process.cwd(), 'libs/proto/src/user_page.proto'),
+              join(process.cwd(), 'libs/proto/src/fanpage.proto'),
             ],
             url: configService.get<string>('FANPAGE_GRPC_URL', 'localhost:50053'),
             loader: {

@@ -14,6 +14,7 @@ async function bootstrap() {
         package: 'FANPAGE_PACKAGE',
         protoPath: [
           join(process.cwd(), 'libs/proto/src/user_page.proto'),
+          join(process.cwd(), 'libs/proto/src/fanpage.proto'),
         ],
         url: grpcUrlFanPage,
         loader: {

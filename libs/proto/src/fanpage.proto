@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package FANPAGE_PACKAGE;
+
+service FanPageService {
+    rpc CreateConnectPageFacebook(CreateConnectRequest) returns (CreateConnectResponse);
+    
+}
+
+message CreateConnectRequest {
+    int64 user_id = 1;
+    string access_token = 2;
+}
+
+
+message CreateConnectResponse {
+    int32 code = 1;
+    string message = 2;
+
+}
+
