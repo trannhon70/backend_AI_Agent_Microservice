@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { UserPage } from '@app/database/entities/user_page.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateConnectFanPageFacebookDto } from 'libs/common/dto/fanpage/index.dto';
+import { CreateConnectFanPageFacebookDto, TokenRenewalFacebookDto } from 'libs/common/dto/fanpage/index.dto';
 import { Fanpage } from '@app/database/entities/fanpage.entity';
 import { ProviderEnum, RoleEnumUserPage } from 'libs/common/enums/role.enum';
 import { currentTimestamp } from 'libs/common/utils/date.util';
@@ -155,7 +155,39 @@ export class FanPageService {
         }
     }
 
+    async TokenRenewal(payload: TokenRenewalFacebookDto) {
+        // tiến hành long token lên thời gian tối đa khoảng 90 ngày
+        const token = await this.exchangeLongLivedToken(payload.access_token);
+        const debugToken = await this.debugToken(token.access_token);
 
+        // // ✅ lấy danh sách page kết nối facebook
+        const result = await fetch(
+            'https://graph.facebook.com/v25.0/me/accounts?fields=id,name,category,picture.type(large),access_token',
+            {
+                headers: {
+                    Authorization: `Bearer ${token.access_token}`, // <-- fix ở đây
+                },
+            }
+        );
+
+        const fanpages = await result.json();
+        const pages = fanpages?.data?.map((item: any) => ({
+            id: item.id,
+            access_token: item.access_token,
+        }));
+
+        for (const item of pages) {
+
+            await this.fanpageRepo.update({ id: payload.fanpage_id }, {
+                access_token: token.access_token,
+                data_access_expires_at: debugToken.data.data_access_expires_at,
+            });
+
+            await this.pageTokenRepo.update({ fanpage_id: payload.fanpage_id }, {
+                access_token: item.access_token,
+            });
+        }
+    }
 
 
 }

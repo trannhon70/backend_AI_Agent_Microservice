@@ -15,3 +15,17 @@ export class CreateConnectFanPageFacebookDto {
     @IsString()
     access_token!: string;
 }
+
+export class TokenRenewalFacebookDto {
+    @Type(() => Number)
+    @IsInt()
+    user_id!: number;
+
+    @Type(() => Number)
+    @IsInt()
+    fanpage_id!: number;
+
+    @IsOptional()
+    @IsString()
+    access_token!: string;
+}

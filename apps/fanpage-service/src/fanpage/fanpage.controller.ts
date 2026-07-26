@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { FanPageService } from './fanpage.service';
 import { status as GrpcStatus } from '@grpc/grpc-js';
-import { CreateConnectFanPageFacebookDto } from 'libs/common/dto/fanpage/index.dto';
+import { CreateConnectFanPageFacebookDto, TokenRenewalFacebookDto } from 'libs/common/dto/fanpage/index.dto';
 
 @Controller()
 export class FanPageController {
@@ -18,5 +18,14 @@ export class FanPageController {
         };
     }
 
+    @GrpcMethod('FanPageService', 'TokenRenewal')
+    async TokenRenewal(dto: TokenRenewalFacebookDto) {
+        const data = await this.FanPageService.TokenRenewal(dto);
+        return {
+            code: GrpcStatus.OK,
+            message: 'create token success!',
+            data: data
+        };
+    }
 
 }

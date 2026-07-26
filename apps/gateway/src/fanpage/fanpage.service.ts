@@ -2,12 +2,13 @@ import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 
 import { JwtService } from '@nestjs/jwt';
 import type { ClientGrpc } from '@nestjs/microservices';
-import { CreateConnectFanPageFacebookDto } from 'libs/common/dto/fanpage/index.dto';
+import { CreateConnectFanPageFacebookDto, TokenRenewalFacebookDto } from 'libs/common/dto/fanpage/index.dto';
 import { RedisService } from 'libs/redis/redis.service';
 import { firstValueFrom, Observable } from 'rxjs';
 
 interface FanpageGrpcService {
     CreateConnectPageFacebook(data: CreateConnectFanPageFacebookDto): Observable<any>;
+    TokenRenewal(data: TokenRenewalFacebookDto): Observable<any>;
 }
 
 @Injectable()
@@ -27,6 +28,10 @@ export class FanpageService implements OnModuleInit {
 
     async createConnectPageFacebook(payload: CreateConnectFanPageFacebookDto) {
         return firstValueFrom(this.FanpageGrpcService.CreateConnectPageFacebook(payload));
+    }
+
+    async tokenRenewal(payload: TokenRenewalFacebookDto) {
+        return firstValueFrom(this.FanpageGrpcService.TokenRenewal(payload));
     }
 
 }

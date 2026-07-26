@@ -4,6 +4,7 @@ package FANPAGE_PACKAGE;
 
 service FanPageService {
     rpc CreateConnectPageFacebook(CreateConnectRequest) returns (CreateConnectResponse);
+    rpc TokenRenewal(TokenRenewalRequest) returns (TokenRenewalResponse);
     
 }
 
@@ -16,6 +17,15 @@ message CreateConnectRequest {
 message CreateConnectResponse {
     int32 code = 1;
     string message = 2;
-
 }
 
+message TokenRenewalRequest {
+    int64 user_id = 1;
+    int64 fanpage_id = 2;
+    string access_token = 3;
+}
+
+message TokenRenewalResponse {
+    int32 code = 1;
+    string message = 2;
+}
