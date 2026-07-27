@@ -9,6 +9,7 @@ import { firstValueFrom, Observable } from 'rxjs';
 interface FanpageGrpcService {
     CreateConnectPageFacebook(data: CreateConnectFanPageFacebookDto): Observable<any>;
     TokenRenewal(data: TokenRenewalFacebookDto): Observable<any>;
+    GetPageId(data: any): Observable<any>;
 }
 
 @Injectable()
@@ -32,6 +33,10 @@ export class FanpageService implements OnModuleInit {
 
     async tokenRenewal(payload: TokenRenewalFacebookDto) {
         return firstValueFrom(this.FanpageGrpcService.TokenRenewal(payload));
+    }
+
+    async getPageId(param: any) {
+        return firstValueFrom(this.FanpageGrpcService.GetPageId(param));
     }
 
 }

@@ -28,4 +28,14 @@ export class FanPageController {
         };
     }
 
+    @GrpcMethod('FanPageService', 'GetPageId')
+    async GetPageId(param: any) {
+        const data = await this.FanPageService.GetPageId(param);
+        return {
+            code: GrpcStatus.OK,
+            message: 'get by id success!',
+            data: data
+        };
+    }
+
 }

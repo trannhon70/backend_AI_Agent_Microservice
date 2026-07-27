@@ -189,5 +189,10 @@ export class FanPageService {
         }
     }
 
+    async GetPageId(param: any) {
+        const result = await this.fanpageRepo.findOne({ where: { page_id: param.id } })
+        return result
+    }
+
 
 }

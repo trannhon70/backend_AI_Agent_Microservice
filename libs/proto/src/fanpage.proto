@@ -5,6 +5,7 @@ package FANPAGE_PACKAGE;
 service FanPageService {
     rpc CreateConnectPageFacebook(CreateConnectRequest) returns (CreateConnectResponse);
     rpc TokenRenewal(TokenRenewalRequest) returns (TokenRenewalResponse);
+    rpc GetPageId(GetPageIdRequest) returns (GetByIdResponse);
     
 }
 
@@ -28,4 +29,22 @@ message TokenRenewalRequest {
 message TokenRenewalResponse {
     int32 code = 1;
     string message = 2;
+}
+
+message GetPageIdRequest {
+    int64 id = 1;
+}
+
+message GetByIdData {
+   int32 id = 1;
+   string page_id = 2;
+   string page_name = 3;
+   string page_avatar = 4;
+   string syncStatus = 5;
+}
+
+message GetByIdResponse {
+    int32 code = 1;
+    string message = 2;
+    GetByIdData data = 3;
 }

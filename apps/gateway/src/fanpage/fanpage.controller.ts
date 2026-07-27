@@ -1,5 +1,5 @@
 // apps/gateway/src/roles/roles.controller.ts
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 import { FanpageService } from './fanpage.service';
 import { CreateConnectFanPageFacebookDto, TokenRenewalFacebookDto } from 'libs/common/dto/fanpage/index.dto';
@@ -30,4 +30,10 @@ export class FanpageController {
         return this.fanpageService.tokenRenewal(payload)
     }
 
+    @Get('get-page-id/:id')
+    @UseGuards(JwtAuthGuard)
+    async getPageId(@Req() req: any, @Param() param: any) {
+        return await this.fanpageService.getPageId(param)
+
+    }
 }

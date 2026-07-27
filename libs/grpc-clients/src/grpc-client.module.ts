@@ -14,15 +14,6 @@ interface GrpcClientOptions {
 @Module({})
 export class GrpcClientModule {
     static forFeature(options: GrpcClientOptions): DynamicModule {
-        const protoPath = join(
-            process.cwd(),
-            `libs/proto/src/${options.protoFile}`,
-        );
-        console.log({
-            name: options.name,
-            protoPath,
-            exists: require('fs').existsSync(protoPath),
-        });
         return {
             module: GrpcClientModule,
             imports: [
