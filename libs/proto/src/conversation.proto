@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package CHAT_PACKAGE;
+
+service ConversationService {
+  rpc GetPaging(GetPagingRequest) returns (GetPagingResponse);
+}
+
+// ===== Request =====
+message GetPagingRequest {
+  int32 limit = 1;
+  string search = 2;
+  string page_id = 3;
+  int64 lastId = 4;
+  string lastUpdatedAt = 5;
+}
+
+// ===== Nested message: last message của 1 conversation =====
+message LastMessage {
+  int64 id = 1;
+  string text = 2;
+  string type = 3;
+}
+
+// ===== 1 conversation item =====
+message ConversationItem {
+  int64 id = 1;
+  string page_id = 2;
+  string full_name = 3;
+  double updated_at = 4;
+  double last_message_at = 5;
+  int32 unread_count = 6;
+  string customer_id = 7;   // ✅ đổi từ int64 sang string
+  LastMessage lastMessage = 8;
+}
+
+// ===== Kết quả phân trang =====
+message GetPagingReSult {
+  int32 limit = 1;
+  bool hasMore = 2;
+  int64 lastId = 3;
+  double lastUpdatedAt = 4;
+  repeated ConversationItem data = 5;
+}
+
+// ===== Response chuẩn theo pattern code/message/data =====
+message GetPagingResponse {
+  int32 code = 1;
+  string message = 2;
+  GetPagingReSult data = 3;   // ✅ thêm dấu ;
+}

@@ -102,22 +102,28 @@ services:
     networks:
       - app-network
 
-  # chat-service:
-  #   build:
-  #     context: .
-  #     dockerfile: apps/chat-service/Dockerfile
-  #   container_name: chat-service
-  #   restart: unless-stopped
-  #   environment:
-  #     CHAT_GRPC_URL: "0.0.0.0:50052"
-  #     DATABASE_URL: "postgresql://postgres:1q2w3e4r@postgres:5432/AI_Agent"
-  #     KAFKA_BROKER: "kafka:29092"
-  #     
-  #   depends_on:
-  #     - postgres
-  #     - kafka
-  #   networks:
-  #     - app-network
+  chat-service:
+    build:
+      context: .
+      dockerfile: apps/chat-service/Dockerfile
+    container_name: chat-service
+    restart: unless-stopped
+    environment:
+      CHAT_GRPC_URL: "0.0.0.0:50052"
+      DB_HOST: "postgres"
+      DB_PORT: "5432"
+      DB_USERNAME: "postgres"
+      DB_PASSWORD: "1q2w3e4r"
+      DB_NAME: "AI_Agent"
+      KAFKA_BROKER: "kafka:29092"
+      REDIS_HOST: "host.docker.internal"
+      REDIS_PORT: "6379"
+      
+    depends_on:
+      - postgres
+      - kafka
+    networks:
+      - app-network
 
   fanpage-service:
     build:
@@ -215,7 +221,7 @@ services:
       JWT_SECRET: "jhdksfjhdks854769"
       JWT_REFRESH_SECRET: "qwertyuiopasdfghjklzxcvbnm1234567890"
       AUTH_GRPC_URL: "auth-service:50051"
-      # CHAT_GRPC_URL: "chat-service:50052"
+      CHAT_GRPC_URL: "chat-service:50052"
       FANPAGE_GRPC_URL: "fanpage-service:50053"
       # FILE_GRPC_URL: "file-service:50054"
       # AI_GRPC_URL: "ai-service:50055"
@@ -225,7 +231,7 @@ services:
       REDIS_PORT: "6379"
     depends_on:
       - auth-service
-      # - chat-service
+      - chat-service
       - fanpage-service
       # - file-service
       # - ai-service

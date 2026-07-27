@@ -1,0 +1,26 @@
+import { Controller, HttpStatus } from '@nestjs/common';
+import { GrpcMethod } from '@nestjs/microservices';
+import { ConversationService } from './conversation.service';
+import { GetPagingConversationDto } from 'libs/common/dto/conversation/index.dto';
+import { status as GrpcStatus } from '@grpc/grpc-js';
+
+@Controller()
+export class ConversationController {
+    constructor(private readonly ConversationService: ConversationService) { }
+
+
+
+    @GrpcMethod('ConversationService', 'GetPaging')
+    async GetPaging(query: GetPagingConversationDto) {
+        const result = await this.ConversationService.GetPaging(query);
+        return {
+            code: GrpcStatus.OK,
+            message: 'get paging success!',
+            data: result,   // ✅ đúng vì proto giờ khai data là 1 message, không phải repeated
+        };
+    }
+
+
+
+
+}

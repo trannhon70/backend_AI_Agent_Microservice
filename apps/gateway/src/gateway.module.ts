@@ -12,6 +12,7 @@ import { FanpageModule } from './fanpage/fanpage.module';
 import { UserPageModule } from './user_page/user_page.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SocketModule } from '@app/socket';
+import { ConversationModule } from './conversation/conversation.module';
 
 @Global()
 @Module({
@@ -63,11 +64,34 @@ import { SocketModule } from '@app/socket';
         inject: [ConfigService],
       },
     ]),
+    ClientsModule.registerAsync([
+      {
+        name: "CHAT_PACKAGE",
+        imports: [ConfigModule],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.GRPC,
+          options: {
+            package: ['CHAT_PACKAGE'],
+            protoPath: [
+              join(process.cwd(), 'libs/proto/src/conversation.proto'),
+            ],
+            url: configService.get<string>('CHAT_GRPC_URL', 'localhost:50052'),
+            loader: {
+              keepCase: true,
+              longs: Number,
+            },
+          },
+        }),
+        inject: [ConfigService],
+      },
+    ]),
+
     RedisModule,
     RolesModule,
     UsersModule,
     FanpageModule,
-    UserPageModule
+    UserPageModule,
+    ConversationModule
   ],
   controllers: [GatewayController],
   providers: [GatewayService],
