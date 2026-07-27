@@ -4,7 +4,7 @@ import { DataSource, Repository } from 'typeorm';
 import { currentTimestamp } from 'libs/common/utils/date.util';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserPage } from '@app/database/entities/user_page.entity';
-import { GetPagingUserPageDto } from 'libs/common/dto/user_page/index.dto';
+import { DeleteUserPageDto, GetPagingUserPageDto } from 'libs/common/dto/user_page/index.dto';
 
 @Injectable()
 export class UserPageService {
@@ -84,6 +84,8 @@ export class UserPageService {
         };
     }
 
-
+    async Delete(param: DeleteUserPageDto) {
+        return await this.UserPageRepo.delete(param)
+    }
 
 }

@@ -1,7 +1,7 @@
 import { Body, Controller, HttpStatus } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { UserPageService } from './user_page.service';
-import { GetPagingUserPageDto } from 'libs/common/dto/user_page/index.dto';
+import { DeleteUserPageDto, GetPagingUserPageDto } from 'libs/common/dto/user_page/index.dto';
 
 
 @Controller()
@@ -34,6 +34,14 @@ export class UserPageController {
         };
     }
 
+    @GrpcMethod('UserPageService', 'Delete')
+    async Delete(param: DeleteUserPageDto) {
+        await this.userPageService.Delete(param);
+        return {
+            code: HttpStatus.OK,
+            message: 'delete user pages success!',
+        };
+    }
 
 
 

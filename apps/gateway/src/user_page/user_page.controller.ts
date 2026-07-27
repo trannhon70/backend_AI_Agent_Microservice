@@ -1,8 +1,8 @@
 // apps/gateway/src/roles/roles.controller.ts
-import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 import { UserPageService } from './user_page.service';
-import { GetPagingUserPageDto } from 'libs/common/dto/user_page/index.dto';
+import { DeleteUserPageDto, GetPagingUserPageDto } from 'libs/common/dto/user_page/index.dto';
 @Controller('fanpage-service/user-pages')
 export class UserPageController {
     constructor(
@@ -20,5 +20,12 @@ export class UserPageController {
     getpaging(@Req() req: any, @Query() query: GetPagingUserPageDto) {
         return this.UserPageService.getPaging(req.user.id, query)
     }
+
+    @Delete('delete/:id')
+    @UseGuards(JwtAuthGuard)
+    async delete(@Req() req: any, @Param() param: DeleteUserPageDto) {
+        return this.UserPageService.delete(param);
+    }
+
 
 }

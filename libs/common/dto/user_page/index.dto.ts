@@ -25,3 +25,10 @@ export class GetPagingUserPageDto {
     @IsString()
     provider?: string;
 }
+
+export class DeleteUserPageDto {
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    id!: number;
+}

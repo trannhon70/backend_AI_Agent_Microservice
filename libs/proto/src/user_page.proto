@@ -5,6 +5,7 @@ package FANPAGE_PACKAGE;
 service UserPageService {
     rpc GetCountProvider(GetCountProviderRequest) returns (GetCountProviderResponse);
     rpc GetPaging(GetPagingRequest) returns (GetPagingResponse);
+    rpc Delete(DeleteRequest) returns (DeleteResponse);
    
 }
 
@@ -66,4 +67,13 @@ message GetPagingResponse {
     int64 code = 1;
     string message = 2;
     PagingData data = 3;
+}
+
+message DeleteRequest {
+    int64 id = 1;
+}
+
+message DeleteResponse {
+    int64 code = 1;
+    string message = 2;
 }
