@@ -13,6 +13,7 @@ async function bootstrap() {
         package: ['CHAT_PACKAGE'],
         protoPath: [
           join(process.cwd(), 'libs/proto/src/conversation.proto'),
+          join(process.cwd(), 'libs/proto/src/messages.proto'),
         ],
         url: grpcUrlFanPage,
         loader: {

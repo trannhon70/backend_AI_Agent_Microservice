@@ -7,6 +7,7 @@ import { RedisModule } from 'libs/redis/redis.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConversationModule } from './conversation/conversation.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { ConversationModule } from './conversation/conversation.module';
     }),
     DatabaseModule,
     RedisModule,
-    ConversationModule
+    ConversationModule,
+    MessagesModule
   ],
   controllers: [AppController],
   providers: [AppService],

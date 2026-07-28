@@ -13,6 +13,7 @@ import { UserPageModule } from './user_page/user_page.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SocketModule } from '@app/socket';
 import { ConversationModule } from './conversation/conversation.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Global()
 @Module({
@@ -74,6 +75,7 @@ import { ConversationModule } from './conversation/conversation.module';
             package: ['CHAT_PACKAGE'],
             protoPath: [
               join(process.cwd(), 'libs/proto/src/conversation.proto'),
+              join(process.cwd(), 'libs/proto/src/messages.proto'),
             ],
             url: configService.get<string>('CHAT_GRPC_URL', 'localhost:50052'),
             loader: {
@@ -91,7 +93,9 @@ import { ConversationModule } from './conversation/conversation.module';
     UsersModule,
     FanpageModule,
     UserPageModule,
-    ConversationModule
+    ConversationModule,
+    MessagesModule
+
   ],
   controllers: [GatewayController],
   providers: [GatewayService],

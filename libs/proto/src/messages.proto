@@ -1,0 +1,95 @@
+syntax = "proto3";
+import "google/protobuf/struct.proto";
+
+package CHAT_PACKAGE;
+
+service MessagesService {
+  rpc GetPaging(GetPagingMessagesRequest) returns (GetPagingMessagesResponse);
+}
+
+// ===== Request =====
+message GetPagingMessagesRequest {
+  int32 pageIndex = 1;
+  int32 limit = 2;
+  string search = 3;
+  int64 conversation_id = 4;
+}
+
+// ===== Thông tin rút gọn của Conversation =====
+message ConversationInfo {
+  int32 id = 1;
+  string full_name = 2;
+  string avatar = 3;
+}
+
+// ===== Thông tin rút gọn của User =====
+message UserInfo {
+  int32 id = 1;
+  string full_name = 2;
+  string avatar = 3;
+}
+
+// ===== Message được reply (rút gọn, không lồng reply_to để tránh đệ quy) =====
+message ReplyMessageItem {
+  int32 id = 1;
+  int64 conversation_id = 2;
+  string direction = 3;
+  string type = 4;
+  string text = 5;
+  string attachments = 6;
+  int64 user_id = 7;
+  int64 sent_at = 8;
+  int64 created_at = 9;
+}
+
+message Attachment {
+    string id = 1;
+    string url = 2;
+    string name = 3;
+
+    int32 width = 4;
+    int32 height = 5;
+
+    string mime_type = 6;
+    string image_type = 7;
+    string preview_url = 8;
+    bool render_as_sticker = 9;
+}
+
+// ===== Một message trong danh sách kết quả =====
+message MessageItem {
+  int32 id = 1;
+  int64 conversation_id = 2;
+  string facebook_mid = 3;
+  string sender_id = 4;
+  string recipient_id = 5;
+  string direction = 6;
+  string type = 7;
+  string text = 8;
+  repeated Attachment attachments = 9;
+  int64 user_id = 10;
+  int64 sent_at = 11;
+  int64 created_at = 12;
+  string reply_to_id = 13;
+  
+ 
+
+  ConversationInfo conversation = 14;
+  UserInfo user = 15;
+  ReplyMessageItem reply_to = 16;
+}
+
+// ===== Kết quả phân trang =====
+message GetPagingMessagesResult {
+  int32 pageIndex = 1;
+  int32 limit = 2;
+  bool hasMore = 3;
+  repeated MessageItem data = 4;
+}
+
+// ===== Response chuẩn theo pattern code/message/data =====
+message GetPagingMessagesResponse {
+  int32 code = 1;
+  string message = 2;
+  GetPagingMessagesResult data = 3;
+}
