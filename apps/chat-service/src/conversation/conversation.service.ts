@@ -20,7 +20,7 @@ export class ConversationService {
         private readonly LiveMessageRepo: Repository<LiveMessage>,
         // private readonly roleRepo: RoleRepository,
         private readonly dataSource: DataSource,
-        private readonly socketService: SocketService,
+
     ) {
     }
 
@@ -177,16 +177,13 @@ export class ConversationService {
                     relations: { lastMessage: true },
                 });
                 // lưu message và thực hiện socket
-                this.handleSync({ page_id: pageId, conversation_id: conversation.id, message: data_mess, conversation: updatedConversation });
+                return { page_id: pageId, conversation_id: conversation.id, message: data_mess, conversation: updatedConversation }
             }
         }
 
 
     }
 
-    handleSync(payload: any) {
-        this.socketService.emitToRoom(`conversation:${payload.conversation_id}`, 'send_message', payload.message);
-        this.socketService.emitToRoom(`page:${payload.page_id}`, 'send_conversation', payload.conversation);
-    }
+
 
 }
