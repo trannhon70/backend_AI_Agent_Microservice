@@ -1,11 +1,11 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { GetPagingMessagesDto } from 'libs/common/dto/messages/index.dto';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
 interface MessagesGrpcService {
-    GetPaging(data: GetPagingMessagesDto): any;
-
+    GetPaging(data: GetPagingMessagesDto): Observable<any>;
+    Send(data: any): Observable<any>;
 }
 
 @Injectable()
@@ -20,6 +20,10 @@ export class MessagesService implements OnModuleInit {
 
     async getPaging(dto: GetPagingMessagesDto) {
         return firstValueFrom(this.MessagesGrpcService.GetPaging(dto));
+    }
+
+    async send(dto: any) {
+        return firstValueFrom(this.MessagesGrpcService.Send({ data: JSON.stringify(dto) }));
     }
 
 

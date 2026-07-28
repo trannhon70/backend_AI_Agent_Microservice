@@ -6,11 +6,13 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MessagesController } from './messages.controller';
 import { MessagesService } from './messages.service';
+import { PageToken } from '@app/database/entities/page_token.entity';
+import { Fanpage } from '@app/database/entities/fanpage.entity';
 
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Conversation, LiveMessage, User, Role]),
+        TypeOrmModule.forFeature([Conversation, LiveMessage, User, Role, PageToken, Fanpage]),
     ],
     providers: [MessagesService],
     controllers: [MessagesController],

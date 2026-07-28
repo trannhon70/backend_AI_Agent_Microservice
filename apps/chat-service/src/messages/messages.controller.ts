@@ -20,7 +20,14 @@ export class MessagesController {
         };
     }
 
-
+    @GrpcMethod('MessagesService', 'Send')
+    async Send(dto: any) {
+        await this.MessagesService.Send(dto);
+        return {
+            code: GrpcStatus.OK,
+            message: 'get paging success!',
+        };
+    }
 
 
 }

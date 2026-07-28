@@ -1,10 +1,12 @@
 syntax = "proto3";
 import "google/protobuf/struct.proto";
+import "google/protobuf/any.proto";
 
 package CHAT_PACKAGE;
 
 service MessagesService {
   rpc GetPaging(GetPagingMessagesRequest) returns (GetPagingMessagesResponse);
+  rpc Send(SendMessagesRequest) returns (SendMessagesResponse);
 }
 
 // ===== Request =====
@@ -92,4 +94,12 @@ message GetPagingMessagesResponse {
   int32 code = 1;
   string message = 2;
   GetPagingMessagesResult data = 3;
+}
+
+message SendMessagesRequest {
+    string data = 1;
+}
+message SendMessagesResponse {
+  int32 code = 1;
+  string message = 2;
 }

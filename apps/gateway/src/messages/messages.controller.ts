@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { Roles } from 'libs/common/decorators/roles.decorator';
 import { RoleEnum } from 'libs/common/enums/role.enum';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
@@ -17,5 +17,17 @@ export class MessagesController {
         return this.MessagesService.getPaging(query);
     }
 
+    @Post()
+    @UseGuards(JwtAuthGuard)
+    async send(@Req() req: any, @Body() body: any) {
+        let attachments = body?.attachments;
+        let url = body?.attachments?.[0]?.url;
+        return this.MessagesService.send({
+            user_id: req.user.id,
+            ...body,
+            url,
+            attachments,
+        });
+    }
 
 }
