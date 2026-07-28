@@ -14,6 +14,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SocketModule } from '@app/socket';
 import { ConversationModule } from './conversation/conversation.module';
 import { MessagesModule } from './messages/messages.module';
+import { WebhooksModule } from './webhooks/webhooks.module';
+import { KafkaModule } from '@app/kafka';
 
 @Global()
 @Module({
@@ -87,14 +89,15 @@ import { MessagesModule } from './messages/messages.module';
         inject: [ConfigService],
       },
     ]),
-
+    KafkaModule,
     RedisModule,
     RolesModule,
     UsersModule,
     FanpageModule,
     UserPageModule,
     ConversationModule,
-    MessagesModule
+    MessagesModule,
+    WebhooksModule
 
   ],
   controllers: [GatewayController],

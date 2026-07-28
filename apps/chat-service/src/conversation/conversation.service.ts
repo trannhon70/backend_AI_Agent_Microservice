@@ -1,6 +1,11 @@
 import { Conversation } from '@app/database/entities/conversation.entity';
+import { LiveMessage } from '@app/database/entities/live_message.entity';
+import { SocketService } from '@app/socket';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { MessageDirection, MessageType } from 'libs/common/enums/role.enum';
+import { normalizeAttachments } from 'libs/common/utils';
+import { currentTimestamp } from 'libs/common/utils/date.util';
 import { DataSource, Repository } from 'typeorm';
 // import { RoleRepository } from './role.repository';
 
@@ -10,8 +15,12 @@ export class ConversationService {
     constructor(
         @InjectRepository(Conversation)
         private conversationRepo: Repository<Conversation>,
+
+        @InjectRepository(LiveMessage)
+        private readonly LiveMessageRepo: Repository<LiveMessage>,
         // private readonly roleRepo: RoleRepository,
         private readonly dataSource: DataSource,
+        private readonly socketService: SocketService,
     ) {
     }
 
@@ -83,6 +92,101 @@ export class ConversationService {
         };
     }
 
+    async findOrCreateConversation(
+        pageId: string,
+        customerId: string,
+    ) {
+        await this.conversationRepo.upsert(
+            {
+                page_id: pageId,
+                customer_id: customerId,
+                created_at: currentTimestamp(),
+                updated_at: currentTimestamp(),
+            },
+            {
+                conflictPaths: ['page_id', 'customer_id'],
+                skipUpdateIfNoValuesChanged: true,
+            },
+        );
 
+        return await this.conversationRepo.findOneOrFail({
+            where: {
+                page_id: pageId,
+                customer_id: customerId,
+            },
+        });
+    }
+
+    async FacebookSend(body: any) {
+        const payload = JSON.parse(body);
+        for (const entry of payload) {
+            const pageId = entry.id;
+            for (const event of entry.messaging) {
+                if (!event.message) {
+                    continue;
+                }
+                const sender_id = event.sender.id;
+                const recipient_id = event.recipient.id;
+                let type = MessageType.TEXT;
+
+                if (event.message.attachments?.length) {
+                    const attachment = event.message.attachments[0];
+
+                    if (attachment.type?.startsWith("image")) {
+                        type = MessageType.IMAGE;
+                    } else if (attachment.type?.startsWith("video")) {
+                        type = MessageType.VIDEO;
+                    } else if (attachment.type?.startsWith("audio")) {
+                        type = MessageType.AUDIO;
+                    } else {
+                        type = MessageType.FILE;
+                    }
+                }
+
+                const conversation = await this.findOrCreateConversation(pageId, sender_id);
+                const data_mess = {
+                    conversation_id: conversation.id,
+                    facebook_mid: event.message.mid,
+                    reply_to_id: event.message?.reply_to?.mid ?? null,
+                    sender_id: sender_id,
+                    recipient_id: recipient_id,
+                    direction: MessageDirection.CUSTOMER,
+                    type: type,
+                    text: event.message.text,
+                    attachments: normalizeAttachments(event.message.attachments, 'webhook'),
+                    raw_data: event,
+                    sent_at: currentTimestamp(),
+                    created_at: currentTimestamp(),
+                }
+                const savedMessage = await this.LiveMessageRepo.save(data_mess);
+
+                // update conversation
+                await this.conversationRepo.update(
+                    conversation.id,
+                    {
+                        last_message_id: savedMessage.id ?? '[Attachment]',
+                        last_message_at: currentTimestamp(),
+                        updated_at: currentTimestamp(),
+                        unread_count: () => `"unread_count" + 1`,
+                    },
+                );
+                const updatedConversation = await this.conversationRepo.findOne({
+                    where: {
+                        id: conversation.id,
+                    },
+                    relations: { lastMessage: true },
+                });
+                // lưu message và thực hiện socket
+                this.handleSync({ page_id: pageId, conversation_id: conversation.id, message: data_mess, conversation: updatedConversation });
+            }
+        }
+
+
+    }
+
+    handleSync(payload: any) {
+        this.socketService.emitToRoom(`conversation:${payload.conversation_id}`, 'send_message', payload.message);
+        this.socketService.emitToRoom(`page:${payload.page_id}`, 'send_conversation', payload.conversation);
+    }
 
 }

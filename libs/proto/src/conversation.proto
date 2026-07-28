@@ -4,6 +4,7 @@ package CHAT_PACKAGE;
 
 service ConversationService {
   rpc GetPaging(GetPagingRequest) returns (GetPagingResponse);
+  rpc FacebookSend(FacebookSendRequest) returns (FacebookSendResponse);
 }
 
 // ===== Request =====
@@ -48,4 +49,14 @@ message GetPagingResponse {
   int32 code = 1;
   string message = 2;
   GetPagingReSult data = 3;   // ✅ thêm dấu ;
+}
+
+message FacebookSendRequest {
+  string payload = 1; 
+}
+
+message FacebookSendResponse {
+  int32 code = 1;
+  string message = 2;
+  string data = 3;   // ✅ thêm dấu ;
 }

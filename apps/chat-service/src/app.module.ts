@@ -8,9 +8,12 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConversationModule } from './conversation/conversation.module';
 import { MessagesModule } from './messages/messages.module';
+import { SocketModule } from '@app/socket';
+// import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
+    // EventEmitterModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
     JwtCommonModule,
     GrpcClientModule.forFeature({
@@ -19,6 +22,7 @@ import { MessagesModule } from './messages/messages.module';
       protoFile: 'conversation.proto',
       urlEnvKey: 'CHAT_GRPC_URL',
     }),
+    SocketModule,
     DatabaseModule,
     RedisModule,
     ConversationModule,

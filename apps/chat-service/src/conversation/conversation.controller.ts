@@ -20,7 +20,15 @@ export class ConversationController {
         };
     }
 
+    @GrpcMethod('ConversationService', 'FacebookSend')
+    async FacebookSend(data: { payload: string }) {
+        await this.ConversationService.FacebookSend(data.payload);
+        return {
+            code: GrpcStatus.OK,
+            message: 'Facebook send success!',
 
+        };
+    }
 
 
 }

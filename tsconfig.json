@@ -41,9 +41,11 @@
         "libs/grpc/src/*"
       ],
       "@app/kafka": [
+        "libs/kafka/src",
         "libs/kafka/src"
       ],
       "@app/kafka/*": [
+        "libs/kafka/src/*",
         "libs/kafka/src/*"
       ],
       "@app/proto": [
