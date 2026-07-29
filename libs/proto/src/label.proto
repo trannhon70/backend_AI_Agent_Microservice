@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package CHAT_PACKAGE;
+
+service LabelService {
+  rpc GetPaging(GetPagingLabelRequest) returns (LabelResponse);
+  
+}
+
+// ===== Request =====
+message GetPagingLabelRequest {
+  int32 pageIndex = 1;
+  int32 limit = 2;
+  string search = 3;
+  string page_id = 4;
+  bool is_deleted = 5;
+}
+
+// ===== Response chuẩn theo pattern code/message/data =====
+message LabelResponse {
+  int32 code = 1;
+  string message = 2;
+  string data = 3;
+}
+

@@ -9,6 +9,7 @@ import { AppService } from './app.service';
 import { ConversationModule } from './conversation/conversation.module';
 import { MessagesModule } from './messages/messages.module';
 import { SocketModule } from '@app/socket';
+import { LabelModule } from './label/label.module';
 // import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
@@ -26,7 +27,8 @@ import { SocketModule } from '@app/socket';
     DatabaseModule,
     RedisModule,
     ConversationModule,
-    MessagesModule
+    MessagesModule,
+    LabelModule
   ],
   controllers: [AppController],
   providers: [AppService],

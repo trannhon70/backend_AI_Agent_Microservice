@@ -1,21 +1,21 @@
+import { SocketModule } from '@app/socket';
 import { Global, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { JwtCommonModule } from 'libs/common/jwt/jwt-common.module';
+import { LoggerMiddleware } from 'libs/common/middlewares/logger.middleware';
+import { RedisModule } from 'libs/redis/redis.module';
+import { join } from 'path';
+import { ConversationModule } from './conversation/conversation.module';
+import { FanpageModule } from './fanpage/fanpage.module';
 import { GatewayController } from './gateway.controller';
 import { GatewayService } from './gateway.service';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { join } from 'path';
-import { RolesModule } from './roles/roles.module';
-import { JwtCommonModule } from 'libs/common/jwt/jwt-common.module';
-import { RedisModule } from 'libs/redis/redis.module';
-import { LoggerMiddleware } from 'libs/common/middlewares/logger.middleware';
-import { UsersModule } from './users/users.module';
-import { FanpageModule } from './fanpage/fanpage.module';
-import { UserPageModule } from './user_page/user_page.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { SocketModule } from '@app/socket';
-import { ConversationModule } from './conversation/conversation.module';
+import { LabelModule } from './label/label.module';
 import { MessagesModule } from './messages/messages.module';
+import { RolesModule } from './roles/roles.module';
+import { UserPageModule } from './user_page/user_page.module';
+import { UsersModule } from './users/users.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
-import { KafkaModule } from '@app/kafka';
 
 @Global()
 @Module({
@@ -78,6 +78,7 @@ import { KafkaModule } from '@app/kafka';
             protoPath: [
               join(process.cwd(), 'libs/proto/src/conversation.proto'),
               join(process.cwd(), 'libs/proto/src/messages.proto'),
+              join(process.cwd(), 'libs/proto/src/label.proto'),
             ],
             url: configService.get<string>('CHAT_GRPC_URL', 'localhost:50052'),
             loader: {
@@ -89,7 +90,6 @@ import { KafkaModule } from '@app/kafka';
         inject: [ConfigService],
       },
     ]),
-    // KafkaModule,
     RedisModule,
     RolesModule,
     UsersModule,
@@ -97,7 +97,8 @@ import { KafkaModule } from '@app/kafka';
     UserPageModule,
     ConversationModule,
     MessagesModule,
-    WebhooksModule
+    WebhooksModule,
+    LabelModule
 
   ],
   controllers: [GatewayController],

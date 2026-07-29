@@ -1,0 +1,25 @@
+import { status as GrpcStatus } from '@grpc/grpc-js';
+import { Controller } from '@nestjs/common';
+import { GrpcMethod } from '@nestjs/microservices';
+import { LabelService } from './label.service';
+import { GetPagingLabelDto } from 'libs/common/dto/label/index.dto';
+
+@Controller()
+export class LabelController {
+    constructor(private readonly LabelService: LabelService) { }
+
+
+
+    @GrpcMethod('LabelService', 'GetPaging')
+    async GetPaging(query: GetPagingLabelDto) {
+        const result = await this.LabelService.GetPaging(query);
+        return {
+            code: GrpcStatus.OK,
+            message: 'get paging success!',
+            data: JSON.stringify(result),
+        };
+    }
+
+
+
+}
