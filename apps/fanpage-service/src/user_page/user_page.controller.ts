@@ -1,7 +1,7 @@
 import { Body, Controller, HttpStatus } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { UserPageService } from './user_page.service';
-import { DeleteUserPageDto, GetPagingUserPageDto } from 'libs/common/dto/user_page/index.dto';
+import { DeleteUserPageDto, getPagingUserPageActiveDto, GetPagingUserPageDto } from 'libs/common/dto/user_page/index.dto';
 
 
 @Controller()
@@ -43,6 +43,15 @@ export class UserPageController {
         };
     }
 
+    @GrpcMethod('UserPageService', 'GetPagingUserPageActive')
+    async GetPagingUserPageActive(query: getPagingUserPageActiveDto) {
+        const result = await this.userPageService.GetPagingUserPageActive(query);
+        return {
+            code: HttpStatus.OK,
+            message: 'get paging user pages success!',
+            data: JSON.stringify(result)
+        };
+    }
 
 
 }

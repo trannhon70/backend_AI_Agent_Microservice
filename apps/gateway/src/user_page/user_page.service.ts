@@ -1,7 +1,7 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { ClientGrpc } from '@nestjs/microservices';
-import { DeleteUserPageDto, GetPagingUserPageDto } from 'libs/common/dto/user_page/index.dto';
+import { DeleteUserPageDto, getPagingUserPageActiveDto, GetPagingUserPageDto } from 'libs/common/dto/user_page/index.dto';
 import { RedisService } from 'libs/redis/redis.service';
 import { firstValueFrom, Observable } from 'rxjs';
 
@@ -9,6 +9,7 @@ interface UserPageGrpcService {
     GetCountProvider(data: any): Observable<any>;
     GetPaging(data: any): Observable<any>;
     Delete(data: DeleteUserPageDto): Observable<any>;
+    GetPagingUserPageActive(data: getPagingUserPageActiveDto): Observable<any>;
 }
 
 @Injectable()
@@ -40,5 +41,9 @@ export class UserPageService implements OnModuleInit {
 
     async delete(param: DeleteUserPageDto) {
         return firstValueFrom(this.UserPageGrpcService.Delete(param));
+    }
+
+    getPagingUserPageActive(query: getPagingUserPageActiveDto) {
+        return firstValueFrom(this.UserPageGrpcService.GetPagingUserPageActive(query));
     }
 }

@@ -6,6 +6,7 @@ service UserPageService {
     rpc GetCountProvider(GetCountProviderRequest) returns (GetCountProviderResponse);
     rpc GetPaging(GetPagingRequest) returns (GetPagingResponse);
     rpc Delete(DeleteRequest) returns (DeleteResponse);
+    rpc GetPagingUserPageActive(GetPagingUserPageActiveRequest) returns (GetPagingUserPageActiveResponse);
    
 }
 
@@ -76,4 +77,17 @@ message DeleteRequest {
 message DeleteResponse {
     int64 code = 1;
     string message = 2;
+}
+
+message GetPagingUserPageActiveRequest {
+    int64 limit = 1;
+    int64 pageIndex = 2;
+    string page_id = 3;
+    string search = 4;
+}
+
+message GetPagingUserPageActiveResponse {
+    int64 code = 1;
+    string message = 2;
+    string data = 3;
 }
