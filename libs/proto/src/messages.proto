@@ -97,8 +97,9 @@ message GetPagingMessagesResponse {
 }
 
 message SendMessagesRequest {
-    string data = 1;
+    string payload = 1;
 }
+
 message SendMessagesResponse {
   int32 code = 1;
   string message = 2;

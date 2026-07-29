@@ -96,7 +96,7 @@ export class MessagesService {
     }
 
     async Send(dto: any) {
-        const payload = JSON.parse(dto.data);
+        const payload = JSON.parse(dto.payload);
         const accessToken = await this.getAccessToken(payload.page_id);
 
         if (!accessToken) {
