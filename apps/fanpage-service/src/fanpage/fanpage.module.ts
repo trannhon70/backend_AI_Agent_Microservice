@@ -9,11 +9,13 @@ import { FanPageController } from './fanpage.controller';
 import { FanPageService } from './fanpage.service';
 import { PageToken } from '@app/database/entities/page_token.entity';
 import { FanPagesRepository } from './fanpages.repository';
+import { LiveMessage } from '@app/database/entities/live_message.entity';
+import { Conversation } from '@app/database/entities/conversation.entity';
 
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([UserPage, User, Fanpage, Role, PageToken]),
+        TypeOrmModule.forFeature([UserPage, User, Fanpage, Role, PageToken, LiveMessage, Conversation]),
     ],
     providers: [FanPageService, FanPagesRepository],
     controllers: [FanPageController],

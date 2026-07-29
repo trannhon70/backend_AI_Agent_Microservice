@@ -29,3 +29,9 @@ export class TokenRenewalFacebookDto {
     @IsString()
     access_token!: string;
 }
+
+export class SyncingDto {
+    @Type(() => String)
+    @IsString()
+    page_id!: string;
+}

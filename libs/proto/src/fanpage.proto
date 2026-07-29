@@ -6,6 +6,7 @@ service FanPageService {
     rpc CreateConnectPageFacebook(CreateConnectRequest) returns (CreateConnectResponse);
     rpc TokenRenewal(TokenRenewalRequest) returns (TokenRenewalResponse);
     rpc GetPageId(GetPageIdRequest) returns (GetByIdResponse);
+    rpc Syncing(SyncingRequest) returns (SyncingResponse);
     
 }
 
@@ -47,4 +48,14 @@ message GetByIdResponse {
     int32 code = 1;
     string message = 2;
     GetByIdData data = 3;
+}
+
+message SyncingRequest {
+    string page_id = 1;
+}
+
+message SyncingResponse {
+    int32 code = 1;
+    string message = 2;
+    string data = 3;
 }

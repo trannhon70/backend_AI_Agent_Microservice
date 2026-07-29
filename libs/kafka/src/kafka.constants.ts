@@ -6,5 +6,6 @@ export class KafkaConstants {
     public static ClientId = 'nestjs-kafka-consumer';
     public static ConsumerGroups = {
         Default: 'nestjs-kafka-consumer-group',
+        Gateway: 'gateway-consumer-group',
     };
 }

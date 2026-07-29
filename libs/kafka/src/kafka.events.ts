@@ -9,5 +9,6 @@ export enum DomainEvents {
     message_send = 'message.send',
     message_send_file = 'message.send_file',
 
-
+    // fanpages
+    FanPage_sync_socket = 'fanPage.sync_soket',
 }

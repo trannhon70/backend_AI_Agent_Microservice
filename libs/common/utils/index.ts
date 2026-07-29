@@ -58,3 +58,7 @@ const resolveMimeType = (type: string): string | null => {
     };
     return map[type] ?? null;
 };
+
+export const toUnixTimestamp = (isoString: string): number => {
+    return Math.floor(new Date(isoString).getTime() / 1000);
+};

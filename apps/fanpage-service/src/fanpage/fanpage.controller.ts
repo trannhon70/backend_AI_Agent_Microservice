@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { FanPageService } from './fanpage.service';
 import { status as GrpcStatus } from '@grpc/grpc-js';
-import { CreateConnectFanPageFacebookDto, TokenRenewalFacebookDto } from 'libs/common/dto/fanpage/index.dto';
+import { CreateConnectFanPageFacebookDto, SyncingDto, TokenRenewalFacebookDto } from 'libs/common/dto/fanpage/index.dto';
 
 @Controller()
 export class FanPageController {
@@ -37,5 +37,16 @@ export class FanPageController {
             data: data
         };
     }
+
+    @GrpcMethod('FanPageService', 'Syncing')
+    async Syncing(dto: SyncingDto) {
+        const result = await this.FanPageService.Syncing(dto);
+        return {
+            code: GrpcStatus.OK,
+            message: 'get by id success!',
+            data: JSON.stringify(result)
+        };
+    }
+
 
 }
