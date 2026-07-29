@@ -1,10 +1,13 @@
 import { Transform, Type } from 'class-transformer';
 import {
+    IsEnum,
     IsInt,
+    IsNotEmpty,
     IsOptional,
     IsString,
     Min,
 } from 'class-validator';
+import { ProviderEnum, RoleEnum, RoleEnumUserPage } from 'libs/common/enums/role.enum';
 
 export class GetPagingUserPageDto {
     @Type(() => Number)
@@ -68,4 +71,25 @@ export class getPagingUserPageActiveDto {
     @IsString()
     search?: string;
 
+}
+
+export class createUserPageDto {
+    @Type(() => String)
+    @IsString()
+    @IsNotEmpty({ message: 'Email không được để trống', })
+    email!: string;
+
+    @IsNotEmpty({ message: 'Role không được để trống', })
+    @IsEnum(RoleEnumUserPage)
+    role!: RoleEnumUserPage;
+
+
+    @IsNotEmpty({ message: 'Provider không được để trống', })
+    @IsEnum(ProviderEnum)
+    provider!: ProviderEnum;
+
+    @Type(() => String)
+    @IsString()
+    @IsNotEmpty({ message: 'Page_id không được để trống', })
+    page_id!: string;
 }

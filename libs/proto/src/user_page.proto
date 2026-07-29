@@ -6,7 +6,8 @@ service UserPageService {
     rpc GetCountProvider(GetCountProviderRequest) returns (GetCountProviderResponse);
     rpc GetPaging(GetPagingRequest) returns (GetPagingResponse);
     rpc Delete(DeleteRequest) returns (DeleteResponse);
-    rpc GetPagingUserPageActive(GetPagingUserPageActiveRequest) returns (GetPagingUserPageActiveResponse);
+    rpc GetPagingUserPageActive(GetPagingUserPageActiveRequest) returns (UserPageResponse);
+    rpc CreateUserPage(CreateUserPageRequest) returns (UserPageResponse);
    
 }
 
@@ -86,8 +87,15 @@ message GetPagingUserPageActiveRequest {
     string search = 4;
 }
 
-message GetPagingUserPageActiveResponse {
+message UserPageResponse {
     int64 code = 1;
     string message = 2;
     string data = 3;
+}
+
+message CreateUserPageRequest {
+    string email = 1;
+    string role = 2;
+    string provider = 3;
+    string page_id = 4;
 }

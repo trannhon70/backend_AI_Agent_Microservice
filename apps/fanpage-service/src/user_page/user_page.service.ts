@@ -4,8 +4,11 @@ import { UserPage } from '@app/database/entities/user_page.entity';
 import { status as GrpcStatus } from '@grpc/grpc-js';
 import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteUserPageDto, getPagingUserPageActiveDto } from 'libs/common/dto/user_page/index.dto';
+import { createUserPageDto, DeleteUserPageDto, getPagingUserPageActiveDto } from 'libs/common/dto/user_page/index.dto';
 import { Fanpage } from '@app/database/entities/fanpage.entity';
+import { ProviderEnum } from 'libs/common/enums/role.enum';
+import { currentTimestamp } from 'libs/common/utils/date.util';
+import { User } from '@app/database/entities/user.entity';
 
 @Injectable()
 export class UserPageService {
@@ -16,6 +19,9 @@ export class UserPageService {
 
         @InjectRepository(Fanpage)
         private fanpageRepo: Repository<Fanpage>,
+
+        @InjectRepository(User)
+        private userRepo: Repository<User>,
 
         // private readonly roleRepo: RoleRepository,
         private readonly dataSource: DataSource,
@@ -128,4 +134,29 @@ export class UserPageService {
         };
     }
 
+    async CreateUserPage(dto: createUserPageDto) {
+        const { email, role, provider, page_id } = dto;
+
+        const check_user = await this.userRepo.findOne({ where: { email: email, provider: provider } });
+
+        if (!check_user) {
+            throw new RpcException({ code: GrpcStatus.NOT_FOUND, message: 'Tài khoản này hiện tại chưa được đăng ký trong hệ thống!' });
+        }
+
+        const check_fanPage: any = await this.fanpageRepo.findOne({ where: { page_id: page_id } })
+        const check_userPage = await this.UserPageRepo.exists({ where: { user_id: check_user.id, fanpage_id: check_fanPage.id } });
+
+        if (check_userPage) {
+            throw new RpcException({ code: GrpcStatus.NOT_FOUND, message: 'Tài khoản này đã tồn tại trong page!' });
+        }
+        const data = {
+            user_id: check_user.id,
+            fanpage_id: check_fanPage.id,
+            provider: ProviderEnum.FACEBOOK,
+            role: role,
+            created_at: currentTimestamp(),
+        }
+        return await this.UserPageRepo.save(data)
+
+    }
 }
