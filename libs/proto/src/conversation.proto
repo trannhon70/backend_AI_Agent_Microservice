@@ -5,6 +5,7 @@ package CHAT_PACKAGE;
 service ConversationService {
   rpc GetPaging(GetPagingRequest) returns (GetPagingResponse);
   rpc FacebookSend(FacebookSendRequest) returns (FacebookSendResponse);
+  rpc UpdateUnreadCount(UpdateUnreadCountRequest) returns (UpdateUnreadCountResponse);
 }
 
 // ===== Request =====
@@ -14,6 +15,10 @@ message GetPagingRequest {
   string page_id = 3;
   int64 lastId = 4;
   string lastUpdatedAt = 5;
+}
+
+message UpdateUnreadCountRequest {
+  string data = 2;
 }
 
 // ===== Nested message: last message của 1 conversation =====
@@ -56,6 +61,12 @@ message FacebookSendRequest {
 }
 
 message FacebookSendResponse {
+  int32 code = 1;
+  string message = 2;
+  string data = 3;   // ✅ thêm dấu ;
+}
+
+message UpdateUnreadCountResponse {
   int32 code = 1;
   string message = 2;
   string data = 3;   // ✅ thêm dấu ;

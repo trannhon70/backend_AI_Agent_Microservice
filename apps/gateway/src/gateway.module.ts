@@ -89,7 +89,7 @@ import { KafkaModule } from '@app/kafka';
         inject: [ConfigService],
       },
     ]),
-    KafkaModule,
+    // KafkaModule,
     RedisModule,
     RolesModule,
     UsersModule,

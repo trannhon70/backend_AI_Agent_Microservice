@@ -1,17 +1,11 @@
 import { Body, Controller, ForbiddenException, Get, Post, Query, Req } from '@nestjs/common';
-import { WebhooksService } from './webhooks.service';
-import { KafkaService } from '@app/kafka';
-import { DomainEvents } from '@app/kafka/kafka.events';
 import { CheckObjectFacebook } from 'libs/common/utils';
-// import { CheckObjectFacebook } from 'src/shared/utils';
-// import { KafkaService } from '../kafka/kafka.service';
-// import { DomainEvents } from '../kafka/kafka.events';
+import { WebhooksService } from './webhooks.service';
 
 @Controller('webhooks')
 export class WebhooksController {
   constructor(
     private readonly webhooksService: WebhooksService,
-    private readonly kafkaService: KafkaService,
 
   ) { }
 

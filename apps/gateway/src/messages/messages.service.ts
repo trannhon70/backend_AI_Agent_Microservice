@@ -22,9 +22,8 @@ export class MessagesService implements OnModuleInit {
         return firstValueFrom(this.MessagesGrpcService.GetPaging(dto));
     }
 
-    async send(dto: any) {
-        return firstValueFrom(this.MessagesGrpcService.Send({ data: JSON.stringify(dto) }));
+    async send(payload: any) {
+        return firstValueFrom(this.MessagesGrpcService.Send({ payload: JSON.stringify(payload) }));
     }
-
 
 }

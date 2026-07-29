@@ -30,5 +30,14 @@ export class ConversationController {
         };
     }
 
+    @GrpcMethod('ConversationService', 'UpdateUnreadCount')
+    async UpdateUnreadCount(data: { data: string }) {
+        const result = await this.ConversationService.UpdateUnreadCount(data.data);
+        return {
+            code: GrpcStatus.OK,
+            message: 'Facebook send success!',
+            data: JSON.stringify(result)
+        };
+    }
 
 }

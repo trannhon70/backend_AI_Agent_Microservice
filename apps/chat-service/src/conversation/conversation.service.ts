@@ -184,6 +184,17 @@ export class ConversationService {
 
     }
 
-
+    async UpdateUnreadCount(body: any) {
+        const payload = JSON.parse(body);
+        const { conversation_id, unread_count } = payload;
+        await this.conversationRepo.update(
+            conversation_id,
+            {
+                unread_count: unread_count,
+                updated_at: currentTimestamp(),
+            },
+        );
+        return payload
+    }
 
 }

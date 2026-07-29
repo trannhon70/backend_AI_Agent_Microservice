@@ -28,3 +28,18 @@ export class GetPagingConversationDto {
     @IsString()
     lastUpdatedAt!: number;
 }
+
+export class updateUnreadCountConversationDto {
+    @Type(() => Number)
+    @IsInt()
+    conversation_id!: number;
+
+    @Type(() => Number)
+    @IsInt()
+    unread_count!: number;
+
+    @Type(() => String)
+    @IsString()
+    page_id!: string;
+
+}

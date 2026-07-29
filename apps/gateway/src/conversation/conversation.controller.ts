@@ -1,8 +1,8 @@
 // apps/gateway/src/roles/roles.controller.ts
-import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 import { ConversationService } from './conversation.service';
-import { GetPagingConversationDto } from 'libs/common/dto/conversation/index.dto';
+import { GetPagingConversationDto, updateUnreadCountConversationDto } from 'libs/common/dto/conversation/index.dto';
 @Controller('chat-service/conversation')
 export class ConversationController {
     constructor(
@@ -15,5 +15,9 @@ export class ConversationController {
         return this.ConversationService.getPaging(query)
     }
 
-
+    @Post('update-unread-count')
+    @UseGuards(JwtAuthGuard)
+    async updateUnreadCount(@Body() payload: updateUnreadCountConversationDto) {
+        return this.ConversationService.updateUnreadCount(payload);
+    }
 }
