@@ -1,7 +1,7 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 import { LabelService } from './label.service';
-import { GetPagingLabelDto } from 'libs/common/dto/label/index.dto';
+import { CreateLabelDto, GetPagingLabelDto } from 'libs/common/dto/label/index.dto';
 
 @Controller('chat-service/labels')
 export class LabelController {
@@ -20,6 +20,16 @@ export class LabelController {
         }
     }
 
+    @Post()
+    @UseGuards(JwtAuthGuard)
+    async create(@Body() body: CreateLabelDto) {
+        const result = await this.LabelService.create(body);
+        return {
+            code: result.code,
+            message: result.message,
+            data: JSON.parse(result.data)
+        }
 
+    }
 
 }

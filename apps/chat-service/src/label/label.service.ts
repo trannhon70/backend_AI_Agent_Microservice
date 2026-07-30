@@ -6,9 +6,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GetPagingMessagesDto } from 'libs/common/dto/messages/index.dto';
 import { currentTimestamp } from 'libs/common/utils/date.util';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, QueryFailedError, Repository } from 'typeorm';
 import axios from 'axios';
-import { GetPagingLabelDto } from 'libs/common/dto/label/index.dto';
+import { CreateLabelDto, GetPagingLabelDto } from 'libs/common/dto/label/index.dto';
 import { Label } from '@app/database/entities/label.entity';
 import { RpcException } from '@nestjs/microservices';
 import { status as GrpcStatus } from '@grpc/grpc-js';
@@ -70,5 +70,43 @@ export class LabelService {
             hasMore,
             data: hasMore ? rows.slice(0, limit) : rows,
         };
+    }
+
+    async Create(dto: CreateLabelDto) {
+        const fanpage = await this.fanpageRepo.findOneBy({
+            page_id: dto.page_id,
+        });
+
+        if (!fanpage) {
+            throw new RpcException({ code: GrpcStatus.NOT_FOUND, message: 'Không tìm thấy trang fanpage!' });
+        }
+
+        try {
+            return await this.labelRepo.save({
+                name: dto.name,
+                color: dto.color,
+                is_deleted: dto.is_deleted,
+                fanpage_id: fanpage.id,
+                created_at: currentTimestamp(),
+            });
+        } catch (error) {
+            this.logger.error(error);
+
+            if (
+                error instanceof QueryFailedError &&
+                error.driverError?.code === '23505'
+            ) {
+
+                throw new RpcException({
+                    code: GrpcStatus.ALREADY_EXISTS,
+                    message: 'Thẻ hội thoại này đã tồn tại!',
+                });
+            }
+
+            throw new RpcException({
+                code: GrpcStatus.INTERNAL,
+                message: 'Internal server error',
+            });
+        }
     }
 }

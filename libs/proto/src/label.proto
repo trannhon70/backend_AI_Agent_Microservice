@@ -4,6 +4,7 @@ package CHAT_PACKAGE;
 
 service LabelService {
   rpc GetPaging(GetPagingLabelRequest) returns (LabelResponse);
+  rpc Create(CreateLabelRequest) returns (LabelResponse);
   
 }
 
@@ -14,6 +15,13 @@ message GetPagingLabelRequest {
   string search = 3;
   string page_id = 4;
   bool is_deleted = 5;
+}
+
+message CreateLabelRequest {
+  string name = 1;
+  string color = 2;
+  string page_id = 3;
+  bool is_deleted = 4;
 }
 
 // ===== Response chuẩn theo pattern code/message/data =====
