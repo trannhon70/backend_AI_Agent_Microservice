@@ -43,38 +43,45 @@ export class UsersService implements OnModuleInit {
             throw new UnauthorizedException('Refresh token không hợp lệ hoặc đã hết hạn');
         }
 
-        // ✅ Kiểm tra session trong Redis
-        const session = await this.redisService.get(`user:${payload.id}:session`);
+        const lockKey = `user:${payload.id}:refresh_lock`;
+        const acquired = await this.redisService.setNX(lockKey, '1', 5); // NX + TTL 5s, tuỳ theo RedisService của bạn hỗ trợ
 
-        if (!session) {
-            throw new UnauthorizedException('Phiên đăng nhập không tồn tại hoặc đã bị đăng xuất');
+        if (!acquired) {
+            // Có request khác đang refresh, đợi 1 chút rồi lấy session mới nhất thay vì tự refresh nữa
+            await new Promise((r) => setTimeout(r, 300));
+            const latestSession = await this.redisService.get(`user:${payload.id}:session`);
+            if (latestSession?.access_token) {
+                return {
+                    access_token: latestSession.access_token,
+                    refresh_token: latestSession.refresh_token,
+                };
+            }
+            throw new UnauthorizedException('Đang refresh, vui lòng thử lại');
         }
 
-        if (session.refresh_token !== refreshToken) {
-            // refresh token này không khớp với token mới nhất đang lưu
-            // → có thể là token cũ đã bị thay thế, hoặc bị đánh cắp dùng lại (replay attack)
-            await this.redisService.del(`user:${payload.id}:session`);
-            throw new UnauthorizedException('Refresh token đã bị thu hồi');
+        try {
+            const session = await this.redisService.get(`user:${payload.id}:session`);
+            if (!session) {
+                throw new UnauthorizedException('Phiên đăng nhập không tồn tại hoặc đã bị đăng xuất');
+            }
+            if (session.refresh_token !== refreshToken) {
+                await this.redisService.del(`user:${payload.id}:session`);
+                throw new UnauthorizedException('Refresh token đã bị thu hồi');
+            }
+
+            const { iat, exp, ...cleanPayload } = payload;
+            const newAccessToken = this.jwtService.sign(cleanPayload, { secret: process.env.JWT_SECRET, expiresIn: '1h' });
+
+            await this.redisService.set(
+                `user:${cleanPayload.id}:session`,
+                { access_token: newAccessToken, refresh_token: refreshToken, expires_at: currentTimestamp() + accessExpire },
+                REFRESH_TTL,
+            );
+
+            return { access_token: newAccessToken, refresh_token: refreshToken };
+        } finally {
+            await this.redisService.del(lockKey);
         }
-
-        // ✅ Chỉ lấy field cần, bỏ iat/exp
-        const { iat, exp, ...cleanPayload } = payload;
-
-        const newAccessToken = this.jwtService.sign(cleanPayload, { secret: process.env.JWT_SECRET, expiresIn: '1h' });
-
-
-        // ✅ Ghi đè lại session mới vào Redis
-        await this.redisService.set(
-            `user:${cleanPayload.id}:session`,
-            { access_token: newAccessToken, refresh_token: refreshToken, expires_at: currentTimestamp() + accessExpire },
-            REFRESH_TTL, // ← sửa ở cả login và refresh
-        );
-
-        return {
-            access_token: newAccessToken,
-            refresh_token: refreshToken,
-        };
-
     }
 
     async GetByIdUser(user_id: number) {

@@ -76,6 +76,12 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         }
     }
 
+    async setNX(key: string, value: unknown, ttlSeconds: number): Promise<boolean> {
+        const data = typeof value === 'string' ? value : JSON.stringify(value);
+        const result = await this.redis.set(key, data, 'EX', ttlSeconds, 'NX');
+        return result === 'OK';
+    }
+
     async get<T = any>(key: string): Promise<T | null> {
         const data = await this.redis.get(key);
         if (!data) return null;

@@ -16,6 +16,7 @@ import { RolesModule } from './roles/roles.module';
 import { UserPageModule } from './user_page/user_page.module';
 import { UsersModule } from './users/users.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
+import { QuickReplyCategoriesModule } from './quick_reply_categories/quick_reply_categories.module';
 
 @Global()
 @Module({
@@ -98,7 +99,8 @@ import { WebhooksModule } from './webhooks/webhooks.module';
     ConversationModule,
     MessagesModule,
     WebhooksModule,
-    LabelModule
+    LabelModule,
+    QuickReplyCategoriesModule
 
   ],
   controllers: [GatewayController],
