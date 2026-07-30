@@ -8,7 +8,7 @@ import { GetPagingMessagesDto } from 'libs/common/dto/messages/index.dto';
 import { currentTimestamp } from 'libs/common/utils/date.util';
 import { DataSource, QueryFailedError, Repository } from 'typeorm';
 import axios from 'axios';
-import { CreateLabelDto, GetPagingLabelDto } from 'libs/common/dto/label/index.dto';
+import { CreateLabelDto, DeleteLabelDto, GetPagingLabelDto } from 'libs/common/dto/label/index.dto';
 import { Label } from '@app/database/entities/label.entity';
 import { RpcException } from '@nestjs/microservices';
 import { status as GrpcStatus } from '@grpc/grpc-js';
@@ -85,7 +85,6 @@ export class LabelService {
             return await this.labelRepo.save({
                 name: dto.name,
                 color: dto.color,
-                is_deleted: dto.is_deleted,
                 fanpage_id: fanpage.id,
                 created_at: currentTimestamp(),
             });
@@ -108,5 +107,9 @@ export class LabelService {
                 message: 'Internal server error',
             });
         }
+    }
+
+    async Delete(dto: DeleteLabelDto) {
+        return await this.labelRepo.delete(dto.id)
     }
 }

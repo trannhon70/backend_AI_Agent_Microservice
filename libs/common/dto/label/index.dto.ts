@@ -50,3 +50,10 @@ export class CreateLabelDto {
     @IsBoolean()
     is_deleted?: boolean;
 }
+
+export class DeleteLabelDto {
+    @Type(() => Number)
+    @IsInt()
+    @IsNotEmpty()
+    id!: number;
+}
