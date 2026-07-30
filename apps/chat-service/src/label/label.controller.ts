@@ -50,4 +50,14 @@ export class LabelController {
         };
     }
 
+    @GrpcMethod('LabelService', 'Restore')
+    async Restore(dto: DeleteLabelDto) {
+        const result = await this.LabelService.Restore(dto);
+        return {
+            code: GrpcStatus.OK,
+            message: 'khôi phục thẻ hội thoại thành công!',
+            data: JSON.stringify(result),
+        };
+    }
+
 }

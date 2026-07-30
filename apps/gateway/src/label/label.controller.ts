@@ -52,4 +52,16 @@ export class LabelController {
             data: JSON.parse(result.data)
         }
     }
+
+    @Put("restore/:id")
+    @UseGuards(JwtAuthGuard)
+    async restore(@Param() param: DeleteLabelDto) {
+        const result = await this.LabelService.restore(param);
+        return {
+            code: result.code,
+            message: result.message,
+            data: JSON.parse(result.data)
+        }
+    }
+
 }

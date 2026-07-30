@@ -142,4 +142,27 @@ export class LabelService {
             });
         }
     }
+
+    async Restore(dto: DeleteLabelDto) {
+        try {
+            return await this.labelsRepository.update(dto.id, { is_deleted: false });
+        } catch (error) {
+            this.logger.error(error);
+
+            if (
+                error instanceof QueryFailedError &&
+                error.driverError?.code === '23505'
+            ) {
+                throw new RpcException({
+                    code: GrpcStatus.ALREADY_EXISTS,
+                    message: 'Thẻ hội thoại này đã tồn tại!',
+                });
+            }
+
+            throw new RpcException({
+                code: GrpcStatus.INTERNAL,
+                message: 'Internal server error',
+            });
+        }
+    }
 }
