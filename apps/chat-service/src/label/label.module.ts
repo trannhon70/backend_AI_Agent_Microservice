@@ -8,13 +8,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { LabelController } from './label.controller';
 import { LabelService } from './label.service';
 import { Fanpage } from '@app/database/entities/fanpage.entity';
+import { LabelsRepository } from './labels.repository';
 
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([Conversation, LiveMessage, User, Role, Label, Fanpage]),
     ],
-    providers: [LabelService],
+    providers: [LabelService, LabelsRepository],
     controllers: [LabelController],
     exports: [LabelService],
 })

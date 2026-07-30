@@ -2,7 +2,7 @@ import { status as GrpcStatus } from '@grpc/grpc-js';
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { LabelService } from './label.service';
-import { CreateLabelDto, DeleteLabelDto, GetPagingLabelDto } from 'libs/common/dto/label/index.dto';
+import { CreateLabelDto, DeleteLabelDto, GetPagingLabelDto, UpdateLabelDto } from 'libs/common/dto/label/index.dto';
 
 @Controller()
 export class LabelController {
@@ -40,5 +40,14 @@ export class LabelController {
         };
     }
 
+    @GrpcMethod('LabelService', 'Update')
+    async Update(dto: UpdateLabelDto) {
+        const result = await this.LabelService.Update(dto);
+        return {
+            code: GrpcStatus.OK,
+            message: 'Cập nhật thẻ hội thoại thành công!',
+            data: JSON.stringify(result),
+        };
+    }
 
 }

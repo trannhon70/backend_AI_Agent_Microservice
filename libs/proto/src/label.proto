@@ -6,6 +6,7 @@ service LabelService {
   rpc GetPaging(GetPagingLabelRequest) returns (LabelResponse);
   rpc Create(CreateLabelRequest) returns (LabelResponse);
   rpc Delete(DeleteLabelRequest) returns (LabelResponse);
+  rpc Update(UpdateLabelRequest) returns (LabelResponse);
   
 }
 
@@ -28,6 +29,14 @@ message CreateLabelRequest {
 message DeleteLabelRequest {
   int64 id = 1;
   
+}
+
+message UpdateLabelRequest {
+  string name = 1;
+  string color = 2;
+  string page_id = 3;
+  bool is_deleted = 4;
+   int64 id = 5;
 }
 
 // ===== Response chuẩn theo pattern code/message/data =====

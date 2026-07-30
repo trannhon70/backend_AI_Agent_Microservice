@@ -8,10 +8,11 @@ import { GetPagingMessagesDto } from 'libs/common/dto/messages/index.dto';
 import { currentTimestamp } from 'libs/common/utils/date.util';
 import { DataSource, QueryFailedError, Repository } from 'typeorm';
 import axios from 'axios';
-import { CreateLabelDto, DeleteLabelDto, GetPagingLabelDto } from 'libs/common/dto/label/index.dto';
+import { CreateLabelDto, DeleteLabelDto, GetPagingLabelDto, UpdateLabelDto } from 'libs/common/dto/label/index.dto';
 import { Label } from '@app/database/entities/label.entity';
 import { RpcException } from '@nestjs/microservices';
 import { status as GrpcStatus } from '@grpc/grpc-js';
+import { LabelsRepository } from './labels.repository';
 
 
 @Injectable()
@@ -26,6 +27,8 @@ export class LabelService {
 
         @InjectRepository(Label)
         private labelRepo: Repository<Label>,
+
+        private readonly labelsRepository: LabelsRepository,
 
         @InjectRepository(Fanpage)
         private fanpageRepo: Repository<Fanpage>,
@@ -111,5 +114,32 @@ export class LabelService {
 
     async Delete(dto: DeleteLabelDto) {
         return await this.labelRepo.delete(dto.id)
+    }
+
+    async Update(dto: UpdateLabelDto) {
+        try {
+            return await this.labelsRepository.update(dto.id, {
+                name: dto.name,
+                color: dto.color,
+                is_deleted: dto.is_deleted
+            });
+        } catch (error) {
+            this.logger.error(error);
+
+            if (
+                error instanceof QueryFailedError &&
+                error.driverError?.code === '23505'
+            ) {
+                throw new RpcException({
+                    code: GrpcStatus.ALREADY_EXISTS,
+                    message: 'Thẻ hội thoại này đã tồn tại!',
+                });
+            }
+
+            throw new RpcException({
+                code: GrpcStatus.INTERNAL,
+                message: 'Internal server error',
+            });
+        }
     }
 }

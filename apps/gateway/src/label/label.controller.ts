@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 import { LabelService } from './label.service';
-import { CreateLabelDto, DeleteLabelDto, GetPagingLabelDto } from 'libs/common/dto/label/index.dto';
+import { CreateLabelDto, DeleteLabelDto, GetPagingLabelDto, UpdateLabelDto } from 'libs/common/dto/label/index.dto';
 
 @Controller('chat-service/labels')
 export class LabelController {
@@ -42,4 +42,14 @@ export class LabelController {
         }
     }
 
+    @Put("")
+    @UseGuards(JwtAuthGuard)
+    async update(@Body() body: UpdateLabelDto) {
+        const result = await this.LabelService.update(body);
+        return {
+            code: result.code,
+            message: result.message,
+            data: JSON.parse(result.data)
+        }
+    }
 }

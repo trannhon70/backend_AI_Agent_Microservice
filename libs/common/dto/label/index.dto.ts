@@ -1,3 +1,4 @@
+import { PartialType } from '@nestjs/mapped-types';
 import { Transform, Type } from 'class-transformer';
 import { IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min } from 'class-validator';
 
@@ -55,5 +56,11 @@ export class DeleteLabelDto {
     @Type(() => Number)
     @IsInt()
     @IsNotEmpty()
+    id!: number;
+}
+
+export class UpdateLabelDto extends PartialType(CreateLabelDto) {
+    @Type(() => Number)
+    @IsInt()
     id!: number;
 }
