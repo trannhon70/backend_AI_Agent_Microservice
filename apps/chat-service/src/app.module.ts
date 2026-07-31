@@ -10,6 +10,7 @@ import { ConversationModule } from './conversation/conversation.module';
 import { MessagesModule } from './messages/messages.module';
 import { SocketModule } from '@app/socket';
 import { LabelModule } from './label/label.module';
+import { QuickReplyCategoriesModule } from './quick_reply_categories/quickReplyCategories.module';
 // import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
@@ -28,7 +29,8 @@ import { LabelModule } from './label/label.module';
     RedisModule,
     ConversationModule,
     MessagesModule,
-    LabelModule
+    LabelModule,
+    QuickReplyCategoriesModule
   ],
   controllers: [AppController],
   providers: [AppService],

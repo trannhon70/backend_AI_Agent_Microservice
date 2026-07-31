@@ -1,24 +1,25 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
+import { CreateQuickReplyCategoriesDto } from 'libs/common/dto/quickReplyCategories/index.dto';
 import { firstValueFrom, Observable } from 'rxjs';
 
 interface QuickReplyCategoriesGrpcService {
-    GetPaging(data: any): Observable<any>;
+    Create(data: CreateQuickReplyCategoriesDto): Observable<any>;
 
 }
 
 @Injectable()
 export class QuickReplyCategoriesService implements OnModuleInit {
-    // private QuickReplyCategoriesGrpcService!: QuickReplyCategoriesGrpcService;
+    private QuickReplyCategoriesGrpcService!: QuickReplyCategoriesGrpcService;
 
-    // constructor(@Inject('CHAT_PACKAGE') private readonly client: ClientGrpc) { }
+    constructor(@Inject('CHAT_PACKAGE') private readonly client: ClientGrpc) { }
 
     onModuleInit() {
-        // this.QuickReplyCategoriesGrpcService = this.client.getService<QuickReplyCategoriesGrpcService>('QuickReplyCategoriesService');
+        this.QuickReplyCategoriesGrpcService = this.client.getService<QuickReplyCategoriesGrpcService>('QuickReplyCategoriesService');
     }
 
-    getPaging(query: any) {
-        // return firstValueFrom(this.QuickReplyCategoriesGrpcService.GetPaging(query));
+    create(dto: CreateQuickReplyCategoriesDto) {
+        return firstValueFrom(this.QuickReplyCategoriesGrpcService.Create(dto));
     }
 
 

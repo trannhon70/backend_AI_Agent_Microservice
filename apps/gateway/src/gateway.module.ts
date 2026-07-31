@@ -80,6 +80,7 @@ import { QuickReplyCategoriesModule } from './quick_reply_categories/quick_reply
               join(process.cwd(), 'libs/proto/src/conversation.proto'),
               join(process.cwd(), 'libs/proto/src/messages.proto'),
               join(process.cwd(), 'libs/proto/src/label.proto'),
+              join(process.cwd(), 'libs/proto/src/quick_reply_category.proto'),
             ],
             url: configService.get<string>('CHAT_GRPC_URL', 'localhost:50052'),
             loader: {

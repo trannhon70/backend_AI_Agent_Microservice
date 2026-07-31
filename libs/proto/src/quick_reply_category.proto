@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package CHAT_PACKAGE;
+
+service QuickReplyCategoriesService {
+ 
+  rpc Create(CreateQuickReplyCategoriesRequest) returns (QuickReplyCategoriesResponse);
+  
+}
+
+// ===== Request =====
+
+message CreateQuickReplyCategoriesRequest {
+  string name = 1;
+  string color = 2;
+  string page_id = 3;
+}
+
+
+
+// ===== Response chuẩn theo pattern code/message/data =====
+message QuickReplyCategoriesResponse {
+  int32 code = 1;
+  string message = 2;
+  string data = 3;
+}
+
