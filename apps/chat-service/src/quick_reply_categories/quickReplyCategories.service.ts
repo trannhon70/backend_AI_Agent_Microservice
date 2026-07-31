@@ -62,7 +62,7 @@ export class QuickReplyCategoriesService {
 
                 throw new RpcException({
                     code: GrpcStatus.ALREADY_EXISTS,
-                    message: 'Thẻ hội thoại này đã tồn tại!',
+                    message: 'Chủ đề này đã tồn tại!',
                 });
             }
 
