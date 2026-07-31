@@ -7,7 +7,7 @@ import { status as GrpcStatus } from '@grpc/grpc-js';
 import { Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateQuickReplyCategoriesDto } from 'libs/common/dto/quickReplyCategories/index.dto';
+import { CreateQuickReplyCategoriesDto, GetPagingQuickReplyCategoriesDto } from 'libs/common/dto/quickReplyCategories/index.dto';
 import { currentTimestamp } from 'libs/common/utils/date.util';
 import { DataSource, QueryFailedError, Repository } from 'typeorm';
 
@@ -73,4 +73,40 @@ export class QuickReplyCategoriesService {
         }
     }
 
+    async GetPaging(query: GetPagingQuickReplyCategoriesDto) {
+        const { pageIndex = 1, limit = 10, search, page_id } = query;
+        const fanpage = await this.fanpageRepo.findOne({ where: { page_id }, select: { id: true }, });
+
+        if (!fanpage) {
+            throw new RpcException({ code: GrpcStatus.NOT_FOUND, message: 'Không tìm thấy fanpage!' });
+        }
+
+        const qb = this.QuickReplyCategoryRepo
+            .createQueryBuilder('categories')
+            .select(['categories.id', 'categories.name', 'categories.color', 'categories.created_at'])
+            .where('categories.fanpage_id = :fanpage_id', { fanpage_id: fanpage.id })
+
+
+        if (search?.trim()) {
+            qb.addSelect(`ts_rank_cd(categories.search_vector, websearch_to_tsquery('simple', unaccent(:search)))`, 'rank')
+                .andWhere(`categories.search_vector @@ websearch_to_tsquery('simple', unaccent(:search))`, { search: search.trim() })
+                .orderBy('rank', 'DESC')
+                .addOrderBy('categories.created_at', 'DESC')
+                .addOrderBy('categories.id', 'DESC');
+        } else {
+            qb.orderBy('categories.created_at', 'DESC').addOrderBy('categories.id', 'DESC');
+        }
+
+        qb.skip((pageIndex - 1) * limit).take(limit + 1);
+
+        const rows = await qb.getMany();
+        const hasMore = rows.length > limit;
+
+        return {
+            pageIndex,
+            limit,
+            hasMore,
+            data: hasMore ? rows.slice(0, limit) : rows,
+        };
+    }
 }

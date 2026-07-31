@@ -1,7 +1,7 @@
 import { status as GrpcStatus } from '@grpc/grpc-js';
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
-import { CreateQuickReplyCategoriesDto } from 'libs/common/dto/quickReplyCategories/index.dto';
+import { CreateQuickReplyCategoriesDto, GetPagingQuickReplyCategoriesDto } from 'libs/common/dto/quickReplyCategories/index.dto';
 import { QuickReplyCategoriesService } from './quickReplyCategories.service';
 
 @Controller()
@@ -18,6 +18,14 @@ export class QuickReplyCategoriesController {
         };
     }
 
-
+    @GrpcMethod('QuickReplyCategoriesService', 'GetPaging')
+    async GetPaging(dto: GetPagingQuickReplyCategoriesDto) {
+        const result = await this.QuickReplyCategoriesService.GetPaging(dto);
+        return {
+            code: GrpcStatus.OK,
+            message: 'get paging success!',
+            data: JSON.stringify(result),
+        };
+    }
 
 }

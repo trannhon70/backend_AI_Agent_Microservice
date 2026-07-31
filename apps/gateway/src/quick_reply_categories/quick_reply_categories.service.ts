@@ -1,10 +1,11 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
-import { CreateQuickReplyCategoriesDto } from 'libs/common/dto/quickReplyCategories/index.dto';
+import { CreateQuickReplyCategoriesDto, GetPagingQuickReplyCategoriesDto } from 'libs/common/dto/quickReplyCategories/index.dto';
 import { firstValueFrom, Observable } from 'rxjs';
 
 interface QuickReplyCategoriesGrpcService {
     Create(data: CreateQuickReplyCategoriesDto): Observable<any>;
+    GetPaging(data: GetPagingQuickReplyCategoriesDto): Observable<any>;
 
 }
 
@@ -22,6 +23,9 @@ export class QuickReplyCategoriesService implements OnModuleInit {
         return firstValueFrom(this.QuickReplyCategoriesGrpcService.Create(dto));
     }
 
+    getPaging(query: GetPagingQuickReplyCategoriesDto) {
+        return firstValueFrom(this.QuickReplyCategoriesGrpcService.GetPaging(query));
+    }
 
 
 }

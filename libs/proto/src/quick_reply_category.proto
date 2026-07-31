@@ -5,6 +5,7 @@ package CHAT_PACKAGE;
 service QuickReplyCategoriesService {
  
   rpc Create(CreateQuickReplyCategoriesRequest) returns (QuickReplyCategoriesResponse);
+  rpc GetPaging(GetPagingQuickReplyCategoriesRequest) returns (QuickReplyCategoriesResponse);
   
 }
 
@@ -15,6 +16,14 @@ message CreateQuickReplyCategoriesRequest {
   string color = 2;
   string page_id = 3;
 }
+
+message GetPagingQuickReplyCategoriesRequest {
+  int32 pageIndex = 1;
+  int32 limit = 2;
+  string search = 3;
+  string page_id = 4;
+}
+
 
 
 
