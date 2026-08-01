@@ -7,7 +7,7 @@ import { status as GrpcStatus } from '@grpc/grpc-js';
 import { Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateQuickReplyCategoriesDto, GetPagingQuickReplyCategoriesDto } from 'libs/common/dto/quickReplyCategories/index.dto';
+import { CreateQuickReplyCategoriesDto, GetPagingQuickReplyCategoriesDto, UpdateQuickReplyCategoriesDto } from 'libs/common/dto/quickReplyCategories/index.dto';
 import { currentTimestamp } from 'libs/common/utils/date.util';
 import { DataSource, QueryFailedError, Repository } from 'typeorm';
 
@@ -112,5 +112,31 @@ export class QuickReplyCategoriesService {
 
     async Delete(id: number) {
         return this.QuickReplyCategoryRepo.delete({ id });
+    }
+
+    async Update(dto: UpdateQuickReplyCategoriesDto) {
+        try {
+            return await this.QuickReplyCategoryRepo.update({ id: dto.id }, {
+                name: dto.name,
+                color: dto.color,
+            });
+        } catch (error) {
+            this.logger.error(error);
+
+            if (
+                error instanceof QueryFailedError &&
+                error.driverError?.code === '23505'
+            ) {
+                throw new RpcException({
+                    code: GrpcStatus.ALREADY_EXISTS,
+                    message: 'Chủ đề này đã tồn tại!',
+                });
+            }
+
+            throw new RpcException({
+                code: GrpcStatus.INTERNAL,
+                message: 'Internal server error',
+            });
+        }
     }
 }

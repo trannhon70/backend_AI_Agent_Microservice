@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
-import { CreateQuickReplyCategoriesDto, GetPagingQuickReplyCategoriesDto } from 'libs/common/dto/quickReplyCategories/index.dto';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { CreateQuickReplyCategoriesDto, GetPagingQuickReplyCategoriesDto, UpdateQuickReplyCategoriesDto } from 'libs/common/dto/quickReplyCategories/index.dto';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 import { QuickReplyCategoriesService } from './quick_reply_categories.service';
 
@@ -41,4 +41,16 @@ export class QuickReplyCategoriesController {
             data: JSON.parse(result.data)
         }
     }
+
+    @Put('')
+    @UseGuards(JwtAuthGuard)
+    async update(@Body() body: UpdateQuickReplyCategoriesDto) {
+        const result = await this.QuickReplyCategoriesService.update(body);
+        return {
+            code: result.code,
+            message: result.message,
+            data: JSON.parse(result.data)
+        }
+    }
+
 }

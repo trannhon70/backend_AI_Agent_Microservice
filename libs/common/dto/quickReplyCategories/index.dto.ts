@@ -15,10 +15,25 @@ export class CreateQuickReplyCategoriesDto {
     @IsString()
     @IsNotEmpty()
     page_id?: string;
+}
+
+export class UpdateQuickReplyCategoriesDto {
+    @IsString()
+    @IsNotEmpty()
+    name!: string;
+
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(20)
+    color!: string;
+
+    @Type(() => Number)
+    @IsInt()
+    @IsNotEmpty()
+    id?: number;
 
 
 }
-
 
 
 export class GetPagingQuickReplyCategoriesDto {

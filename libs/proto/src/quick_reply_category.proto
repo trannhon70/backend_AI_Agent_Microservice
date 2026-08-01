@@ -7,6 +7,7 @@ service QuickReplyCategoriesService {
   rpc Create(CreateQuickReplyCategoriesRequest) returns (QuickReplyCategoriesResponse);
   rpc GetPaging(GetPagingQuickReplyCategoriesRequest) returns (QuickReplyCategoriesResponse);
   rpc Delete(DeleteQuickReplyCategoriesRequest) returns (QuickReplyCategoriesResponse);
+  rpc Update(UpdateQuickReplyCategoriesRequest) returns (QuickReplyCategoriesResponse);
   
 }
 
@@ -20,7 +21,12 @@ message CreateQuickReplyCategoriesRequest {
 
 message DeleteQuickReplyCategoriesRequest {
   int32 id = 1;
-  
+}
+
+message UpdateQuickReplyCategoriesRequest {
+  int32 id = 1;
+  string color = 2;
+  string name = 3;
 }
 
 message GetPagingQuickReplyCategoriesRequest {
