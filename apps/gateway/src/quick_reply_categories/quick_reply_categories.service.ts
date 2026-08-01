@@ -6,7 +6,7 @@ import { firstValueFrom, Observable } from 'rxjs';
 interface QuickReplyCategoriesGrpcService {
     Create(data: CreateQuickReplyCategoriesDto): Observable<any>;
     GetPaging(data: GetPagingQuickReplyCategoriesDto): Observable<any>;
-
+    Delete(data: { id: number }): Observable<any>;
 }
 
 @Injectable()
@@ -27,5 +27,7 @@ export class QuickReplyCategoriesService implements OnModuleInit {
         return firstValueFrom(this.QuickReplyCategoriesGrpcService.GetPaging(query));
     }
 
-
+    delete(id: number) {
+        return firstValueFrom(this.QuickReplyCategoriesGrpcService.Delete({ id }));
+    }
 }

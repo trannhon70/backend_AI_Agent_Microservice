@@ -6,6 +6,7 @@ service QuickReplyCategoriesService {
  
   rpc Create(CreateQuickReplyCategoriesRequest) returns (QuickReplyCategoriesResponse);
   rpc GetPaging(GetPagingQuickReplyCategoriesRequest) returns (QuickReplyCategoriesResponse);
+  rpc Delete(DeleteQuickReplyCategoriesRequest) returns (QuickReplyCategoriesResponse);
   
 }
 
@@ -15,6 +16,11 @@ message CreateQuickReplyCategoriesRequest {
   string name = 1;
   string color = 2;
   string page_id = 3;
+}
+
+message DeleteQuickReplyCategoriesRequest {
+  int32 id = 1;
+  
 }
 
 message GetPagingQuickReplyCategoriesRequest {

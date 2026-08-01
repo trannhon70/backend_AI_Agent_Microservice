@@ -19,6 +19,8 @@ export class CreateQuickReplyCategoriesDto {
 
 }
 
+
+
 export class GetPagingQuickReplyCategoriesDto {
     @Type(() => Number)
     @IsInt()

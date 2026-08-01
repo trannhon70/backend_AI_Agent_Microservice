@@ -109,4 +109,8 @@ export class QuickReplyCategoriesService {
             data: hasMore ? rows.slice(0, limit) : rows,
         };
     }
+
+    async Delete(id: number) {
+        return this.QuickReplyCategoryRepo.delete({ id });
+    }
 }

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { CreateQuickReplyCategoriesDto, GetPagingQuickReplyCategoriesDto } from 'libs/common/dto/quickReplyCategories/index.dto';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 import { QuickReplyCategoriesService } from './quick_reply_categories.service';
@@ -31,5 +31,14 @@ export class QuickReplyCategoriesController {
         }
     }
 
-
+    @Delete(':id')
+    @UseGuards(JwtAuthGuard)
+    async delete(@Param("id") id: number) {
+        const result = await this.QuickReplyCategoriesService.delete(id);
+        return {
+            code: result.code,
+            message: result.message,
+            data: JSON.parse(result.data)
+        }
+    }
 }

@@ -28,4 +28,13 @@ export class QuickReplyCategoriesController {
         };
     }
 
+    @GrpcMethod('QuickReplyCategoriesService', 'Delete')
+    async Delete(dto: { id: number }) {
+        const result = await this.QuickReplyCategoriesService.Delete(dto.id);
+        return {
+            code: GrpcStatus.OK,
+            message: 'get paging success!',
+            data: JSON.stringify(result),
+        };
+    }
 }
