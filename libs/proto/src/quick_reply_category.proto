@@ -8,6 +8,7 @@ service QuickReplyCategoriesService {
   rpc GetPaging(GetPagingQuickReplyCategoriesRequest) returns (QuickReplyCategoriesResponse);
   rpc Delete(DeleteQuickReplyCategoriesRequest) returns (QuickReplyCategoriesResponse);
   rpc Update(UpdateQuickReplyCategoriesRequest) returns (QuickReplyCategoriesResponse);
+  rpc GetAll(GetAllQuickReplyCategoriesRequest) returns (QuickReplyCategoriesResponse);
   
 }
 
@@ -36,7 +37,9 @@ message GetPagingQuickReplyCategoriesRequest {
   string page_id = 4;
 }
 
-
+message GetAllQuickReplyCategoriesRequest {
+  string page_id = 1;
+}
 
 
 // ===== Response chuẩn theo pattern code/message/data =====

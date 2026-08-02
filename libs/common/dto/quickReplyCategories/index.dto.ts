@@ -56,6 +56,10 @@ export class GetPagingQuickReplyCategoriesDto {
     @IsString()
     @IsNotEmpty()
     page_id!: string;
+}
 
-
+export class GetAllQuickReplyCategoriesDto {
+    @IsString()
+    @IsNotEmpty()
+    page_id!: string;
 }

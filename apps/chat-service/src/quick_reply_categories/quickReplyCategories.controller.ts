@@ -1,7 +1,7 @@
 import { status as GrpcStatus } from '@grpc/grpc-js';
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
-import { CreateQuickReplyCategoriesDto, GetPagingQuickReplyCategoriesDto, UpdateQuickReplyCategoriesDto } from 'libs/common/dto/quickReplyCategories/index.dto';
+import { CreateQuickReplyCategoriesDto, GetAllQuickReplyCategoriesDto, GetPagingQuickReplyCategoriesDto, UpdateQuickReplyCategoriesDto } from 'libs/common/dto/quickReplyCategories/index.dto';
 import { QuickReplyCategoriesService } from './quickReplyCategories.service';
 
 @Controller()
@@ -47,4 +47,15 @@ export class QuickReplyCategoriesController {
             data: JSON.stringify(result),
         };
     }
+
+    @GrpcMethod('QuickReplyCategoriesService', 'GetAll')
+    async GetAll(dto: GetAllQuickReplyCategoriesDto) {
+        const result = await this.QuickReplyCategoriesService.GetAll(dto);
+        return {
+            code: GrpcStatus.OK,
+            message: 'Lấy danh sách chủ đề thành công!',
+            data: JSON.stringify(result),
+        };
+    }
+
 }

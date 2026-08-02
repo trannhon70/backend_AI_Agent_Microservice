@@ -139,4 +139,15 @@ export class QuickReplyCategoriesService {
             });
         }
     }
+
+    async GetAll(dto: { page_id: string }) {
+        const fanpage = await this.fanpageRepo.findOne({ where: { page_id: dto.page_id }, select: { id: true }, });
+        if (!fanpage) {
+            throw new RpcException({
+                code: GrpcStatus.NOT_FOUND,
+                message: 'Fanpage not found',
+            });
+        }
+        return this.QuickReplyCategoryRepo.find({ where: { fanpage_id: fanpage.id } });
+    }
 }
