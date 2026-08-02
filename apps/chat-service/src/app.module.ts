@@ -11,6 +11,7 @@ import { MessagesModule } from './messages/messages.module';
 import { SocketModule } from '@app/socket';
 import { LabelModule } from './label/label.module';
 import { QuickReplyCategoriesModule } from './quick_reply_categories/quickReplyCategories.module';
+import { QuickReplyModule } from './quick_reply/quick_reply.module';
 // import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
@@ -30,7 +31,8 @@ import { QuickReplyCategoriesModule } from './quick_reply_categories/quickReplyC
     ConversationModule,
     MessagesModule,
     LabelModule,
-    QuickReplyCategoriesModule
+    QuickReplyCategoriesModule,
+    QuickReplyModule
   ],
   controllers: [AppController],
   providers: [AppService],

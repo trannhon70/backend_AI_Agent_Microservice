@@ -17,6 +17,7 @@ import { UserPageModule } from './user_page/user_page.module';
 import { UsersModule } from './users/users.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { QuickReplyCategoriesModule } from './quick_reply_categories/quick_reply_categories.module';
+import { QuickReplyModule } from './quick_reply/quick_reply.module';
 
 @Global()
 @Module({
@@ -81,6 +82,7 @@ import { QuickReplyCategoriesModule } from './quick_reply_categories/quick_reply
               join(process.cwd(), 'libs/proto/src/messages.proto'),
               join(process.cwd(), 'libs/proto/src/label.proto'),
               join(process.cwd(), 'libs/proto/src/quick_reply_category.proto'),
+              join(process.cwd(), 'libs/proto/src/quick_reply.proto'),
             ],
             url: configService.get<string>('CHAT_GRPC_URL', 'localhost:50052'),
             loader: {
@@ -101,7 +103,8 @@ import { QuickReplyCategoriesModule } from './quick_reply_categories/quick_reply
     MessagesModule,
     WebhooksModule,
     LabelModule,
-    QuickReplyCategoriesModule
+    QuickReplyCategoriesModule,
+    QuickReplyModule
 
   ],
   controllers: [GatewayController],

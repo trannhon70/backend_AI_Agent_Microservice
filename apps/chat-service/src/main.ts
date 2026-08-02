@@ -20,6 +20,7 @@ async function bootstrap() {
         join(process.cwd(), 'libs/proto/src/messages.proto'),
         join(process.cwd(), 'libs/proto/src/label.proto'),
         join(process.cwd(), 'libs/proto/src/quick_reply_category.proto'),
+        join(process.cwd(), 'libs/proto/src/quick_reply.proto'),
       ],
       url: grpcUrlFanPage,
       loader: {
