@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 import { QuickReplyService } from './quick_reply.service';
-import { CreateQuickReplyDto, GetPagingQuickReplyDto, UpdateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
+import { CreateQuickReplyDto, DeleteQuickReplyDto, GetPagingQuickReplyDto, UpdateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
 
 @Controller('chat-service/quick-reply')
 export class QuickReplyController {
@@ -36,6 +36,17 @@ export class QuickReplyController {
     @UseGuards(JwtAuthGuard)
     async update(@Body() body: UpdateQuickReplyDto) {
         const result = await this.QuickReplyService.update(body);
+        return {
+            code: result.code,
+            message: result.message,
+            data: JSON.parse(result.data)
+        }
+    }
+
+    @Delete(":id")
+    @UseGuards(JwtAuthGuard)
+    async delete(@Param() param: DeleteQuickReplyDto) {
+        const result = await this.QuickReplyService.delete(param);
         return {
             code: result.code,
             message: result.message,

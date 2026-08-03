@@ -2,7 +2,7 @@ import { status as GrpcStatus } from '@grpc/grpc-js';
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { QuickReplyService } from './quick_reply.service';
-import { CreateQuickReplyDto, GetPagingQuickReplyDto, UpdateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
+import { CreateQuickReplyDto, DeleteQuickReplyDto, GetPagingQuickReplyDto, UpdateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
 
 @Controller()
 export class QuickReplyController {
@@ -34,6 +34,16 @@ export class QuickReplyController {
         return {
             code: GrpcStatus.OK,
             message: 'Cập nhật reply nhanh thành công!',
+            data: JSON.stringify(result),
+        };
+    }
+
+    @GrpcMethod('QuickReplyService', 'Delete')
+    async Delete(dto: DeleteQuickReplyDto) {
+        const result = await this.QuickReplyService.Delete(dto);
+        return {
+            code: GrpcStatus.OK,
+            message: 'Xóa reply nhanh thành công!',
             data: JSON.stringify(result),
         };
     }

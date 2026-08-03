@@ -55,3 +55,10 @@ export class UpdateQuickReplyDto {
     quick_reply_category_id?: number;
 
 }
+
+export class DeleteQuickReplyDto {
+    @Type(() => Number)
+    @IsInt()
+    @IsNotEmpty()
+    id?: number;
+}

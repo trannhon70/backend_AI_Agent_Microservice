@@ -5,7 +5,7 @@ import { status as GrpcStatus } from '@grpc/grpc-js';
 import { Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateQuickReplyDto, GetPagingQuickReplyDto, UpdateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
+import { CreateQuickReplyDto, DeleteQuickReplyDto, GetPagingQuickReplyDto, UpdateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
 import { currentTimestamp } from 'libs/common/utils/date.util';
 import { DataSource, QueryFailedError, Repository } from 'typeorm';
 
@@ -127,5 +127,9 @@ export class QuickReplyService {
                 message: 'Internal server error',
             });
         }
+    }
+
+    async Delete(dto: DeleteQuickReplyDto) {
+        return this.quickReplyRepo.delete({ id: dto.id });
     }
 }
