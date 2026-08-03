@@ -32,7 +32,9 @@ export class UpdateQuickReplyCategoriesDto {
     @IsNotEmpty()
     id?: number;
 
-
+    @IsString()
+    @IsNotEmpty()
+    page_id!: string;
 }
 
 

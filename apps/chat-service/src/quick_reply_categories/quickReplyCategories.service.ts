@@ -113,10 +113,14 @@ export class QuickReplyCategoriesService {
 
     async Update(dto: UpdateQuickReplyCategoriesDto) {
         try {
-            return await this.QuickReplyCategoryRepo.update({ id: dto.id }, {
+            console.log(dto, 'dto');
+
+            const result = await this.QuickReplyCategoryRepo.update({ id: dto.id }, {
                 name: dto.name,
                 color: dto.color,
             });
+            await this.invalidateCache(dto.page_id);
+            return result;
         } catch (error) {
             this.logger.error(error);
 

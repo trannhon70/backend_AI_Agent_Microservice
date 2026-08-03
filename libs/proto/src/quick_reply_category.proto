@@ -29,6 +29,7 @@ message UpdateQuickReplyCategoriesRequest {
   int32 id = 1;
   string color = 2;
   string name = 3;
+  string page_id = 4;
 }
 
 message GetPagingQuickReplyCategoriesRequest {
