@@ -22,6 +22,7 @@ message CreateQuickReplyCategoriesRequest {
 
 message DeleteQuickReplyCategoriesRequest {
   int32 id = 1;
+  string page_id = 2;
 }
 
 message UpdateQuickReplyCategoriesRequest {

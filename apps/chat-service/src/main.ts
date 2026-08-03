@@ -49,6 +49,7 @@ async function bootstrap() {
   // });
 
   app.enableShutdownHooks();
+  await app.init();
   await app.startAllMicroservices(); // start cả gRPC lẫn Kafka cùng lúc
 
   Logger.debug(`🚀 Chat Service (gRPC) running on: ${grpcUrlFanPage}`);

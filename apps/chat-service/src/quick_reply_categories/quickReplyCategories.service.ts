@@ -1,7 +1,4 @@
-import { Conversation } from '@app/database/entities/conversation.entity';
 import { Fanpage } from '@app/database/entities/fanpage.entity';
-import { Label } from '@app/database/entities/label.entity';
-import { LiveMessage } from '@app/database/entities/live_message.entity';
 import { QuickReplyCategory } from '@app/database/entities/quick_reply_category.entity';
 import { status as GrpcStatus } from '@grpc/grpc-js';
 import { Injectable, Logger } from '@nestjs/common';
@@ -9,49 +6,46 @@ import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateQuickReplyCategoriesDto, GetPagingQuickReplyCategoriesDto, UpdateQuickReplyCategoriesDto } from 'libs/common/dto/quickReplyCategories/index.dto';
 import { currentTimestamp } from 'libs/common/utils/date.util';
-import { DataSource, QueryFailedError, Repository } from 'typeorm';
+import { RedisService } from 'libs/redis/redis.service';
+import { QueryFailedError, Repository } from 'typeorm';
 
 
 @Injectable()
 export class QuickReplyCategoriesService {
     private readonly logger = new Logger(QuickReplyCategoriesService.name);
     constructor(
-        @InjectRepository(LiveMessage)
-        private liveMessageRepo: Repository<LiveMessage>,
 
         @InjectRepository(QuickReplyCategory)
         private QuickReplyCategoryRepo: Repository<QuickReplyCategory>,
 
-        @InjectRepository(Conversation)
-        private conversationRepo: Repository<Conversation>,
-
-        @InjectRepository(Label)
-        private labelRepo: Repository<Label>,
-
-
         @InjectRepository(Fanpage)
         private fanpageRepo: Repository<Fanpage>,
         // private readonly roleRepo: RoleRepository,
-        private readonly dataSource: DataSource,
+        private readonly redisService: RedisService,
     ) {
     }
 
+    private invalidateCache(pageId: string) {
+        return this.redisService.del(`quick_reply_categories:${pageId}`)
+            .catch(err => this.logger.warn(`Failed to invalidate cache for ${pageId}`, err));
+    }
+
     async Create(dto: CreateQuickReplyCategoriesDto) {
-        const fanpage = await this.fanpageRepo.findOneBy({
-            page_id: dto.page_id,
-        });
+        const fanpage = await this.fanpageRepo.findOneBy({ page_id: dto.page_id });
 
         if (!fanpage) {
             throw new RpcException({ code: GrpcStatus.NOT_FOUND, message: 'Không tìm thấy trang fanpage!' });
         }
 
         try {
-            return await this.QuickReplyCategoryRepo.save({
+            const saved = await this.QuickReplyCategoryRepo.save({
                 name: dto.name,
                 color: dto.color,
                 fanpage_id: fanpage.id,
                 created_at: currentTimestamp(),
             });
+            await this.invalidateCache(dto.page_id);
+            return saved;
         } catch (error) {
             this.logger.error(error);
 
@@ -110,8 +104,11 @@ export class QuickReplyCategoriesService {
         };
     }
 
-    async Delete(id: number) {
-        return this.QuickReplyCategoryRepo.delete({ id });
+    async Delete(dto: any) {
+        const result = await this.QuickReplyCategoryRepo.delete({ id: dto.id });
+        // Xóa cache khi xóa danh mục
+        await this.invalidateCache(dto.page_id);
+        return result;
     }
 
     async Update(dto: UpdateQuickReplyCategoriesDto) {
@@ -141,6 +138,16 @@ export class QuickReplyCategoriesService {
     }
 
     async GetAll(dto: { page_id: string }) {
+        const cacheKey = `quick_reply_categories:${dto.page_id}`;
+        // 1. Thử lấy từ cache trước
+        try {
+            const cached = await this.redisService.get(cacheKey);
+            if (cached) return cached;
+        } catch (err) {
+            this.logger.warn(`Redis get failed for ${cacheKey}, fallback to DB`, err);
+        }
+
+        // 2. Cache miss → query DB như cũ
         const fanpage = await this.fanpageRepo.findOne({ where: { page_id: dto.page_id }, select: { id: true }, });
         if (!fanpage) {
             throw new RpcException({
@@ -148,6 +155,15 @@ export class QuickReplyCategoriesService {
                 message: 'Fanpage not found',
             });
         }
-        return this.QuickReplyCategoryRepo.find({ where: { fanpage_id: fanpage.id } });
+        const data = await this.QuickReplyCategoryRepo.find({
+            where: { fanpage_id: fanpage.id },
+            order: { created_at: 'DESC', id: 'DESC' },
+        });
+        // 3. Lưu vào cache
+        this.redisService.set(cacheKey, data, 60 * 60).catch(err =>
+            this.logger.warn(`Redis set failed for ${cacheKey}`, err)
+        );
+        return data;
+
     }
 }

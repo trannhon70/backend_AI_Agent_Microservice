@@ -31,10 +31,10 @@ export class QuickReplyCategoriesController {
         }
     }
 
-    @Delete(':id')
+    @Post('delete')
     @UseGuards(JwtAuthGuard)
-    async delete(@Param("id") id: number) {
-        const result = await this.QuickReplyCategoriesService.delete(id);
+    async delete(@Body() body: any) {
+        const result = await this.QuickReplyCategoriesService.delete(body);
         return {
             code: result.code,
             message: result.message,

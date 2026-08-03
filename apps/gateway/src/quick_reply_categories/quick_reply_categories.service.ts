@@ -6,7 +6,7 @@ import { firstValueFrom, Observable } from 'rxjs';
 interface QuickReplyCategoriesGrpcService {
     Create(data: CreateQuickReplyCategoriesDto): Observable<any>;
     GetPaging(data: GetPagingQuickReplyCategoriesDto): Observable<any>;
-    Delete(data: { id: number }): Observable<any>;
+    Delete(data: any): Observable<any>;
     Update(data: UpdateQuickReplyCategoriesDto): Observable<any>;
     GetAll(data: GetAllQuickReplyCategoriesDto): Observable<any>;
 }
@@ -29,8 +29,8 @@ export class QuickReplyCategoriesService implements OnModuleInit {
         return firstValueFrom(this.QuickReplyCategoriesGrpcService.GetPaging(query));
     }
 
-    delete(id: number) {
-        return firstValueFrom(this.QuickReplyCategoriesGrpcService.Delete({ id }));
+    delete(body: any) {
+        return firstValueFrom(this.QuickReplyCategoriesGrpcService.Delete(body));
     }
 
     update(dto: UpdateQuickReplyCategoriesDto) {

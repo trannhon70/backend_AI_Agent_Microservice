@@ -14,7 +14,7 @@ export class CreateQuickReplyCategoriesDto {
 
     @IsString()
     @IsNotEmpty()
-    page_id?: string;
+    page_id!: string;
 }
 
 export class UpdateQuickReplyCategoriesDto {

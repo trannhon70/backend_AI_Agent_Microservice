@@ -24,7 +24,6 @@ async function bootstrap() {
     credentials: true,
   });
 
-
   app.setGlobalPrefix('api');
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.KAFKA,

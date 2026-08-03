@@ -29,8 +29,8 @@ export class QuickReplyCategoriesController {
     }
 
     @GrpcMethod('QuickReplyCategoriesService', 'Delete')
-    async Delete(dto: { id: number }) {
-        const result = await this.QuickReplyCategoriesService.Delete(dto.id);
+    async Delete(dto: any) {
+        const result = await this.QuickReplyCategoriesService.Delete(dto);
         return {
             code: GrpcStatus.OK,
             message: 'Xóa chủ đề thành công!',
