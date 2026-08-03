@@ -39,8 +39,18 @@ export class QuickReplyService {
             fanpage_id: fanpage.id,
             created_at: currentTimestamp(),
         });
-        //  await this.invalidateCache(dto.page_id);
-        return saved;
+        // query lại kèm relation
+        return this.quickReplyRepo.findOne({
+            where: { id: saved.id },
+            relations: { quickReplyCategory: true },
+            select: {
+                id: true,
+                content: true,
+                created_at: true,
+                quick_reply_category_id: true,
+                quickReplyCategory: { id: true, name: true, color: true },
+            },
+        });
     }
 
     async GetPaging(query: GetPagingQuickReplyDto) {
