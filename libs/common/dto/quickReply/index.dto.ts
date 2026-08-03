@@ -16,3 +16,25 @@ export class CreateQuickReplyDto {
     @IsNotEmpty()
     page_id!: string;
 }
+
+export class GetPagingQuickReplyDto {
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    @IsNotEmpty()
+    pageIndex!: number;
+
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    @IsNotEmpty()
+    limit!: number;
+
+    @IsOptional()
+    @IsString()
+    search!: string;
+
+    @IsString()
+    @IsNotEmpty()
+    page_id!: string;
+}

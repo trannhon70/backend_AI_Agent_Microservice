@@ -5,7 +5,7 @@ import { status as GrpcStatus } from '@grpc/grpc-js';
 import { Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
+import { CreateQuickReplyDto, GetPagingQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
 import { currentTimestamp } from 'libs/common/utils/date.util';
 import { DataSource, QueryFailedError, Repository } from 'typeorm';
 
@@ -43,5 +43,49 @@ export class QuickReplyService {
         return saved;
     }
 
+    async GetPaging(query: GetPagingQuickReplyDto) {
+        const { pageIndex = 1, limit = 10, search, page_id } = query;
+        const fanpage = await this.fanpageRepo.findOne({ where: { page_id }, select: { id: true }, });
+
+        if (!fanpage) {
+            throw new RpcException({ code: GrpcStatus.NOT_FOUND, message: 'Không tìm thấy fanpage!' });
+        }
+
+        const qb = this.quickReplyRepo
+            .createQueryBuilder('reply')
+            .leftJoinAndSelect('reply.quickReplyCategory', 'quickReplyCategory')
+            .select([
+                'reply.id',
+                'reply.content',
+                'reply.created_at',
+                'reply.quick_reply_category_id',
+                'quickReplyCategory.id',      // bắt buộc phải có
+                'quickReplyCategory.name',
+                'quickReplyCategory.color',
+            ])
+            .where('reply.fanpage_id = :fanpage_id', { fanpage_id: fanpage.id })
+
+        if (search?.trim()) {
+            qb.addSelect(`ts_rank_cd(reply.search_vector, websearch_to_tsquery('simple', unaccent(:search)))`, 'rank')
+                .andWhere(`reply.search_vector @@ websearch_to_tsquery('simple', unaccent(:search))`, { search: search.trim() })
+                .orderBy('rank', 'DESC')
+                .addOrderBy('reply.created_at', 'DESC')
+                .addOrderBy('reply.id', 'DESC');
+        } else {
+            qb.orderBy('reply.created_at', 'DESC').addOrderBy('reply.id', 'DESC');
+        }
+
+        qb.skip((pageIndex - 1) * limit).take(limit + 1);
+
+        const rows = await qb.getMany();
+        const hasMore = rows.length > limit;
+
+        return {
+            pageIndex,
+            limit,
+            hasMore,
+            data: hasMore ? rows.slice(0, limit) : rows,
+        };
+    }
 
 }
