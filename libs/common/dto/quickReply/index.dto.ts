@@ -38,3 +38,20 @@ export class GetPagingQuickReplyDto {
     @IsNotEmpty()
     page_id!: string;
 }
+
+export class UpdateQuickReplyDto {
+    @Type(() => Number)
+    @IsInt()
+    @IsNotEmpty()
+    id?: number;
+
+    @IsString()
+    @IsNotEmpty()
+    content!: string;
+
+    @IsOptional()
+    @Type(() => Number)
+    @IsInt()
+    quick_reply_category_id?: number;
+
+}

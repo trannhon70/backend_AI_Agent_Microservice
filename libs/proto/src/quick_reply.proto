@@ -5,6 +5,7 @@ package CHAT_PACKAGE;
 service QuickReplyService {
   rpc Create(CreateQuickReplyRequest) returns (QuickReplyResponse);
   rpc GetPaging(GetPagingQuickReplyRequest) returns (QuickReplyResponse);
+  rpc Update(UpdateQuickReplyRequest) returns (QuickReplyResponse);
   
   
 }
@@ -21,6 +22,12 @@ message GetPagingQuickReplyRequest {
   int32 limit = 2;
   string search = 3;
   string page_id = 4;
+}
+
+message UpdateQuickReplyRequest {
+  string content = 1;
+  int64 quick_reply_category_id = 2;
+  int64 id = 3;
 }
 
 // ===== Response chuẩn theo pattern code/message/data =====

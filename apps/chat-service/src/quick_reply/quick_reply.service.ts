@@ -5,7 +5,7 @@ import { status as GrpcStatus } from '@grpc/grpc-js';
 import { Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateQuickReplyDto, GetPagingQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
+import { CreateQuickReplyDto, GetPagingQuickReplyDto, UpdateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
 import { currentTimestamp } from 'libs/common/utils/date.util';
 import { DataSource, QueryFailedError, Repository } from 'typeorm';
 
@@ -98,4 +98,34 @@ export class QuickReplyService {
         };
     }
 
+    async Update(dto: UpdateQuickReplyDto) {
+        try {
+            await this.quickReplyRepo.update({ id: dto.id }, {
+                content: dto.content,
+                quick_reply_category_id:
+                    dto.quick_reply_category_id && dto.quick_reply_category_id > 0
+                        ? dto.quick_reply_category_id
+                        : null,
+            });
+
+            // query lại kèm relation
+            return this.quickReplyRepo.findOne({
+                where: { id: dto.id },
+                relations: { quickReplyCategory: true },
+                select: {
+                    id: true,
+                    content: true,
+                    created_at: true,
+                    quick_reply_category_id: true,
+                    quickReplyCategory: { id: true, name: true, color: true },
+                },
+            });
+        } catch (error) {
+            this.logger.error(error);
+            throw new RpcException({
+                code: GrpcStatus.INTERNAL,
+                message: 'Internal server error',
+            });
+        }
+    }
 }
