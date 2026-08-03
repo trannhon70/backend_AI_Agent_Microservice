@@ -3,7 +3,7 @@ import { Fanpage } from './fanpage.entity';
 import { QuickReplyCategory } from './quick_reply_category.entity';
 
 @Entity('quick_reply')
-@Index('idx_QuickReply_created_at_id', ['quick_reply_category_id', 'created_at', 'id'])
+@Index('idx_QuickReply_created_at_id', ['fanpage_id', 'created_at', 'id'])
 export class QuickReply {
     @PrimaryGeneratedColumn("increment")
     id!: number;
@@ -11,12 +11,19 @@ export class QuickReply {
     @Column({ type: 'text', nullable: true })
     content!: string | null;
 
-    @Column({ nullable: true })
+    @Column({ type: 'bigint', nullable: true })
     quick_reply_category_id!: number | null;
 
     @ManyToOne(() => QuickReplyCategory, { nullable: true, onDelete: 'SET NULL' })
     @JoinColumn({ name: 'quick_reply_category_id' })
     quickReplyCategory!: QuickReplyCategory | null;
+
+    @Column({ type: 'bigint', nullable: true })
+    fanpage_id!: number | null;
+
+    @ManyToOne(() => Fanpage, { nullable: true, onDelete: 'SET NULL' })
+    @JoinColumn({ name: 'fanpage_id' })
+    fanpage!: Fanpage | null;
 
     @Column({ type: 'tsvector', select: false, nullable: true })
     search_vector!: string;
