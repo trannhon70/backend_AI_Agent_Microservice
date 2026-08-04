@@ -1,6 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
+import type { Response } from 'express';
 import { CreateQuickReplyCategoriesDto, GetAllQuickReplyCategoriesDto, GetPagingQuickReplyCategoriesDto, UpdateQuickReplyCategoriesDto } from 'libs/common/dto/quickReplyCategories/index.dto';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
+import { sendEncryptedResponse } from 'libs/common/utils/encrypted-response.util';
 import { QuickReplyCategoriesService } from './quick_reply_categories.service';
 
 @Controller('chat-service/quick-reply-categories')
@@ -22,13 +24,13 @@ export class QuickReplyCategoriesController {
 
     @Get('get-paging')
     @UseGuards(JwtAuthGuard)
-    async getPaging(@Query() query: GetPagingQuickReplyCategoriesDto) {
+    async getPaging(@Query() query: GetPagingQuickReplyCategoriesDto, @Res() res: Response) {
         const result = await this.QuickReplyCategoriesService.getPaging(query);
-        return {
+        sendEncryptedResponse(res, {
             code: result.code,
             message: result.message,
-            data: JSON.parse(result.data)
-        }
+            data: JSON.parse(result.data),
+        });
     }
 
     @Post('delete')
