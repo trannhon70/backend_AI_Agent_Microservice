@@ -10,7 +10,6 @@ export class AuthServiceController {
   @GrpcMethod('AuthService', 'Create')
   create(data: { name: string }) {
 
-    console.log(data);
 
     return {
 

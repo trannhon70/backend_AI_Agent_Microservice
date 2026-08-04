@@ -23,7 +23,6 @@ export class QuickReplyController {
     @Get('get-paging')
     @UseGuards(JwtAuthGuard)
     async getPaging(@Query() query: GetPagingQuickReplyDto) {
-        console.log(query);
         const result = await this.QuickReplyService.getPaging(query);
         return {
             code: result.code,

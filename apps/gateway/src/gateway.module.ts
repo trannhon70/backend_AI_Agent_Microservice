@@ -18,10 +18,18 @@ import { UsersModule } from './users/users.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { QuickReplyCategoriesModule } from './quick_reply_categories/quick_reply_categories.module';
 import { QuickReplyModule } from './quick_reply/quick_reply.module';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Global()
 @Module({
   imports: [
+    // giới hạn số lượng request trong một khoảng thời gian nhất định theo từng ip
+    ThrottlerModule.forRoot([{
+      ttl: 60000, // 1 phút
+      limit: 50,  // tối đa 50 request
+    }]),
+    // cấu hình biến môi trường
     ConfigModule.forRoot({ isGlobal: true }),
     JwtCommonModule,
     SocketModule,
@@ -108,7 +116,11 @@ import { QuickReplyModule } from './quick_reply/quick_reply.module';
 
   ],
   controllers: [GatewayController],
-  providers: [GatewayService],
+  providers: [
+    GatewayService,
+    // ThrottlerGuard is used to limit the number of requests in a certain time frame per IP
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
+  ],
   exports: [ClientsModule],
 })
 export class GatewayModule implements NestModule {

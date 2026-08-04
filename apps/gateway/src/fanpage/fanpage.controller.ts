@@ -3,6 +3,7 @@ import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/comm
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 import { FanpageService } from './fanpage.service';
 import { CreateConnectFanPageFacebookDto, SyncingDto, TokenRenewalFacebookDto } from 'libs/common/dto/fanpage/index.dto';
+import { encryptResponse } from 'libs/common/utils';
 @Controller('fanpage-service/fanpages')
 export class FanpageController {
     constructor(
@@ -33,7 +34,12 @@ export class FanpageController {
     @Get('get-page-id/:id')
     @UseGuards(JwtAuthGuard)
     async getPageId(@Req() req: any, @Param() param: any) {
-        return await this.fanpageService.getPageId(param)
+        const result = await this.fanpageService.getPageId(param);
+        const response = await encryptResponse(result, process.env.SECRET_KEY);
+        return {
+            payload: response
+        };
+
     }
 
     //đồng bọ tin nhắn

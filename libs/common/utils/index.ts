@@ -1,4 +1,5 @@
 import { NormalizedAttachment } from "../interfaces";
+import CryptoJS from "crypto-js";
 
 export const expiresIn = '365d' //Refresh Token (365 ngày)
 
@@ -62,3 +63,8 @@ const resolveMimeType = (type: string): string | null => {
 export const toUnixTimestamp = (isoString: string): number => {
     return Math.floor(new Date(isoString).getTime() / 1000);
 };
+
+
+export function encryptResponse(data: unknown, key = 'Qv5R6gO9m2s1cKjY9yKjJmWQv2q7L1F4NwP0YxV8hZs=') {
+    return CryptoJS.AES.encrypt(JSON.stringify(data), key).toString();
+}
