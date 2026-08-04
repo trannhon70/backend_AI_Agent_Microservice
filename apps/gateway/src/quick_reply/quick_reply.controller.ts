@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
-import { QuickReplyService } from './quick_reply.service';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
+import type { Response } from 'express';
 import { CreateQuickReplyDto, DeleteQuickReplyDto, GetPagingQuickReplyDto, UpdateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
-
+import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
+import { sendEncryptedResponse } from 'libs/common/utils/encrypted-response.util';
+import { QuickReplyService } from './quick_reply.service';
 @Controller('chat-service/quick-reply')
 export class QuickReplyController {
     constructor(
@@ -22,13 +23,13 @@ export class QuickReplyController {
 
     @Get('get-paging')
     @UseGuards(JwtAuthGuard)
-    async getPaging(@Query() query: GetPagingQuickReplyDto) {
+    async getPaging(@Query() query: GetPagingQuickReplyDto, @Res() res: Response) {
         const result = await this.QuickReplyService.getPaging(query);
-        return {
+        sendEncryptedResponse(res, {
             code: result.code,
             message: result.message,
-            data: JSON.parse(result.data)
-        }
+            data: JSON.parse(result.data),
+        });
     }
 
     @Put('')

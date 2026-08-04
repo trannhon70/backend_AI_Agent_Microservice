@@ -5,6 +5,7 @@ import { ClientInfo } from 'libs/common/decorators/client-info.decorator';
 import { LoginDto, LoginV1Dto } from '../../../../libs/common/dto/user/login-users.dto';
 import type { Request, Response } from 'express';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
+import { encryptResponse } from 'libs/common/utils';
 const REFRESH_TOKEN_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
 @Controller('auth-service/users')
 export class UsersController {
@@ -47,8 +48,12 @@ export class UsersController {
 
     @Get('get-by-id-user')
     @UseGuards(JwtAuthGuard)
-    GetByIdUser(@Req() req: any) {
-        return this.usersService.GetByIdUser(req.user.id);
+    async GetByIdUser(@Req() req: any) {
+        const result = await this.usersService.GetByIdUser(req.user.id);
+        const response = await encryptResponse(result, process.env.SECRET_KEY);
+        return {
+            payload: response
+        };
     }
 
     @Post('logout')

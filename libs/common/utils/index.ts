@@ -65,6 +65,6 @@ export const toUnixTimestamp = (isoString: string): number => {
 };
 
 
-export function encryptResponse(data: unknown, key = 'Qv5R6gO9m2s1cKjY9yKjJmWQv2q7L1F4NwP0YxV8hZs=') {
+export function encryptResponse(data: unknown, key = 'Qv5R6gO9m2s1cKjY9yKjJmWQv2q7L1F4NwP0YxV8hZs=!@#') {
     return CryptoJS.AES.encrypt(JSON.stringify(data), key).toString();
 }
