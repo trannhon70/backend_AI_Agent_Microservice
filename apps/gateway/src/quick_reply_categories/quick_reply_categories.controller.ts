@@ -57,13 +57,13 @@ export class QuickReplyCategoriesController {
 
     @Get('get-all')
     @UseGuards(JwtAuthGuard)
-    async getAll(@Query() query: GetAllQuickReplyCategoriesDto) {
+    async getAll(@Res() res: Response, @Query() query: GetAllQuickReplyCategoriesDto) {
         const result = await this.QuickReplyCategoriesService.getAll(query);
-        return {
+        sendEncryptedResponse(res, {
             code: result.code,
             message: result.message,
-            data: JSON.parse(result.data)
-        }
+            data: JSON.parse(result.data),
+        });
     }
 
 }

@@ -159,6 +159,7 @@ export class QuickReplyCategoriesService {
         }
         const data = await this.QuickReplyCategoryRepo.find({
             where: { fanpage_id: fanpage.id },
+            select: { id: true, name: true, color: true },
             order: { created_at: 'DESC', id: 'DESC' },
         });
         // 3. Lưu vào cache
