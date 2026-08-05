@@ -1,8 +1,10 @@
 // apps/gateway/src/roles/roles.controller.ts
-import { Body, Controller, Delete, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 import { UserPageService } from './user_page.service';
 import { createUserPageDto, DeleteUserPageDto, getPagingUserPageActiveDto, GetPagingUserPageDto } from 'libs/common/dto/user_page/index.dto';
+import { sendEncryptedResponse } from 'libs/common/utils/encrypted-response.util';
+import type { Response } from 'express';
 @Controller('fanpage-service/user-pages')
 export class UserPageController {
     constructor(
@@ -29,13 +31,13 @@ export class UserPageController {
 
     @Get('get-paging-user-page-active')
     @UseGuards(JwtAuthGuard)
-    async getPagingUserPageActive(@Query() query: getPagingUserPageActiveDto) {
+    async getPagingUserPageActive(@Res() res: Response, @Query() query: getPagingUserPageActiveDto) {
         const result = await this.UserPageService.getPagingUserPageActive(query);
-        return {
+        sendEncryptedResponse(res, {
             code: result.code,
             message: result.message,
-            data: JSON.parse(result.data)
-        }
+            data: JSON.parse(result.data),
+        });
     }
 
     @Post('create')
