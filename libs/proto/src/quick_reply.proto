@@ -7,6 +7,7 @@ service QuickReplyService {
   rpc GetPaging(GetPagingQuickReplyRequest) returns (QuickReplyResponse);
   rpc Update(UpdateQuickReplyRequest) returns (QuickReplyResponse);
   rpc Delete(DeleteQuickReplyRequest) returns (QuickReplyResponse);
+  rpc DeleteAll(DeleteAllQuickReplyRequest) returns (QuickReplyResponse);
   
   
 }
@@ -34,6 +35,11 @@ message UpdateQuickReplyRequest {
 message DeleteQuickReplyRequest {
   int64 id = 1;
 }
+
+message DeleteAllQuickReplyRequest {
+  repeated int64 ids = 1;
+}
+
 
 // ===== Response chuẩn theo pattern code/message/data =====
 message QuickReplyResponse {

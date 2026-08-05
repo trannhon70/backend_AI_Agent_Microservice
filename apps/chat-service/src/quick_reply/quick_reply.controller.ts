@@ -47,4 +47,14 @@ export class QuickReplyController {
             data: JSON.stringify(result),
         };
     }
+
+    @GrpcMethod('QuickReplyService', 'DeleteAll')
+    async DeleteAll(dtos: { ids: number[] }) {
+        const result = await this.QuickReplyService.DeleteAll(dtos);
+        return {
+            code: GrpcStatus.OK,
+            message: 'Xóa reply nhanh thành công!',
+            data: JSON.stringify(result),
+        };
+    }
 }

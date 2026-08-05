@@ -54,4 +54,16 @@ export class QuickReplyController {
         }
     }
 
+    @Post("delete-all")
+    @UseGuards(JwtAuthGuard)
+    async deleteAll(@Body() ids: number[]) {
+        const result = await this.QuickReplyService.deleteAll({ ids });
+        return {
+            code: result.code,
+            message: result.message,
+            data: JSON.parse(result.data)
+        }
+    }
+
+
 }

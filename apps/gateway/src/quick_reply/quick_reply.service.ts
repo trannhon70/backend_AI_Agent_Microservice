@@ -8,6 +8,7 @@ interface QuickReplyGrpcService {
     GetPaging(data: GetPagingQuickReplyDto): Observable<any>;
     Update(data: UpdateQuickReplyDto): Observable<any>;
     Delete(data: DeleteQuickReplyDto): Observable<any>;
+    DeleteAll(data: { ids: number[] }): Observable<any>;
 }
 
 @Injectable()
@@ -34,5 +35,9 @@ export class QuickReplyService implements OnModuleInit {
 
     delete(dto: DeleteQuickReplyDto) {
         return firstValueFrom(this.QuickReplyGrpcService.Delete(dto));
+    }
+
+    deleteAll(dto: { ids: number[] }) {
+        return firstValueFrom(this.QuickReplyGrpcService.DeleteAll(dto));
     }
 }

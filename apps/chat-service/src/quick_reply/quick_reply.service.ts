@@ -7,7 +7,7 @@ import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateQuickReplyDto, DeleteQuickReplyDto, GetPagingQuickReplyDto, UpdateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
 import { currentTimestamp } from 'libs/common/utils/date.util';
-import { DataSource, QueryFailedError, Repository } from 'typeorm';
+import { DataSource, In, QueryFailedError, Repository } from 'typeorm';
 
 
 @Injectable()
@@ -132,4 +132,9 @@ export class QuickReplyService {
     async Delete(dto: DeleteQuickReplyDto) {
         return this.quickReplyRepo.delete({ id: dto.id });
     }
+
+    async DeleteAll(dtos: { ids: number[] }) {
+        return this.quickReplyRepo.delete({ id: In(dtos.ids) });
+    }
+
 }
