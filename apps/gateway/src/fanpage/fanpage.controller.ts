@@ -1,9 +1,10 @@
 // apps/gateway/src/roles/roles.controller.ts
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
-import { FanpageService } from './fanpage.service';
+import { Body, Controller, Get, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
+import type { Response } from 'express';
 import { CreateConnectFanPageFacebookDto, SyncingDto, TokenRenewalFacebookDto } from 'libs/common/dto/fanpage/index.dto';
-import { encryptResponse } from 'libs/common/utils';
+import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
+import { sendEncryptedResponse } from 'libs/common/utils/encrypted-response.util';
+import { FanpageService } from './fanpage.service';
 @Controller('fanpage-service/fanpages')
 export class FanpageController {
     constructor(
@@ -33,12 +34,9 @@ export class FanpageController {
 
     @Get('get-page-id/:id')
     @UseGuards(JwtAuthGuard)
-    async getPageId(@Req() req: any, @Param() param: any) {
+    async getPageId(@Res() res: Response, @Param() param: any) {
         const result = await this.fanpageService.getPageId(param);
-        const response = await encryptResponse(result, process.env.SECRET_KEY);
-        return {
-            payload: response
-        };
+       sendEncryptedResponse(res, result);
 
     }
 

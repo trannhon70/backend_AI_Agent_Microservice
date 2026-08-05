@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 import { LabelService } from './label.service';
 import { CreateLabelDto, DeleteLabelDto, GetPagingLabelDto, UpdateLabelDto } from 'libs/common/dto/label/index.dto';
-
+import type { Response } from 'express';
+import { sendEncryptedResponse } from 'libs/common/utils/encrypted-response.util';
 @Controller('chat-service/labels')
 export class LabelController {
     constructor(
@@ -11,13 +12,13 @@ export class LabelController {
 
     @Get('get-paging')
     @UseGuards(JwtAuthGuard)
-    async getPaging(@Query() query: GetPagingLabelDto) {
+    async getPaging(@Res() res: Response, @Query() query: GetPagingLabelDto) {
         const result = await this.LabelService.getPaging(query);
-        return {
+        sendEncryptedResponse(res, {
             code: result.code,
             message: result.message,
-            data: JSON.parse(result.data)
-        }
+            data: JSON.parse(result.data),
+        });
     }
 
     @Post()

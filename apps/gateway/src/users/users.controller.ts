@@ -1,11 +1,11 @@
 // apps/gateway/src/roles/roles.controller.ts
 import { Body, Controller, Get, Post, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { ClientInfo } from 'libs/common/decorators/client-info.decorator';
-import { LoginDto, LoginV1Dto } from '../../../../libs/common/dto/user/login-users.dto';
 import type { Request, Response } from 'express';
+import { ClientInfo } from 'libs/common/decorators/client-info.decorator';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
-import { encryptResponse } from 'libs/common/utils';
+import { sendEncryptedResponse } from 'libs/common/utils/encrypted-response.util';
+import { LoginDto, LoginV1Dto } from '../../../../libs/common/dto/user/login-users.dto';
+import { UsersService } from './users.service';
 const REFRESH_TOKEN_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
 @Controller('auth-service/users')
 export class UsersController {
@@ -48,12 +48,9 @@ export class UsersController {
 
     @Get('get-by-id-user')
     @UseGuards(JwtAuthGuard)
-    async GetByIdUser(@Req() req: any) {
+    async GetByIdUser(@Res() res: Response, @Req() req: any) {
         const result = await this.usersService.GetByIdUser(req.user.id);
-        const response = await encryptResponse(result, process.env.SECRET_KEY);
-        return {
-            payload: response
-        };
+        sendEncryptedResponse(res, result);
     }
 
     @Post('logout')
