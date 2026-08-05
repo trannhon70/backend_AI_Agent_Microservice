@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
-import { Roles } from 'libs/common/decorators/roles.decorator';
-import { RoleEnum } from 'libs/common/enums/role.enum';
-import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
-import { MessagesService } from './messages.service';
+import { Body, Controller, Get, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
+import type { Response } from 'express';
 import { GetPagingMessagesDto } from 'libs/common/dto/messages/index.dto';
+import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
+import { sendEncryptedResponse } from 'libs/common/utils/encrypted-response.util';
+import { MessagesService } from './messages.service';
 
 @Controller('chat-service/messages')
 export class MessagesController {
@@ -13,8 +13,9 @@ export class MessagesController {
 
     @Get('get-paging')
     @UseGuards(JwtAuthGuard)
-    getPaging(@Query() query: GetPagingMessagesDto) {
-        return this.MessagesService.getPaging(query);
+    async getPaging(@Res() res: Response, @Query() query: GetPagingMessagesDto) {
+        const result = await this.MessagesService.getPaging(query);
+        sendEncryptedResponse(res, result);
     }
 
     @Post()

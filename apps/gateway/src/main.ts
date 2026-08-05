@@ -5,6 +5,7 @@ import { HttpExceptionFilter } from 'libs/common/filters/http-exception.filter';
 import cookieParser from 'cookie-parser';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { KafkaConstants } from '@app/kafka/kafka.constants';
+// import compression from 'compression';
 
 async function bootstrap() {
   const app = await NestFactory.create(GatewayModule);
@@ -38,11 +39,11 @@ async function bootstrap() {
       },
     },
   });
+  // app.use(compression({ threshold: '1kb' }));
   app.enableShutdownHooks();
   await app.startAllMicroservices();
   await app.listen(process.env.port ?? 5000);
   Logger.debug(`🚀 Gateway (HTTP) running on ${process.env.PORT}`);
   Logger.debug(`🚀 Gateway (Kafka consumer) running`);
-
 }
 bootstrap();
