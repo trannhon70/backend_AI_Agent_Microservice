@@ -13,14 +13,16 @@ export class UserPageController {
 
     @Get('get-count-provider')
     @UseGuards(JwtAuthGuard)
-    getCountProvider(@Req() req: any) {
-        return this.UserPageService.getCountProvider(req.user.id)
+    async getCountProvider(@Res() res: Response, @Req() req: any) {
+        const result = await this.UserPageService.getCountProvider(req.user.id);
+        sendEncryptedResponse(res, result);
     }
 
     @Get('get-paging')
     @UseGuards(JwtAuthGuard)
-    getpaging(@Req() req: any, @Query() query: GetPagingUserPageDto) {
-        return this.UserPageService.getPaging(req.user.id, query)
+    async getpaging(@Res() res: Response, @Req() req: any, @Query() query: GetPagingUserPageDto) {
+        const result = await this.UserPageService.getPaging(req.user.id, query);
+        sendEncryptedResponse(res, result);
     }
 
     @Delete('delete/:id')
