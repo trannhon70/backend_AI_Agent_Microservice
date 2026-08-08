@@ -16,7 +16,7 @@ export class ConversationController {
         return {
             code: GrpcStatus.OK,
             message: 'get paging success!',
-            data: result,   // ✅ đúng vì proto giờ khai data là 1 message, không phải repeated
+            data: JSON.stringify(result),
         };
     }
 

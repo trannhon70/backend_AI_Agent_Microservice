@@ -7,7 +7,7 @@ import { RedisService } from 'libs/redis/redis.service';
 import { firstValueFrom, Observable } from 'rxjs';
 
 interface ConversationGrpcService {
-    GetPaging(data: any): Observable<any>;
+    GetPaging(data: GetPagingConversationDto): Observable<any>;
     UpdateUnreadCount(data: any): Observable<any>;
 }
 

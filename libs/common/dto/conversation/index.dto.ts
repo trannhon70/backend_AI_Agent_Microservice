@@ -12,6 +12,11 @@ export class GetPagingConversationDto {
     @Min(1)
     limit!: number;
 
+    @Type(() => Number)
+    @IsInt()
+    @Min(1)
+    pageIndex!: number;
+
     @Type(() => String)
     @IsString()
     page_id!: string;
@@ -20,13 +25,6 @@ export class GetPagingConversationDto {
     @IsString()
     search!: string;
 
-    @IsOptional()
-    @IsString()
-    lastId!: number;
-
-    @IsOptional()
-    @IsString()
-    lastUpdatedAt!: number;
 }
 
 export class updateUnreadCountConversationDto {

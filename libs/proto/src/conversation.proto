@@ -13,8 +13,7 @@ message GetPagingRequest {
   int32 limit = 1;
   string search = 2;
   string page_id = 3;
-  int64 lastId = 4;
-  string lastUpdatedAt = 5;
+  int64 pageIndex = 4;
 }
 
 message UpdateUnreadCountRequest {
@@ -53,7 +52,7 @@ message GetPagingReSult {
 message GetPagingResponse {
   int32 code = 1;
   string message = 2;
-  GetPagingReSult data = 3;   // ✅ thêm dấu ;
+  string data = 3;
 }
 
 message FacebookSendRequest {

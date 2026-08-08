@@ -15,7 +15,11 @@ export class ConversationController {
     @UseGuards(JwtAuthGuard)
     async getpaging(@Res() res: Response, @Query() query: GetPagingConversationDto) {
         const result = await this.ConversationService.getPaging(query);
-        sendEncryptedResponse(res, result);
+        sendEncryptedResponse(res, {
+            code: result.code,
+            message: result.message,
+            data: JSON.parse(result.data),
+        });
     }
 
     @Post('update-unread-count')
