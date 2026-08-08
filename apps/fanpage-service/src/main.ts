@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { join } from 'path';
 import { Logger } from '@nestjs/common';
-import { KafkaConstants } from '@app/kafka/kafka.constants';
+// import { KafkaConstants } from '@app/kafka/kafka.constants';
 export const grpcUrlFanPage = '0.0.0.0:50053';
 
 async function bootstrap() {
@@ -45,6 +45,6 @@ async function bootstrap() {
   app.enableShutdownHooks();
   await app.startAllMicroservices(); // start cả gRPC lẫn Kafka cùng lúc
   Logger.debug(`🚀 Fanpage Service (gRPC) running on: ${grpcUrlFanPage}`);
-  Logger.debug(`🚀 Fanpage Service (Kafka) consumer group: Fanpage-service-group`);
+  // Logger.debug(`🚀 Fanpage Service (Kafka) consumer group: Fanpage-service-group`);
 }
 bootstrap();

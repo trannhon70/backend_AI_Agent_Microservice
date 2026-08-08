@@ -7,16 +7,13 @@ import { RedisModule } from 'libs/redis/redis.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConversationModule } from './conversation/conversation.module';
-import { MessagesModule } from './messages/messages.module';
-import { SocketModule } from '@app/socket';
 import { LabelModule } from './label/label.module';
-import { QuickReplyCategoriesModule } from './quick_reply_categories/quickReplyCategories.module';
+import { MessagesModule } from './messages/messages.module';
 import { QuickReplyModule } from './quick_reply/quick_reply.module';
-// import { EventEmitterModule } from '@nestjs/event-emitter';
+import { QuickReplyCategoriesModule } from './quick_reply_categories/quickReplyCategories.module';
 
 @Module({
   imports: [
-    // EventEmitterModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
     JwtCommonModule,
     GrpcClientModule.forFeature({
@@ -25,7 +22,6 @@ import { QuickReplyModule } from './quick_reply/quick_reply.module';
       protoFile: 'conversation.proto',
       urlEnvKey: 'CHAT_GRPC_URL',
     }),
-    SocketModule,
     DatabaseModule,
     RedisModule,
     ConversationModule,

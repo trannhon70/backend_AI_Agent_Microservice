@@ -3,8 +3,7 @@ import { Fanpage, SyncStatus } from '@app/database/entities/fanpage.entity';
 import { LiveMessage } from '@app/database/entities/live_message.entity';
 import { PageToken } from '@app/database/entities/page_token.entity';
 import { UserPage } from '@app/database/entities/user_page.entity';
-import { KafkaService } from '@app/kafka';
-import { SocketService } from '@app/socket';
+// import { KafkaService } from '@app/kafka';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateConnectFanPageFacebookDto, SyncingDto, TokenRenewalFacebookDto } from 'libs/common/dto/fanpage/index.dto';
@@ -13,7 +12,9 @@ import { normalizeAttachments, toUnixTimestamp } from 'libs/common/utils';
 import { currentTimestamp } from 'libs/common/utils/date.util';
 import { DataSource, Repository } from 'typeorm';
 import { FanPagesRepository } from './fanpages.repository';
-import { DomainEvents } from '@app/kafka/kafka.events';
+// import { DomainEvents } from '@app/kafka/kafka.events';
+import { RedisService } from 'libs/redis/redis.service';
+import { SOCKET_EMIT_CHANNEL } from 'libs/common/constants/redis.constants';
 
 @Injectable()
 export class FanPageService {
@@ -40,10 +41,10 @@ export class FanPageService {
         @InjectRepository(LiveMessage)
         private readonly liveMessageRepo: Repository<LiveMessage>,
 
-        private readonly kafkaService: KafkaService,
+        // private readonly kafkaService: KafkaService,
         // private readonly roleRepo: RoleRepository,
         private readonly dataSource: DataSource,
-        private readonly socketService: SocketService,
+        private readonly redisService: RedisService,
     ) { }
 
     async exchangeLongLivedToken(shortLivedToken: string) {
@@ -342,10 +343,8 @@ export class FanPageService {
 
     async updateSyncStatus(page_id: string, status: SyncStatus,) {
         await this.fanpageRepo.update({ page_id: page_id }, { syncStatus: status });
-        this.kafkaService.publish(DomainEvents.FanPage_sync_socket, {
-            page_id,
-            syncStatus: status,
-        });
+        await this.redisService.publish(SOCKET_EMIT_CHANNEL, { page_id, syncStatus: status });
+
     }
 
 }

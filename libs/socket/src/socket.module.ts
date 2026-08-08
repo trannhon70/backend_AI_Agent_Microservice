@@ -1,17 +1,17 @@
-import { forwardRef, Global, Module } from '@nestjs/common';
+// socket.module.ts
+import { Global, Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { RedisModule } from 'libs/redis/redis.module'; // 👈 thêm
 import { SocketService } from './socket.service';
-// import { FanpageSyncListener } from '../fanpages/fanpages.listener';
-// import { ConversationListener } from '../conversations/conversations.listener';
 import { SocketGateway } from './socket.gateway';
 
 @Global()
 @Module({
   imports: [
-    // forwardRef(() => MessageModule),
-  ], // 👈 để ChatGateway dùng MessageService 
-  providers: [SocketService, SocketGateway
-    // , FanpageSyncListener, ConversationListener
+    ConfigModule,
+    RedisModule, // 👈 thêm — cần RedisService để subscribe
   ],
-  exports: [SocketService, SocketGateway], // 👈 export để middleware hoặc service khác dùng
+  providers: [SocketService, SocketGateway],
+  exports: [SocketService, SocketGateway],
 })
 export class SocketModule { }

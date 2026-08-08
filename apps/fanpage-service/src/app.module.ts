@@ -1,6 +1,5 @@
 import { DatabaseModule } from '@app/database/typeorm.module';
-import { KafkaModule } from '@app/kafka';
-import { SocketModule } from '@app/socket';
+// import { KafkaModule } from '@app/kafka';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { JwtCommonModule } from 'libs/common/jwt/jwt-common.module';
@@ -15,14 +14,13 @@ import { UserPageModule } from './user_page/user_page.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     JwtCommonModule,
-    SocketModule,
     GrpcClientModule.forFeature({
       name: 'FANPAGE_PACKAGE',
       package: 'FANPAGE_PACKAGE',
       protoFile: 'user_page.proto',
       urlEnvKey: 'FANPAGE_GRPC_URL',
     }),
-    KafkaModule,
+    // KafkaModule,
     DatabaseModule,
     RedisModule,
     UserPageModule,

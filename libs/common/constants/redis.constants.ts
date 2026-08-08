@@ -1,0 +1,1 @@
+export const SOCKET_EMIT_CHANNEL = 'socket:emit';

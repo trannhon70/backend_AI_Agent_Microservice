@@ -26,24 +26,23 @@ async function bootstrap() {
   });
 
   app.setGlobalPrefix('api');
-  app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.KAFKA,
-    options: {
-      client: {
-        clientId: 'gateway-kafka-client',
-        brokers: (process.env.KAFKA_BROKERS ?? 'localhost:9092').split(','),
-      },
-      consumer: {
-        groupId: KafkaConstants.ConsumerGroups.Gateway,
-        allowAutoTopicCreation: true,
-      },
-    },
-  });
+  // app.connectMicroservice<MicroserviceOptions>({
+  //   transport: Transport.KAFKA,
+  //   options: {
+  //     client: {
+  //       clientId: 'gateway-kafka-client',
+  //       brokers: (process.env.KAFKA_BROKERS ?? 'localhost:9092').split(','),
+  //     },
+  //     consumer: {
+  //       groupId: KafkaConstants.ConsumerGroups.Gateway,
+  //       allowAutoTopicCreation: true,
+  //     },
+  //   },
+  // });
   // app.use(compression({ threshold: '1kb' }));
   app.enableShutdownHooks();
   await app.startAllMicroservices();
   await app.listen(process.env.port ?? 5000);
   Logger.debug(`🚀 Gateway (HTTP) running on ${process.env.PORT}`);
-  Logger.debug(`🚀 Gateway (Kafka consumer) running`);
 }
 bootstrap();
