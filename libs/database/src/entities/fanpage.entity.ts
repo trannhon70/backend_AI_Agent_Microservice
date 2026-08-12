@@ -32,6 +32,11 @@ export class Fanpage {
     @Column({ nullable: true })
     page_avatar!: string;
 
+    // nền tảng của fanpage, mặc định là facebook
+    @Column({ nullable: true, default: 'facebook' })
+    page_platform!: string;
+
+
     @Column({ nullable: true, type: "text" })
     access_token!: string; // Long-lived User Token
 

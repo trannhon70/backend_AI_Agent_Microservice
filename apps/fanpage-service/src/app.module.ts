@@ -25,6 +25,7 @@ import { UserPageModule } from './user_page/user_page.module';
     RedisModule,
     UserPageModule,
     FanPageModule
+
   ],
   controllers: [AppController],
   providers: [AppService],

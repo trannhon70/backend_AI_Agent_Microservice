@@ -42,6 +42,7 @@ message GetByIdData {
    string page_name = 3;
    string page_avatar = 4;
    string syncStatus = 5;
+   string page_platform = 6;
 }
 
 message GetByIdResponse {
