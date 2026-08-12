@@ -45,9 +45,7 @@ export class ConversationService {
         }
 
         qb.skip((pageIndex - 1) * limit).take(limit + 1);
-
         const result = await qb.getMany();
-
         const hasMore = result.length > limit;
 
         return {

@@ -44,5 +44,6 @@ async function bootstrap() {
   await app.startAllMicroservices();
   await app.listen(process.env.port ?? 5000);
   Logger.debug(`🚀 Gateway (HTTP) running on ${process.env.PORT}`);
+
 }
 bootstrap();
