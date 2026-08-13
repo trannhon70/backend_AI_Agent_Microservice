@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { Transform, Type } from 'class-transformer';
-import { IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min } from 'class-validator';
+import { IsArray, IsBoolean, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min } from 'class-validator';
 
 export class GetPagingLabelDto {
     @Type(() => Number)
@@ -63,4 +63,25 @@ export class UpdateLabelDto extends PartialType(CreateLabelDto) {
     @Type(() => Number)
     @IsInt()
     id!: number;
+}
+
+export class CopyLabelDto {
+    @Type(() => Number)
+    @IsInt()
+    @IsNotEmpty()
+    source_id!: number;
+
+    @IsOptional()
+    @Type(() => Number)
+    @IsInt()
+    landing_id?: number;
+
+    @IsArray()
+    @Type(() => Number)
+    @IsInt({ each: true })
+    selectedKeys!: number[];
+
+    @IsString()
+    @IsNotEmpty()
+    mode!: string;
 }

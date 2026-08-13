@@ -60,4 +60,20 @@ export class LabelController {
         };
     }
 
+    @GrpcMethod('LabelService', 'Copy')
+    async Copy(dto: any) {
+        const updateDto = {
+            source_id: dto.source_id,
+            landing_id: dto.landing_id,
+            selectedKeys: JSON.parse(dto.selectedKeys),
+            mode: dto.mode
+        }
+        const result = await this.LabelService.Copy(updateDto);
+        return {
+            code: GrpcStatus.OK,
+            message: 'Sao chép thành công!',
+            data: JSON.stringify(result),
+        };
+    }
+
 }

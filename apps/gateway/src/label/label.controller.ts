@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 import { LabelService } from './label.service';
-import { CreateLabelDto, DeleteLabelDto, GetPagingLabelDto, UpdateLabelDto } from 'libs/common/dto/label/index.dto';
+import { CopyLabelDto, CreateLabelDto, DeleteLabelDto, GetPagingLabelDto, UpdateLabelDto } from 'libs/common/dto/label/index.dto';
 import type { Response } from 'express';
 import { sendEncryptedResponse } from 'libs/common/utils/encrypted-response.util';
 @Controller('chat-service/labels')
@@ -58,6 +58,17 @@ export class LabelController {
     @UseGuards(JwtAuthGuard)
     async restore(@Param() param: DeleteLabelDto) {
         const result = await this.LabelService.restore(param);
+        return {
+            code: result.code,
+            message: result.message,
+            data: JSON.parse(result.data)
+        }
+    }
+
+    @Post('copy')
+    @UseGuards(JwtAuthGuard)
+    async copy(@Body() body: CopyLabelDto) {
+        const result = await this.LabelService.copy(body);
         return {
             code: result.code,
             message: result.message,

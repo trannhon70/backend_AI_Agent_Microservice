@@ -8,6 +8,7 @@ service LabelService {
   rpc Delete(DeleteLabelRequest) returns (LabelResponse);
   rpc Update(UpdateLabelRequest) returns (LabelResponse);
   rpc Restore(DeleteLabelRequest) returns (LabelResponse);
+  rpc Copy(CopyLabelRequest) returns (LabelResponse);
   
 }
 
@@ -38,6 +39,13 @@ message UpdateLabelRequest {
   string page_id = 3;
   bool is_deleted = 4;
    int64 id = 5;
+}
+
+message CopyLabelRequest {
+   int64 source_id = 1;
+  int64 landing_id = 2;
+  string selectedKeys = 3;
+  string mode = 4;
 }
 
 // ===== Response chuẩn theo pattern code/message/data =====

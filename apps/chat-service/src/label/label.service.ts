@@ -6,7 +6,7 @@ import { status as GrpcStatus } from '@grpc/grpc-js';
 import { Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateLabelDto, DeleteLabelDto, GetPagingLabelDto, UpdateLabelDto } from 'libs/common/dto/label/index.dto';
+import { CopyLabelDto, CreateLabelDto, DeleteLabelDto, GetPagingLabelDto, UpdateLabelDto } from 'libs/common/dto/label/index.dto';
 import { currentTimestamp } from 'libs/common/utils/date.util';
 import { DataSource, QueryFailedError, Repository } from 'typeorm';
 import { LabelsRepository } from './labels.repository';
@@ -160,6 +160,37 @@ export class LabelService {
                 code: GrpcStatus.INTERNAL,
                 message: 'Internal server error',
             });
+        }
+    }
+
+    async Copy(dto: CopyLabelDto) {
+        const { source_id, landing_id, selectedKeys, mode } = dto;
+        if (source_id === landing_id) {
+            throw new RpcException({ code: GrpcStatus.NOT_FOUND, message: 'source_id và landing_id không được trùng nhau' });
+        }
+        if (mode === 'replace') {
+            await this.labelRepo.delete({ fanpage_id: landing_id });
+        }
+
+        await this.copySelectedLabel(selectedKeys, landing_id);
+        return true;
+    }
+
+    private async copySelectedLabel(selectedKeys: number[], landing_id?: number) {
+        for (const id of selectedKeys) {
+            const label: any = await this.labelRepo.findOne({ where: { id: id } })
+            const existing = await this.labelRepo.findOneBy({
+                name: label.name,
+                fanpage_id: landing_id
+            })
+            if (!existing) {
+                await this.labelRepo.save({
+                    name: label.name,
+                    color: label.color,
+                    fanpage_id: landing_id,
+                    created_at: currentTimestamp(),
+                })
+            }
         }
     }
 }

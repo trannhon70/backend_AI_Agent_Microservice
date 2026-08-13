@@ -1,6 +1,6 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
-import { CreateLabelDto, DeleteLabelDto, GetPagingLabelDto, UpdateLabelDto } from 'libs/common/dto/label/index.dto';
+import { CopyLabelDto, CreateLabelDto, DeleteLabelDto, GetPagingLabelDto, UpdateLabelDto } from 'libs/common/dto/label/index.dto';
 import { firstValueFrom, Observable } from 'rxjs';
 
 interface LabelGrpcService {
@@ -9,6 +9,7 @@ interface LabelGrpcService {
     Delete(data: DeleteLabelDto): Observable<any>;
     Update(data: UpdateLabelDto): Observable<any>;
     Restore(data: DeleteLabelDto): Observable<any>;
+    Copy(data: any): Observable<any>;
 }
 
 @Injectable()
@@ -41,4 +42,13 @@ export class LabelService implements OnModuleInit {
         return firstValueFrom(this.LabelGrpcService.Restore(dto));
     }
 
+    copy(dto: CopyLabelDto) {
+        const updateDto = {
+            source_id: dto.source_id,
+            landing_id: dto.landing_id,
+            selectedKeys: JSON.stringify(dto.selectedKeys),
+            mode: dto.mode
+        }
+        return firstValueFrom(this.LabelGrpcService.Copy(updateDto));
+    }
 }
