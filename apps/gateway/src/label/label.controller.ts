@@ -76,4 +76,14 @@ export class LabelController {
         }
     }
 
+    @Post("delete-all")
+    @UseGuards(JwtAuthGuard)
+    async deleteAll(@Body() ids: number[]) {
+        const result = await this.LabelService.deleteAll({ ids });
+        return {
+            code: result.code,
+            message: result.message,
+            data: JSON.parse(result.data)
+        }
+    }
 }

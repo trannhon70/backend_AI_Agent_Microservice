@@ -10,6 +10,7 @@ interface LabelGrpcService {
     Update(data: UpdateLabelDto): Observable<any>;
     Restore(data: DeleteLabelDto): Observable<any>;
     Copy(data: any): Observable<any>;
+    DeleteAll(data: { ids: number[] }): Observable<any>;
 }
 
 @Injectable()
@@ -50,5 +51,9 @@ export class LabelService implements OnModuleInit {
             mode: dto.mode
         }
         return firstValueFrom(this.LabelGrpcService.Copy(updateDto));
+    }
+
+    deleteAll(dto: { ids: number[] }) {
+        return firstValueFrom(this.LabelGrpcService.DeleteAll(dto));
     }
 }

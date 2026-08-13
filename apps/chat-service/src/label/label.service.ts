@@ -8,7 +8,7 @@ import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CopyLabelDto, CreateLabelDto, DeleteLabelDto, GetPagingLabelDto, UpdateLabelDto } from 'libs/common/dto/label/index.dto';
 import { currentTimestamp } from 'libs/common/utils/date.util';
-import { DataSource, QueryFailedError, Repository } from 'typeorm';
+import { DataSource, In, QueryFailedError, Repository } from 'typeorm';
 import { LabelsRepository } from './labels.repository';
 
 
@@ -192,5 +192,9 @@ export class LabelService {
                 })
             }
         }
+    }
+
+    async DeleteAll(dtos: { ids: number[] }) {
+        return this.labelRepo.delete({ id: In(dtos.ids) });
     }
 }

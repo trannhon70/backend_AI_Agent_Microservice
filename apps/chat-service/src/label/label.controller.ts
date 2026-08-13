@@ -76,4 +76,14 @@ export class LabelController {
         };
     }
 
+    @GrpcMethod('LabelService', 'DeleteAll')
+    async DeleteAll(dtos: { ids: number[] }) {
+        const result = await this.LabelService.DeleteAll(dtos);
+        return {
+            code: GrpcStatus.OK,
+            message: 'Xóa reply nhanh thành công!',
+            data: JSON.stringify(result),
+        };
+    }
+
 }
