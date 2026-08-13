@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min } from "class-validator";
+import { IsArray, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, Min } from "class-validator";
 
 
 export class CreateQuickReplyDto {
@@ -16,6 +16,28 @@ export class CreateQuickReplyDto {
     @IsNotEmpty()
     page_id!: string;
 }
+
+export class CopyQuickReplyDto {
+    @Type(() => Number)
+    @IsInt()
+    @IsNotEmpty()
+    source_id!: number;
+
+    @IsOptional()
+    @Type(() => Number)
+    @IsInt()
+    landing_id?: number;
+
+    @IsArray()
+    @Type(() => Number)
+    @IsInt({ each: true })
+    selectedKeys!: number[];
+
+    @IsString()
+    @IsNotEmpty()
+    mode!: string;
+}
+
 
 export class GetPagingQuickReplyDto {
     @Type(() => Number)

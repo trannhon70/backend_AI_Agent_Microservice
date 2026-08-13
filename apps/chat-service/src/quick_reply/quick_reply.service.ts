@@ -1,11 +1,12 @@
 
 import { Fanpage } from '@app/database/entities/fanpage.entity';
 import { QuickReply } from '@app/database/entities/quick_reply.entity';
+import { QuickReplyCategory } from '@app/database/entities/quick_reply_category.entity';
 import { status as GrpcStatus } from '@grpc/grpc-js';
 import { Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateQuickReplyDto, DeleteQuickReplyDto, GetPagingQuickReplyDto, UpdateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
+import { CopyQuickReplyDto, CreateQuickReplyDto, DeleteQuickReplyDto, GetPagingQuickReplyDto, UpdateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
 import { currentTimestamp } from 'libs/common/utils/date.util';
 import { DataSource, In, QueryFailedError, Repository } from 'typeorm';
 
@@ -16,6 +17,9 @@ export class QuickReplyService {
     constructor(
         @InjectRepository(QuickReply)
         private quickReplyRepo: Repository<QuickReply>,
+
+        @InjectRepository(QuickReplyCategory)
+        private quickReplyCategoryRepo: Repository<QuickReplyCategory>,
 
         @InjectRepository(Fanpage)
         private fanpageRepo: Repository<Fanpage>,
@@ -137,4 +141,72 @@ export class QuickReplyService {
         return this.quickReplyRepo.delete({ id: In(dtos.ids) });
     }
 
+
+    async Copy(dto: CopyQuickReplyDto) {
+        const { source_id, landing_id, selectedKeys, mode } = dto;
+        if (source_id === landing_id) {
+            throw new RpcException({ code: GrpcStatus.NOT_FOUND, message: 'source_id và landing_id không được trùng nhau' });
+        }
+        if (mode === 'replace') {
+            await this.quickReplyRepo.delete({ fanpage_id: landing_id });
+            await this.quickReplyCategoryRepo.delete({ fanpage_id: landing_id });
+        }
+        await this.copySelectedReplies(selectedKeys, landing_id);
+        return true;
+    }
+
+    private async copySelectedReplies(selectedKeys: number[], landing_id?: number) {
+        const categoryCache = new Map<number, number>(); // originalCategoryId -> newCategoryId
+
+        for (const id of selectedKeys) {
+            const reply: any = await this.quickReplyRepo.findOne({
+                where: { id },
+                relations: { quickReplyCategory: true },
+            });
+
+            if (!reply) continue; // phòng trường hợp id không tồn tại
+
+            const categoryId = reply.quick_reply_category_id;
+
+            if (categoryId) {
+                let newCategoryId: number;
+
+                if (categoryCache.has(categoryId)) {
+                    newCategoryId = categoryCache.get(categoryId)!;
+                } else {
+                    const existingCategory = await this.quickReplyCategoryRepo.findOneBy({
+                        name: reply.quickReplyCategory.name,
+                        fanpage_id: landing_id,
+                    });
+
+                    if (existingCategory) {
+                        newCategoryId = existingCategory.id;
+                    } else {
+                        const replyCategory = await this.quickReplyCategoryRepo.save({
+                            name: reply.quickReplyCategory.name,
+                            color: reply.quickReplyCategory.color,
+                            fanpage_id: landing_id,
+                            created_at: currentTimestamp(),
+                        });
+                        newCategoryId = replyCategory.id;
+                    }
+
+                    categoryCache.set(categoryId, newCategoryId);
+                }
+
+                await this.quickReplyRepo.save({
+                    content: reply.content,
+                    quick_reply_category_id: newCategoryId,
+                    fanpage_id: landing_id,
+                    created_at: currentTimestamp(),
+                });
+            } else {
+                await this.quickReplyRepo.save({
+                    content: reply.content,
+                    fanpage_id: landing_id,
+                    created_at: currentTimestamp(),
+                });
+            }
+        }
+    }
 }

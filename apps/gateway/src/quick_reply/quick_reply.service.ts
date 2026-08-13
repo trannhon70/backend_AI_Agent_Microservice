@@ -1,6 +1,6 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
-import { CreateQuickReplyDto, DeleteQuickReplyDto, GetPagingQuickReplyDto, UpdateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
+import { CopyQuickReplyDto, CreateQuickReplyDto, DeleteQuickReplyDto, GetPagingQuickReplyDto, UpdateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
 import { firstValueFrom, Observable } from 'rxjs';
 
 interface QuickReplyGrpcService {
@@ -9,6 +9,7 @@ interface QuickReplyGrpcService {
     Update(data: UpdateQuickReplyDto): Observable<any>;
     Delete(data: DeleteQuickReplyDto): Observable<any>;
     DeleteAll(data: { ids: number[] }): Observable<any>;
+    Copy(data: any): Observable<any>;
 }
 
 @Injectable()
@@ -39,5 +40,15 @@ export class QuickReplyService implements OnModuleInit {
 
     deleteAll(dto: { ids: number[] }) {
         return firstValueFrom(this.QuickReplyGrpcService.DeleteAll(dto));
+    }
+
+    copy(dto: CopyQuickReplyDto) {
+        const updateDto = {
+            source_id: dto.source_id,
+            landing_id: dto.landing_id,
+            selectedKeys: JSON.stringify(dto.selectedKeys),
+            mode: dto.mode
+        }
+        return firstValueFrom(this.QuickReplyGrpcService.Copy(updateDto));
     }
 }

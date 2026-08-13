@@ -8,6 +8,7 @@ service QuickReplyService {
   rpc Update(UpdateQuickReplyRequest) returns (QuickReplyResponse);
   rpc Delete(DeleteQuickReplyRequest) returns (QuickReplyResponse);
   rpc DeleteAll(DeleteAllQuickReplyRequest) returns (QuickReplyResponse);
+  rpc Copy(CopyQuickReplyRequest) returns (QuickReplyResponse);
   
   
 }
@@ -40,6 +41,12 @@ message DeleteAllQuickReplyRequest {
   repeated int64 ids = 1;
 }
 
+message CopyQuickReplyRequest {
+  int64 source_id = 1;
+  int64 landing_id = 2;
+  string selectedKeys = 3;
+  string mode = 4;
+}
 
 // ===== Response chuẩn theo pattern code/message/data =====
 message QuickReplyResponse {

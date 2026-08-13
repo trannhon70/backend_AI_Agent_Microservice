@@ -2,7 +2,7 @@ import { status as GrpcStatus } from '@grpc/grpc-js';
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { QuickReplyService } from './quick_reply.service';
-import { CreateQuickReplyDto, DeleteQuickReplyDto, GetPagingQuickReplyDto, UpdateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
+import { CopyQuickReplyDto, CreateQuickReplyDto, DeleteQuickReplyDto, GetPagingQuickReplyDto, UpdateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
 
 @Controller()
 export class QuickReplyController {
@@ -54,6 +54,22 @@ export class QuickReplyController {
         return {
             code: GrpcStatus.OK,
             message: 'Xóa reply nhanh thành công!',
+            data: JSON.stringify(result),
+        };
+    }
+
+    @GrpcMethod('QuickReplyService', 'Copy')
+    async Copy(dto: any) {
+        const updateDto = {
+            source_id: dto.source_id,
+            landing_id: dto.landing_id,
+            selectedKeys: JSON.parse(dto.selectedKeys),
+            mode: dto.mode
+        }
+        const result = await this.QuickReplyService.Copy(updateDto);
+        return {
+            code: GrpcStatus.OK,
+            message: 'Sao chép thành công!',
             data: JSON.stringify(result),
         };
     }
