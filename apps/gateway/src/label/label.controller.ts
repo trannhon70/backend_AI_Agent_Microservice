@@ -97,4 +97,5 @@ export class LabelController {
             data: JSON.parse(result.data),
         });
     }
+
 }
