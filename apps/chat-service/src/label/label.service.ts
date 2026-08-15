@@ -11,6 +11,7 @@ import { currentTimestamp } from 'libs/common/utils/date.util';
 import { DataSource, In, QueryFailedError, Repository } from 'typeorm';
 import { LabelsRepository } from './labels.repository';
 import { RedisService } from 'libs/redis/redis.service';
+const ONE_DAY = 24 * 60 * 60;
 
 
 @Injectable()
@@ -35,7 +36,7 @@ export class LabelService {
         private readonly redisService: RedisService,
     ) {
     }
-    private invalidateCache(pageId: string) {
+    private invalidateCache(pageId: string | undefined) {
         return this.redisService.del(`label:${pageId}`)
             .catch(err => this.logger.warn(`Failed to invalidate cache for ${pageId}`, err));
     }
@@ -125,11 +126,14 @@ export class LabelService {
 
     async Update(dto: UpdateLabelDto) {
         try {
-            return await this.labelsRepository.update(dto.id, {
+
+            const result = await this.labelsRepository.update(dto.id, {
                 name: dto.name,
                 color: dto.color,
                 is_deleted: dto.is_deleted
             });
+            await this.invalidateCache(dto.page_id);
+            return result
         } catch (error) {
             this.logger.error(error);
 
@@ -231,7 +235,7 @@ export class LabelService {
             order: { created_at: 'DESC', id: 'DESC' },
         });
         // 3. Lưu vào cache
-        this.redisService.set(cacheKey, data, 60 * 60).catch(err =>
+        this.redisService.set(cacheKey, data, ONE_DAY).catch(err =>
             this.logger.warn(`Redis set failed for ${cacheKey}`, err)
         );
         return data;
