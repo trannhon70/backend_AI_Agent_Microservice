@@ -2,6 +2,16 @@
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { join } from 'path';
+import { Conversation } from './entities/conversation.entity';
+import { Fanpage } from './entities/fanpage.entity';
+import { Label } from './entities/label.entity';
+import { LiveMessage } from './entities/live_message.entity';
+import { PageToken } from './entities/page_token.entity';
+import { UserPage } from './entities/user_page.entity';
+import { User } from './entities/user.entity';
+import { Role } from './entities/role.entity';
+import { QuickReplyCategory } from './entities/quick_reply_category.entity';
+import { QuickReply } from './entities/quick_reply.entity';
 
 const isTs = __filename.endsWith('.ts');
 
@@ -22,7 +32,7 @@ export const getTypeOrmConfig = (
     password: requireEnv(configService, 'DB_PASSWORD'),
     database: requireEnv(configService, 'DB_NAME'),
     entities: [
-        join(__dirname, isTs ? '../entities/**/*.entity.ts' : '../entities/**/*.entity.js'),
+        Conversation, Fanpage, Label, LiveMessage, PageToken, QuickReply, QuickReplyCategory, Role, User, UserPage,
     ],
     migrations: [
         join(__dirname, isTs ? '../migrations/**/*.ts' : '../migrations/**/*.js'),

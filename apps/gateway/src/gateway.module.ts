@@ -113,7 +113,6 @@ import { APP_GUARD } from '@nestjs/core';
     LabelModule,
     QuickReplyCategoriesModule,
     QuickReplyModule
-
   ],
   controllers: [GatewayController],
   providers: [
