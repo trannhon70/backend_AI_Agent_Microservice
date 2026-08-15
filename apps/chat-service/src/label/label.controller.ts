@@ -2,7 +2,7 @@ import { status as GrpcStatus } from '@grpc/grpc-js';
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { LabelService } from './label.service';
-import { CreateLabelDto, DeleteLabelDto, GetPagingLabelDto, UpdateLabelDto } from 'libs/common/dto/label/index.dto';
+import { CreateLabelDto, DeleteLabelDto, GetAllLabelDto, GetPagingLabelDto, UpdateLabelDto } from 'libs/common/dto/label/index.dto';
 
 @Controller()
 export class LabelController {
@@ -82,6 +82,16 @@ export class LabelController {
         return {
             code: GrpcStatus.OK,
             message: 'Xóa reply nhanh thành công!',
+            data: JSON.stringify(result),
+        };
+    }
+
+    @GrpcMethod('LabelService', 'GetAll')
+    async GetAll(dto: GetAllLabelDto) {
+        const result = await this.LabelService.GetAll(dto);
+        return {
+            code: GrpcStatus.OK,
+            message: 'lấy danh sách thành công!',
             data: JSON.stringify(result),
         };
     }

@@ -10,6 +10,7 @@ service LabelService {
   rpc Restore(DeleteLabelRequest) returns (LabelResponse);
   rpc Copy(CopyLabelRequest) returns (LabelResponse);
   rpc DeleteAll(DeleteAllLabelRequest) returns (LabelResponse);
+  rpc GetAll(GetAllLabelRequest) returns (LabelResponse);
   
 }
 
@@ -51,6 +52,10 @@ message CopyLabelRequest {
 
 message DeleteAllLabelRequest {
   repeated int64 ids = 1;
+}
+
+message GetAllLabelRequest {
+  string page_id = 1;
 }
 
 // ===== Response chuẩn theo pattern code/message/data =====

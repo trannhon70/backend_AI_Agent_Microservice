@@ -6,10 +6,11 @@ import { status as GrpcStatus } from '@grpc/grpc-js';
 import { Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CopyLabelDto, CreateLabelDto, DeleteLabelDto, GetPagingLabelDto, UpdateLabelDto } from 'libs/common/dto/label/index.dto';
+import { CopyLabelDto, CreateLabelDto, DeleteLabelDto, GetAllLabelDto, GetPagingLabelDto, UpdateLabelDto } from 'libs/common/dto/label/index.dto';
 import { currentTimestamp } from 'libs/common/utils/date.util';
 import { DataSource, In, QueryFailedError, Repository } from 'typeorm';
 import { LabelsRepository } from './labels.repository';
+import { RedisService } from 'libs/redis/redis.service';
 
 
 @Injectable()
@@ -31,9 +32,13 @@ export class LabelService {
         private fanpageRepo: Repository<Fanpage>,
         // private readonly roleRepo: RoleRepository,
         private readonly dataSource: DataSource,
+        private readonly redisService: RedisService,
     ) {
     }
-
+    private invalidateCache(pageId: string) {
+        return this.redisService.del(`label:${pageId}`)
+            .catch(err => this.logger.warn(`Failed to invalidate cache for ${pageId}`, err));
+    }
 
     async GetPaging(query: GetPagingLabelDto) {
         const { pageIndex = 1, limit = 10, search, page_id, is_deleted } = query;
@@ -82,12 +87,15 @@ export class LabelService {
         }
 
         try {
-            return await this.labelRepo.save({
+
+            const saved = await this.labelRepo.save({
                 name: dto.name,
                 color: dto.color,
                 fanpage_id: fanpage.id,
                 created_at: currentTimestamp(),
             });
+            await this.invalidateCache(dto.page_id);
+            return saved
         } catch (error) {
             this.logger.error(error);
 
@@ -110,7 +118,9 @@ export class LabelService {
     }
 
     async Delete(dto: DeleteLabelDto) {
-        return await this.labelRepo.delete(dto.id)
+        const result = await this.labelRepo.delete(dto.id)
+        await this.invalidateCache(dto.page_id);
+        return result
     }
 
     async Update(dto: UpdateLabelDto) {
@@ -196,5 +206,35 @@ export class LabelService {
 
     async DeleteAll(dtos: { ids: number[] }) {
         return this.labelRepo.delete({ id: In(dtos.ids) });
+    }
+
+    async GetAll(dto: GetAllLabelDto) {
+        const cacheKey = `label:${dto.page_id}`;
+        // 1. Thử lấy từ cache trước
+        try {
+            const cached = await this.redisService.get(cacheKey);
+            if (cached) return cached;
+        } catch (err) {
+            this.logger.warn(`Redis get failed for ${cacheKey}, fallback to DB`, err);
+        }
+        // 2. Cache miss → query DB như cũ
+        const fanpage = await this.fanpageRepo.findOne({ where: { page_id: dto.page_id }, select: { id: true }, });
+        if (!fanpage) {
+            throw new RpcException({
+                code: GrpcStatus.NOT_FOUND,
+                message: 'Fanpage not found',
+            });
+        }
+        const data = await this.labelRepo.find({
+            where: { fanpage_id: fanpage.id, is_deleted: false },
+            select: { id: true, name: true, color: true },
+            order: { created_at: 'DESC', id: 'DESC' },
+        });
+        // 3. Lưu vào cache
+        this.redisService.set(cacheKey, data, 60 * 60).catch(err =>
+            this.logger.warn(`Redis set failed for ${cacheKey}`, err)
+        );
+        return data;
+
     }
 }

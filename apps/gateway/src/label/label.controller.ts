@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 import { LabelService } from './label.service';
-import { CopyLabelDto, CreateLabelDto, DeleteLabelDto, GetPagingLabelDto, UpdateLabelDto } from 'libs/common/dto/label/index.dto';
+import { CopyLabelDto, CreateLabelDto, DeleteLabelDto, GetAllLabelDto, GetPagingLabelDto, UpdateLabelDto } from 'libs/common/dto/label/index.dto';
 import type { Response } from 'express';
 import { sendEncryptedResponse } from 'libs/common/utils/encrypted-response.util';
 @Controller('chat-service/labels')
@@ -32,10 +32,10 @@ export class LabelController {
         }
     }
 
-    @Delete(":id")
+    @Post("delete")
     @UseGuards(JwtAuthGuard)
-    async delete(@Param() param: DeleteLabelDto) {
-        const result = await this.LabelService.delete(param);
+    async delete(@Body() body: DeleteLabelDto) {
+        const result = await this.LabelService.delete(body);
         return {
             code: result.code,
             message: result.message,
@@ -85,5 +85,16 @@ export class LabelController {
             message: result.message,
             data: JSON.parse(result.data)
         }
+    }
+
+    @Get('get-all')
+    @UseGuards(JwtAuthGuard)
+    async getAll(@Res() res: Response, @Query() query: GetAllLabelDto) {
+        const result = await this.LabelService.getAll(query);
+        sendEncryptedResponse(res, {
+            code: result.code,
+            message: result.message,
+            data: JSON.parse(result.data),
+        });
     }
 }

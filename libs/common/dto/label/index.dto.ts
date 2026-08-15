@@ -28,6 +28,12 @@ export class GetPagingLabelDto {
     is_deleted!: boolean;
 }
 
+export class GetAllLabelDto {
+    @IsString()
+    @IsNotEmpty()
+    page_id!: string;
+}
+
 export class CreateLabelDto {
     @IsString()
     @IsNotEmpty()
@@ -40,7 +46,7 @@ export class CreateLabelDto {
 
     @IsString()
     @IsNotEmpty()
-    page_id?: string;
+    page_id!: string;
 
     @IsOptional()
     @Transform(({ value }) => {
@@ -57,6 +63,10 @@ export class DeleteLabelDto {
     @IsInt()
     @IsNotEmpty()
     id!: number;
+
+    @IsString()
+    @IsNotEmpty()
+    page_id!: string;
 }
 
 export class UpdateLabelDto extends PartialType(CreateLabelDto) {
