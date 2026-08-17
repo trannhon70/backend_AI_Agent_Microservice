@@ -3,9 +3,10 @@ syntax = "proto3";
 package CHAT_PACKAGE;
 
 service ConversationService {
-  rpc GetPaging(GetPagingRequest) returns (GetPagingResponse);
-  rpc FacebookSend(FacebookSendRequest) returns (FacebookSendResponse);
-  rpc UpdateUnreadCount(UpdateUnreadCountRequest) returns (UpdateUnreadCountResponse);
+  rpc GetPaging(GetPagingRequest) returns (ConversationResponse);
+  rpc FacebookSend(FacebookSendRequest) returns (ConversationResponse);
+  rpc UpdateUnreadCount(UpdateUnreadCountRequest) returns (ConversationResponse);
+  rpc AddLabelToConversation(addLabelToConversationRequest) returns (ConversationResponse);
 }
 
 // ===== Request =====
@@ -48,24 +49,21 @@ message GetPagingReSult {
   repeated ConversationItem data = 5;
 }
 
-// ===== Response chuẩn theo pattern code/message/data =====
-message GetPagingResponse {
-  int32 code = 1;
-  string message = 2;
-  string data = 3;
-}
 
 message FacebookSendRequest {
   string payload = 1; 
 }
 
-message FacebookSendResponse {
-  int32 code = 1;
-  string message = 2;
-  string data = 3;   // ✅ thêm dấu ;
+message addLabelToConversationRequest {
+  int64 id = 1; 
+  int64 label_id = 2; 
+  string page_id = 3; 
 }
 
-message UpdateUnreadCountResponse {
+// ===== Response chuẩn theo pattern code/message/data =====
+
+
+message ConversationResponse {
   int32 code = 1;
   string message = 2;
   string data = 3;   // ✅ thêm dấu ;

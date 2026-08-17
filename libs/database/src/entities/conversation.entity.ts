@@ -1,4 +1,4 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 import { User } from "./user.entity";
 import { LiveMessage } from "./live_message.entity";
 import { Label } from "./label.entity";
@@ -34,13 +34,20 @@ export class Conversation {
     @Column({ nullable: true })
     full_name!: string;
 
-    //phân loại tin nhắn theo label
-    @Column({ nullable: true })
-    label_id!: number | null;
-
-    @ManyToOne(() => Label, { nullable: true, onDelete: 'SET NULL' })
-    @JoinColumn({ name: 'label_id' })
-    label!: Label | null;
+    //1 conversation sẽ có nhiều label
+    @ManyToMany(() => Label)
+    @JoinTable({
+        name: 'conversation_labels',
+        joinColumn: {
+            name: 'conversation_id',
+            referencedColumnName: 'id',
+        },
+        inverseJoinColumn: {
+            name: 'label_id',
+            referencedColumnName: 'id',
+        },
+    })
+    labels!: Label[];
 
     // last_message tin nhắn mới nhất
     @Column({ nullable: true })

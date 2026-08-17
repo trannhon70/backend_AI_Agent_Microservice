@@ -2,13 +2,14 @@ import { SocketService } from '@app/socket';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import type { ClientGrpc } from '@nestjs/microservices';
-import { GetPagingConversationDto, updateUnreadCountConversationDto } from 'libs/common/dto/conversation/index.dto';
+import { addLabelToConversationDto, GetPagingConversationDto, updateUnreadCountConversationDto } from 'libs/common/dto/conversation/index.dto';
 import { RedisService } from 'libs/redis/redis.service';
 import { firstValueFrom, Observable } from 'rxjs';
 
 interface ConversationGrpcService {
     GetPaging(data: GetPagingConversationDto): Observable<any>;
     UpdateUnreadCount(data: any): Observable<any>;
+    AddLabelToConversation(data: addLabelToConversationDto): Observable<any>;
 }
 
 @Injectable()
@@ -40,5 +41,8 @@ export class ConversationService implements OnModuleInit {
         this.socketService.emitToRoom(`page:${payload.page_id}`, 'send_unread_count', payload);
     }
 
+    async addLabelToConversation(dto: addLabelToConversationDto) {
+        return firstValueFrom(this.ConversationGrpcService.AddLabelToConversation(dto));
+    }
 
 }

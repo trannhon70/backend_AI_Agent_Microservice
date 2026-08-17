@@ -2,7 +2,7 @@
 import { Body, Controller, Get, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 import { ConversationService } from './conversation.service';
-import { GetPagingConversationDto, updateUnreadCountConversationDto } from 'libs/common/dto/conversation/index.dto';
+import { addLabelToConversationDto, GetPagingConversationDto, updateUnreadCountConversationDto } from 'libs/common/dto/conversation/index.dto';
 import type { Response } from 'express';
 import { sendEncryptedResponse } from 'libs/common/utils/encrypted-response.util';
 @Controller('chat-service/conversation')
@@ -27,4 +27,11 @@ export class ConversationController {
     async updateUnreadCount(@Body() payload: updateUnreadCountConversationDto) {
         return this.ConversationService.updateUnreadCount(payload);
     }
+
+    @Post('add-label-to-conversation')
+    @UseGuards(JwtAuthGuard)
+    async addLabelToConversation(@Body() payload: addLabelToConversationDto) {
+        return this.ConversationService.addLabelToConversation(payload);
+    }
+
 }

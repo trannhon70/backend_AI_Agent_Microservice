@@ -1,9 +1,8 @@
 import { Conversation } from '@app/database/entities/conversation.entity';
 import { LiveMessage } from '@app/database/entities/live_message.entity';
-import { SocketService } from '@app/socket';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GetPagingConversationDto } from 'libs/common/dto/conversation/index.dto';
+import { addLabelToConversationDto, GetPagingConversationDto } from 'libs/common/dto/conversation/index.dto';
 import { MessageDirection, MessageType } from 'libs/common/enums/role.enum';
 import { normalizeAttachments } from 'libs/common/utils';
 import { currentTimestamp } from 'libs/common/utils/date.util';
@@ -159,6 +158,21 @@ export class ConversationService {
             },
         );
         return payload
+    }
+
+    async AddLabelToConversation(dto: addLabelToConversationDto) {
+        const { id, label_id, page_id } = dto;
+        await this.conversationRepo
+            .createQueryBuilder()
+            .relation(Conversation, 'labels')
+            .of(id)
+            .add(label_id);
+
+        return {
+            success: true,
+            message: 'Thêm label vào conversation thành công',
+        };
+        // const
     }
 
 }

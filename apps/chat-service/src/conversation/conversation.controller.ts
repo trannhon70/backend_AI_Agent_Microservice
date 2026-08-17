@@ -1,7 +1,7 @@
 import { Controller, HttpStatus } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { ConversationService } from './conversation.service';
-import { GetPagingConversationDto } from 'libs/common/dto/conversation/index.dto';
+import { addLabelToConversationDto, GetPagingConversationDto } from 'libs/common/dto/conversation/index.dto';
 import { status as GrpcStatus } from '@grpc/grpc-js';
 
 @Controller()
@@ -38,6 +38,16 @@ export class ConversationController {
             message: 'Facebook send success!',
             data: JSON.stringify(result)
         };
+    }
+
+    @GrpcMethod('ConversationService', 'AddLabelToConversation')
+    async AddLabelToConversation(dto: addLabelToConversationDto) {
+        return this.ConversationService.AddLabelToConversation(dto);
+        // return {
+        //     code: GrpcStatus.OK,
+        //     message: 'Facebook send success!',
+        //     data: JSON.stringify(result)
+        // };
     }
 
 }

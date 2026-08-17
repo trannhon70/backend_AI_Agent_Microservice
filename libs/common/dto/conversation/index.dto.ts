@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
     IsInt,
+    IsNotEmpty,
     IsOptional,
     IsString,
     Min,
@@ -36,6 +37,24 @@ export class updateUnreadCountConversationDto {
     @IsInt()
     unread_count!: number;
 
+    @Type(() => String)
+    @IsString()
+    page_id!: string;
+
+}
+
+export class addLabelToConversationDto {
+    @IsNotEmpty()
+    @Type(() => Number)
+    @IsInt()
+    id!: number;
+
+    @IsNotEmpty()
+    @Type(() => Number)
+    @IsInt()
+    label_id!: number;
+
+    @IsNotEmpty()
     @Type(() => String)
     @IsString()
     page_id!: string;
