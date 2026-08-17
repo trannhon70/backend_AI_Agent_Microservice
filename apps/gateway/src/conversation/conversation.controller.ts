@@ -5,10 +5,12 @@ import { ConversationService } from './conversation.service';
 import { addLabelToConversationDto, GetPagingConversationDto, updateUnreadCountConversationDto } from 'libs/common/dto/conversation/index.dto';
 import type { Response } from 'express';
 import { sendEncryptedResponse } from 'libs/common/utils/encrypted-response.util';
+import { SocketService } from '@app/socket';
 @Controller('chat-service/conversation')
 export class ConversationController {
     constructor(
-        private readonly ConversationService: ConversationService
+        private readonly ConversationService: ConversationService,
+        private readonly socketService: SocketService,
     ) { }
 
     @Get('get-paging')
@@ -31,6 +33,7 @@ export class ConversationController {
     @Post('add-label-to-conversation')
     @UseGuards(JwtAuthGuard)
     async addLabelToConversation(@Body() payload: addLabelToConversationDto) {
+        await this.socketService.emitToRoom(`page:${payload.page_id}`, 'conversation_labels', { conversationId: payload.id, id: payload.label_id, color: payload.color, name: payload.name })
         return this.ConversationService.addLabelToConversation(payload);
     }
 

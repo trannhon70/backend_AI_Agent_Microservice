@@ -59,4 +59,14 @@ export class addLabelToConversationDto {
     @IsString()
     page_id!: string;
 
+    @IsNotEmpty()
+    @Type(() => String)
+    @IsString()
+    name!: string;
+
+    @IsNotEmpty()
+    @Type(() => String)
+    @IsString()
+    color!: string;
+
 }

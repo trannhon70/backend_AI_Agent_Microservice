@@ -31,6 +31,25 @@ export class ConversationService {
         const qb = this.conversationRepo
             .createQueryBuilder('conversation')
             .leftJoinAndSelect('conversation.lastMessage', 'lastMessage')
+            .leftJoinAndSelect('conversation.labels', 'labels')
+            .select([
+                'conversation.id',
+                'conversation.full_name',
+                'conversation.avatar',
+                'conversation.unread_count',
+                'conversation.last_message_at',
+                'conversation.created_at',
+                'conversation.page_id',
+                'conversation.customer_id',
+                'lastMessage.id',
+                'lastMessage.text',       // đổi tên field đúng theo entity LiveMessage của bạn
+                'lastMessage.created_at',
+                'lastMessage.sent_at',
+                'lastMessage.type',
+                'labels.id',
+                'labels.name',                // đổi tên field đúng theo entity Label của bạn
+                'labels.color',
+            ])
             .where('conversation.page_id = :page_id', { page_id });
 
         if (search?.trim()) {
@@ -161,7 +180,7 @@ export class ConversationService {
     }
 
     async AddLabelToConversation(dto: addLabelToConversationDto) {
-        const { id, label_id, page_id } = dto;
+        const { id, label_id } = dto;
         await this.conversationRepo
             .createQueryBuilder()
             .relation(Conversation, 'labels')
