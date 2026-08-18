@@ -9,7 +9,7 @@ service QuickReplyService {
   rpc Delete(DeleteQuickReplyRequest) returns (QuickReplyResponse);
   rpc DeleteAll(DeleteAllQuickReplyRequest) returns (QuickReplyResponse);
   rpc Copy(CopyQuickReplyRequest) returns (QuickReplyResponse);
-  
+  rpc GetAll(GetAllQuickReplyRequest) returns (QuickReplyResponse);
   
 }
 
@@ -46,6 +46,10 @@ message CopyQuickReplyRequest {
   int64 landing_id = 2;
   string selectedKeys = 3;
   string mode = 4;
+}
+
+message GetAllQuickReplyRequest {
+  string page_id = 1;
 }
 
 // ===== Response chuẩn theo pattern code/message/data =====

@@ -61,6 +61,12 @@ export class GetPagingQuickReplyDto {
     page_id!: string;
 }
 
+export class GetAllQuickReplyDto {
+    @IsString()
+    @IsNotEmpty()
+    page_id!: string;
+}
+
 export class UpdateQuickReplyDto {
     @Type(() => Number)
     @IsInt()

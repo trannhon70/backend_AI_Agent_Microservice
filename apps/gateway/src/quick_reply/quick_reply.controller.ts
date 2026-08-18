@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
 import type { Response } from 'express';
-import { CopyQuickReplyDto, CreateQuickReplyDto, DeleteQuickReplyDto, GetPagingQuickReplyDto, UpdateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
+import { CopyQuickReplyDto, CreateQuickReplyDto, DeleteQuickReplyDto, GetAllQuickReplyDto, GetPagingQuickReplyDto, UpdateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
 import { JwtAuthGuard } from 'libs/common/guards/jwt-auth.guard';
 import { sendEncryptedResponse } from 'libs/common/utils/encrypted-response.util';
 import { QuickReplyService } from './quick_reply.service';
@@ -74,6 +74,17 @@ export class QuickReplyController {
             message: result.message,
             data: JSON.parse(result.data)
         }
+    }
+
+    @Get('get-all')
+    @UseGuards(JwtAuthGuard)
+    async getAll(@Query() query: GetAllQuickReplyDto, @Res() res: Response) {
+        const result = await this.QuickReplyService.getAll(query);
+        sendEncryptedResponse(res, {
+            code: result.code,
+            message: result.message,
+            data: JSON.parse(result.data),
+        });
     }
 
 }

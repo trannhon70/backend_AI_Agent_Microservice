@@ -6,10 +6,11 @@ import { status as GrpcStatus } from '@grpc/grpc-js';
 import { Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CopyQuickReplyDto, CreateQuickReplyDto, DeleteQuickReplyDto, GetPagingQuickReplyDto, UpdateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
+import { CopyQuickReplyDto, CreateQuickReplyDto, DeleteQuickReplyDto, GetAllQuickReplyDto, GetPagingQuickReplyDto, UpdateQuickReplyDto } from 'libs/common/dto/quickReply/index.dto';
 import { currentTimestamp } from 'libs/common/utils/date.util';
+import { RedisService } from 'libs/redis/redis.service';
 import { DataSource, In, QueryFailedError, Repository } from 'typeorm';
-
+const ONE_DAY = 24 * 60 * 60;
 
 @Injectable()
 export class QuickReplyService {
@@ -26,7 +27,13 @@ export class QuickReplyService {
 
         // private readonly roleRepo: RoleRepository,
         private readonly dataSource: DataSource,
+        private readonly redisService: RedisService,
     ) { }
+
+    private invalidateCache(pageId: string | undefined) {
+        return this.redisService.del(`quickReply:${pageId}`)
+            .catch(err => this.logger.warn(`Failed to invalidate cache for ${pageId}`, err));
+    }
 
     async Create(dto: CreateQuickReplyDto) {
         const fanpage = await this.fanpageRepo.findOneBy({ page_id: dto.page_id });
@@ -208,5 +215,42 @@ export class QuickReplyService {
                 });
             }
         }
+    }
+
+    async GetAll(dto: GetAllQuickReplyDto) {
+        const cacheKey = `quickReply:${dto.page_id}`;
+        // 1. Thử lấy từ cache trước
+        try {
+            const cached = await this.redisService.get(cacheKey);
+            if (cached) return cached;
+        } catch (err) {
+            this.logger.warn(`Redis get failed for ${cacheKey}, fallback to DB`, err);
+        }
+        // 2. Cache miss → query DB như cũ
+        const fanpage = await this.fanpageRepo.findOne({ where: { page_id: dto.page_id }, select: { id: true }, });
+        if (!fanpage) {
+            throw new RpcException({
+                code: GrpcStatus.NOT_FOUND,
+                message: 'Fanpage not found',
+            });
+        }
+        const data = await this.quickReplyRepo.find({
+            where: { fanpage_id: fanpage.id },
+            relations: { quickReplyCategory: true },
+            select: {
+                id: true,
+                content: true,
+                created_at: true,
+                quick_reply_category_id: true,
+                quickReplyCategory: { id: true, name: true, color: true },
+            },
+            order: { created_at: 'DESC', id: 'DESC' },
+            take: 300,
+        });
+        // 3. Lưu vào cache
+        this.redisService.set(cacheKey, data, ONE_DAY).catch(err =>
+            this.logger.warn(`Redis set failed for ${cacheKey}`, err)
+        );
+        return data;
     }
 }
