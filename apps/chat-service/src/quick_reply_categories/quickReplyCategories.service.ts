@@ -8,7 +8,7 @@ import { CreateQuickReplyCategoriesDto, GetPagingQuickReplyCategoriesDto, Update
 import { currentTimestamp } from 'libs/common/utils/date.util';
 import { RedisService } from 'libs/redis/redis.service';
 import { QueryFailedError, Repository } from 'typeorm';
-
+const ONE_DAY = 24 * 60 * 60;
 
 @Injectable()
 export class QuickReplyCategoriesService {
@@ -163,7 +163,7 @@ export class QuickReplyCategoriesService {
             order: { created_at: 'DESC', id: 'DESC' },
         });
         // 3. Lưu vào cache
-        this.redisService.set(cacheKey, data, 60 * 60).catch(err =>
+        this.redisService.set(cacheKey, data, ONE_DAY).catch(err =>
             this.logger.warn(`Redis set failed for ${cacheKey}`, err)
         );
         return data;
