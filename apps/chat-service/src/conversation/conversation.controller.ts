@@ -42,12 +42,12 @@ export class ConversationController {
 
     @GrpcMethod('ConversationService', 'AddLabelToConversation')
     async AddLabelToConversation(dto: addLabelToConversationDto) {
-        return this.ConversationService.AddLabelToConversation(dto);
-        // return {
-        //     code: GrpcStatus.OK,
-        //     message: 'Facebook send success!',
-        //     data: JSON.stringify(result)
-        // };
+        const result = await this.ConversationService.AddLabelToConversation(dto);
+        return {
+            code: GrpcStatus.OK,
+            message: 'Facebook send success!',
+            data: JSON.stringify(result)
+        };
     }
 
 }

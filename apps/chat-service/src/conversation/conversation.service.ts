@@ -1,13 +1,14 @@
 import { Conversation } from '@app/database/entities/conversation.entity';
 import { LiveMessage } from '@app/database/entities/live_message.entity';
+import { status as GrpcStatus } from '@grpc/grpc-js';
 import { Injectable } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { addLabelToConversationDto, GetPagingConversationDto } from 'libs/common/dto/conversation/index.dto';
 import { MessageDirection, MessageType } from 'libs/common/enums/role.enum';
 import { normalizeAttachments } from 'libs/common/utils';
 import { currentTimestamp } from 'libs/common/utils/date.util';
-import { DataSource, Repository } from 'typeorm';
-// import { RoleRepository } from './role.repository';
+import { DataSource, QueryFailedError, Repository } from 'typeorm';
 
 @Injectable()
 export class ConversationService {
@@ -42,12 +43,12 @@ export class ConversationService {
                 'conversation.page_id',
                 'conversation.customer_id',
                 'lastMessage.id',
-                'lastMessage.text',       // đổi tên field đúng theo entity LiveMessage của bạn
+                'lastMessage.text',
                 'lastMessage.created_at',
                 'lastMessage.sent_at',
                 'lastMessage.type',
                 'labels.id',
-                'labels.name',                // đổi tên field đúng theo entity Label của bạn
+                'labels.name',
                 'labels.color',
             ])
             .where('conversation.page_id = :page_id', { page_id });
@@ -181,17 +182,35 @@ export class ConversationService {
 
     async AddLabelToConversation(dto: addLabelToConversationDto) {
         const { id, label_id } = dto;
-        await this.conversationRepo
-            .createQueryBuilder()
-            .relation(Conversation, 'labels')
-            .of(id)
-            .add(label_id);
 
-        return {
-            success: true,
-            message: 'Thêm label vào conversation thành công',
-        };
-        // const
+        try {
+            await this.conversationRepo
+                .createQueryBuilder()
+                .relation(Conversation, 'labels')
+                .of(id)
+                .add(label_id);
+
+            return {
+                success: true,
+                message: 'Thêm label vào conversation thành công',
+            };
+        } catch (error) {
+            if (
+                error instanceof QueryFailedError &&
+                error.driverError?.code === '23505'
+            ) {
+
+                throw new RpcException({
+                    code: GrpcStatus.ALREADY_EXISTS,
+                    message: 'Thẻ hội thoại này đã tồn tại!',
+                });
+            }
+
+            throw new RpcException({
+                code: GrpcStatus.INTERNAL,
+                message: 'Internal server error',
+            });
+        }
     }
 
 }
