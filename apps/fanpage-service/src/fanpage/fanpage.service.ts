@@ -4,7 +4,7 @@ import { LiveMessage } from '@app/database/entities/live_message.entity';
 import { PageToken } from '@app/database/entities/page_token.entity';
 import { UserPage } from '@app/database/entities/user_page.entity';
 // import { KafkaService } from '@app/kafka';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateConnectFanPageFacebookDto, SyncingDto, TokenRenewalFacebookDto } from 'libs/common/dto/fanpage/index.dto';
 import { MessageDirection, MessageType, ProviderEnum, RoleEnumUserPage } from 'libs/common/enums/role.enum';
@@ -15,10 +15,11 @@ import { FanPagesRepository } from './fanpages.repository';
 // import { DomainEvents } from '@app/kafka/kafka.events';
 import { RedisService } from 'libs/redis/redis.service';
 import { SOCKET_EMIT_CHANNEL } from 'libs/common/constants/redis.constants';
+const ONE_DAY = 24 * 60 * 60;
 
 @Injectable()
 export class FanPageService {
-
+    private readonly logger = new Logger(FanPageService.name);
     constructor(
         // @Inject('KAFKA_SERVICE') private readonly kafkaClient: ClientKafka,
         @InjectRepository(UserPage)
@@ -206,8 +207,29 @@ export class FanPageService {
     }
 
     async GetPageId(param: any) {
-        const result = await this.fanpageRepo.findOne({ where: { page_id: param.id } })
-        return result
+        const cacheKey = `fanpage_id:${param.id}`;
+
+        // 1. Thử lấy từ cache trước
+        try {
+            const cached = await this.redisService.get(cacheKey);
+            if (cached) return cached;
+        } catch (err) {
+            this.logger.warn(`Redis get failed for ${cacheKey}, fallback to DB`, err);
+        }
+
+        // 2. Không có cache → query DB
+        const result = await this.fanpageRepo.findOne({ where: { page_id: param.id } });
+
+        // 3. Lưu lại cache cho lần sau (kể cả khi null? xem lưu ý bên dưới)
+        if (result) {
+            try {
+                await this.redisService.set(cacheKey, result, ONE_DAY); // TTL 1 ngay — chỉnh theo nhu cầu
+            } catch (err) {
+                this.logger.warn(`Redis set failed for ${cacheKey}`, err);
+            }
+        }
+
+        return result;
     }
 
     async Syncing(payload: SyncingDto) {
