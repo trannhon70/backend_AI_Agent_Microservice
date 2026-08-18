@@ -50,6 +50,7 @@ export class QuickReplyService {
             fanpage_id: fanpage.id,
             created_at: currentTimestamp(),
         });
+        await this.invalidateCache(dto.page_id)
         // query lại kèm relation
         return this.quickReplyRepo.findOne({
             where: { id: saved.id },
@@ -118,7 +119,7 @@ export class QuickReplyService {
                         ? dto.quick_reply_category_id
                         : null,
             });
-
+            await this.invalidateCache(dto.page_id)
             // query lại kèm relation
             return this.quickReplyRepo.findOne({
                 where: { id: dto.id },
@@ -141,6 +142,7 @@ export class QuickReplyService {
     }
 
     async Delete(dto: DeleteQuickReplyDto) {
+        await this.invalidateCache(dto.page_id)
         return this.quickReplyRepo.delete({ id: dto.id });
     }
 

@@ -43,10 +43,10 @@ export class QuickReplyController {
         }
     }
 
-    @Delete(":id")
+    @Post("delete")
     @UseGuards(JwtAuthGuard)
-    async delete(@Param() param: DeleteQuickReplyDto) {
-        const result = await this.QuickReplyService.delete(param);
+    async delete(@Body() body: DeleteQuickReplyDto) {
+        const result = await this.QuickReplyService.delete(body);
         return {
             code: result.code,
             message: result.message,

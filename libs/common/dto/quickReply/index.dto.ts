@@ -82,6 +82,10 @@ export class UpdateQuickReplyDto {
     @IsInt()
     quick_reply_category_id?: number;
 
+    @IsString()
+    @IsNotEmpty()
+    page_id!: string;
+
 }
 
 export class DeleteQuickReplyDto {
@@ -89,4 +93,8 @@ export class DeleteQuickReplyDto {
     @IsInt()
     @IsNotEmpty()
     id?: number;
+
+    @IsString()
+    @IsNotEmpty()
+    page_id!: string;
 }

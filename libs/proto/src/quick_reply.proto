@@ -31,10 +31,12 @@ message UpdateQuickReplyRequest {
   string content = 1;
   int64 quick_reply_category_id = 2;
   int64 id = 3;
+  string page_id = 4;
 }
 
 message DeleteQuickReplyRequest {
   int64 id = 1;
+   string page_id = 2;
 }
 
 message DeleteAllQuickReplyRequest {
