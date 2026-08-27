@@ -20,6 +20,7 @@ import { QuickReplyCategoriesModule } from './quick_reply_categories/quick_reply
 import { QuickReplyModule } from './quick_reply/quick_reply.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { TelegramModule } from './telegram/telegram.module';
 
 @Global()
 @Module({
@@ -112,7 +113,8 @@ import { APP_GUARD } from '@nestjs/core';
     WebhooksModule,
     LabelModule,
     QuickReplyCategoriesModule,
-    QuickReplyModule
+    QuickReplyModule,
+    TelegramModule
   ],
   controllers: [GatewayController],
   providers: [
