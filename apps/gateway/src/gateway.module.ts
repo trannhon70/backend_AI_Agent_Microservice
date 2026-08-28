@@ -67,6 +67,7 @@ import { TelegramModule } from './telegram/telegram.module';
             protoPath: [
               join(process.cwd(), 'libs/proto/src/user_page.proto'),
               join(process.cwd(), 'libs/proto/src/fanpage.proto'),
+              join(process.cwd(), 'libs/proto/src/telegram.proto'),
             ],
             url: configService.get<string>('FANPAGE_GRPC_URL', 'localhost:50053'),
             loader: {

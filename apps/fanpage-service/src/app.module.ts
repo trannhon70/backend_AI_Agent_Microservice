@@ -9,6 +9,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { FanPageModule } from './fanpage/fanpage.module';
 import { UserPageModule } from './user_page/user_page.module';
+import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
   imports: [
@@ -24,8 +25,8 @@ import { UserPageModule } from './user_page/user_page.module';
     DatabaseModule,
     RedisModule,
     UserPageModule,
-    FanPageModule
-
+    FanPageModule,
+    TelegramModule
   ],
   controllers: [AppController],
   providers: [AppService],

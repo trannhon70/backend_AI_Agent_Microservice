@@ -16,6 +16,7 @@ async function bootstrap() {
       protoPath: [
         join(process.cwd(), 'libs/proto/src/user_page.proto'),
         join(process.cwd(), 'libs/proto/src/fanpage.proto'),
+        join(process.cwd(), 'libs/proto/src/telegram.proto'),
       ],
       url: grpcUrlFanPage,
       loader: {

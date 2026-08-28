@@ -1,8 +1,10 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Api, TelegramClient } from 'telegram';
 import { StringSession } from 'telegram/sessions';
-
+import { firstValueFrom, Observable } from 'rxjs';
+import type { ClientGrpc } from '@nestjs/microservices';
 type QrStatus = | 'waiting' | 'success' | 'expired' | 'need_password' | 'error';
+
 
 interface TelegramUserInfo {
     id: string;
@@ -23,8 +25,14 @@ interface QrSession {
     error?: string;
 }
 
+interface TelegramGrpcService {
+    ConnectPageTelegram(data: any): Observable<any>;
+
+}
+
 @Injectable()
 export class TelegramService implements OnModuleInit {
+    private TelegramGrpcService!: TelegramGrpcService;
     private readonly logger = new Logger(TelegramService.name);
     private readonly apiId = Number(process.env.TELEGRAM_API_ID,);
     private readonly apiHash = String(process.env.TELEGRAM_API_HASH,);
@@ -36,14 +44,16 @@ export class TelegramService implements OnModuleInit {
      * - TelegramClient không nên serialize vào Redis
      */
     private readonly sessions = new Map<string, QrSession>();
+    constructor(
+        @Inject('FANPAGE_PACKAGE') private readonly client: ClientGrpc,
+    ) { }
     onModuleInit() {
-        this.logger.log(
-            `TelegramService initialized. API ID: ${this.apiId}`,
-        );
+        this.TelegramGrpcService = this.client.getService<TelegramGrpcService>('TelegramService');
     }
 
     /** Tạo QR login*/
-    async createQrLogin(sessionId: string) {
+    async createQrLogin(dto: any) {
+        const { sessionId, user_id } = dto
         if (!this.apiId || !this.apiHash) {
             throw new Error('TELEGRAM_API_ID / TELEGRAM_API_HASH chưa được cấu hình',);
         }
@@ -77,7 +87,7 @@ export class TelegramService implements OnModuleInit {
         this.logger.log(`[QR] Expires: ${new Date(expiresAt,).toISOString()}`);
 
         /** Bắt đầu theo dõi UpdateLoginToken. Không ExportLoginToken liên tục. */
-        this.watchLoginResult(sessionId, expiresAt,).catch((error) => {
+        this.watchLoginResult(sessionId, expiresAt, user_id).catch((error) => {
             this.logger.error(`[QR] Watch failed [${sessionId}]`, error?.stack || error?.message,);
         });
 
@@ -85,7 +95,7 @@ export class TelegramService implements OnModuleInit {
     }
 
     /*** STEP 2 * Theo dõi UpdateLoginToken*/
-    private async watchLoginResult(sessionId: string, expiresAt: number,) {
+    private async watchLoginResult(sessionId: string, expiresAt: number, user_id: number) {
         const entry = this.sessions.get(sessionId);
         if (!entry) {
             this.logger.warn(`[QR] Session not found: ${sessionId}`,);
@@ -128,14 +138,14 @@ export class TelegramService implements OnModuleInit {
 
                     /*** CASE 1 * LoginTokenSuccess * =================================================*/
                     if (result instanceof Api.auth.LoginTokenSuccess) {
-                        await this.handleLoginSuccess(sessionId, client,);
+                        await this.handleLoginSuccess(sessionId, client, user_id);
                         resolve();
                         return;
                     }
 
                     /*** CASE 2* LoginTokenMigrateTo*/
                     if (result instanceof Api.auth.LoginTokenMigrateTo) {
-                        await this.handleMigration(sessionId, client, result,);
+                        await this.handleMigration(sessionId, client, result, user_id);
                         resolve();
                         return;
                     }
@@ -163,15 +173,16 @@ export class TelegramService implements OnModuleInit {
     }
 
     /*** HANDLE LOGIN SUCCESS */
-    private async handleLoginSuccess(sessionId: string, client: TelegramClient,) {
+    private async handleLoginSuccess(sessionId: string, client: TelegramClient, user_id: number) {
         this.logger.log(`[QR] Login success [${sessionId}]`);
         /** Lấy user Telegram */
         const me = await client.getMe();
+
         /** Kiểm tra user. */
         if (!me) { throw new Error('Telegram login success nhưng không lấy được user',); }
 
         /**Convert Telegram User -> object sạch để lưu DB / trả API.*/
-        const telegramUser: TelegramUserInfo = {
+        const telegramUser: any = {
             id: me.id.toString(),
             accessHash: me.accessHash?.toString(),
             username: me.username,
@@ -180,10 +191,13 @@ export class TelegramService implements OnModuleInit {
             phone: me.phone,
             premium: me.premium,
             bot: me.bot,
+            user_id: user_id,
+            sessionId
         };
 
         /**Log user. Không log sessionString. */
         this.logger.log(`[TELEGRAM USER] ${JSON.stringify(telegramUser,)}`);
+        await firstValueFrom(this.TelegramGrpcService.ConnectPageTelegram(telegramUser));
 
         /** Lưu session Đây là credential rất nhạy cảm.  * Không trả sessionString về frontend. */
         const sessionString = (client.session as StringSession).save();
@@ -194,7 +208,7 @@ export class TelegramService implements OnModuleInit {
     }
 
     /** HANDLE MIGRATION*/
-    private async handleMigration(sessionId: string, client: TelegramClient, result: Api.auth.LoginTokenMigrateTo,) {
+    private async handleMigration(sessionId: string, client: TelegramClient, result: Api.auth.LoginTokenMigrateTo, user_id: number) {
         this.logger.log(`[QR] Telegram requires migration [${sessionId}]`,);
         this.logger.log(`[QR] Target DC: ${result.dcId}`);
 
@@ -213,7 +227,7 @@ export class TelegramService implements OnModuleInit {
 
         /**Login thành công sau migration*/
         if (migrated instanceof Api.auth.LoginTokenSuccess) {
-            await this.handleLoginSuccess(sessionId, client,);
+            await this.handleLoginSuccess(sessionId, client, user_id);
             return;
         }
 
@@ -241,6 +255,7 @@ export class TelegramService implements OnModuleInit {
     /** STEP 3 * Frontend polling status*/
     getQrStatus(sessionId: string) {
         const entry = this.sessions.get(sessionId);
+        console.log(entry, 'entry');
 
         /** Không tồn tại.  */
         if (!entry) {

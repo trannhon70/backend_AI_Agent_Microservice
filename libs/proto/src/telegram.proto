@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package FANPAGE_PACKAGE;
+
+service TelegramService {
+    rpc ConnectPageTelegram(ConnectTelegramRequest) returns (TelegramResponse);
+}
+
+message ConnectTelegramRequest {
+    string id = 1;
+    string accessHash = 2;
+    string username = 3;
+    string firstName = 4;
+    string lastName = 5;
+    string phone = 6;
+    string premium = 7;
+    bool bot = 8;
+    int32 user_id = 9;
+    string sessionId = 10;
+}
+
+
+
+
+message TelegramResponse {
+    int32 code = 1;
+    string message = 2;
+    string data = 3;
+}

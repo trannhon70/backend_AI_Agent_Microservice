@@ -14,7 +14,11 @@ export class TelegramController {
     @Post('qr')
     @UseGuards(JwtAuthGuard)
     createQrLogin(@Req() req: any, @Body('sessionId') sessionId: string,) {
-        return this.TelegramService.createQrLogin(sessionId);
+        const dto = {
+            user_id: req.user.id,
+            sessionId: sessionId
+        }
+        return this.TelegramService.createQrLogin(dto);
     }
 
     @Get('qr-status/:sessionId')
