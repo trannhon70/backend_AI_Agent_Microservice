@@ -246,5 +246,8 @@ SELECT indexname, indexdef FROM pg_indexes WHERE tablename = 'conversations';
 ## store lưu cnd file 
 https://console.cloudinary.com/app/c-45c6bd6465bbb5f74168580c9d2082/home/delivery-reports
 
-## AI free
+## AI free search
 https://github.com/tashfeenahmed/freellmapi
+
+## prompt AI 
+https://github.com/linshenkx/prompt-optimizer
