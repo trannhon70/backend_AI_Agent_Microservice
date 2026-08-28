@@ -5,10 +5,10 @@ import { PageToken } from '@app/database/entities/page_token.entity';
 import { UserPage } from '@app/database/entities/user_page.entity';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
-import { RedisService } from 'libs/redis/redis.service';
-import { FanPagesRepository } from '../fanpage/fanpages.repository';
+import { ProviderEnum, RoleEnumUserPage } from 'libs/common/enums/role.enum';
 import { currentTimestamp } from 'libs/common/utils/date.util';
+import { RedisService } from 'libs/redis/redis.service';
+import { Repository } from 'typeorm';
 const ONE_DAY = 24 * 60 * 60;
 
 @Injectable()
@@ -41,15 +41,50 @@ export class TelegramService {
 
     async ConnectPageTelegram(dto: any) {
         const { id, accessHash, username, firstName, phone, premium, bot, user_id, sessionId } = dto;
-        const data_fanpage = {
-            user_id: user_id,
-            page_id: id,
-            page_name: firstName,
-            access_token: sessionId,
-            page_platform: 'telegram',
-            created_at: currentTimestamp(),
+        let page: any = await this.fanpageRepo.findOne({
+            where: { page_id: id },
+        });
+
+        if (!page) {
+            page = await this.fanpageRepo.save({          // ← đổi create → save
+                user_id: user_id,
+                page_id: id,
+                page_name: firstName,
+                access_token: sessionId,
+                page_platform: 'telegram',
+                created_at: currentTimestamp(),
+            });
+            // page.id giờ đã có giá trị thật từ DB
+
+            await this.pageTokenRepo.save({
+                fanpage_id: page.id,
+                access_token: sessionId,
+                created_at: currentTimestamp(),
+            });
         }
-        return this.fanpageRepo.save(data_fanpage)
+
+        // Update lại thông tin page
+        await this.fanpageRepo.update(
+            { id: page.id },
+            {
+                page_name: firstName,
+                access_token: sessionId,
+            },
+        );
+
+        await this.pageTokenRepo.update({ fanpage_id: page.id }, {
+            access_token: sessionId,
+        });
+
+        await this.userPageRepo.upsert({
+            user_id: user_id,
+            fanpage_id: page.id,
+            provider: ProviderEnum.TELEGRAM,
+            role: RoleEnumUserPage.ADMIN_MANAGE,
+            created_at: currentTimestamp(),
+        }, { conflictPaths: ["user_id", "fanpage_id"] });
+
+        return;
     }
 
 }

@@ -19,6 +19,7 @@ export enum ProviderEnum {
     FACEBOOK = 'facebook',
     GITHUB = 'github',
     APPLE = 'apple',
+    TELEGRAM = 'telegram',
 }
 
 export enum MessageDirection {
