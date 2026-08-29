@@ -3,6 +3,7 @@ import { Api, TelegramClient } from 'telegram';
 import { StringSession } from 'telegram/sessions';
 import { firstValueFrom, Observable } from 'rxjs';
 import type { ClientGrpc } from '@nestjs/microservices';
+import { SyncingTelegramDto } from 'libs/common/dto/telegram/index.dto';
 type QrStatus = | 'waiting' | 'success' | 'expired' | 'need_password' | 'error';
 
 
@@ -27,6 +28,7 @@ interface QrSession {
 
 interface TelegramGrpcService {
     ConnectPageTelegram(data: any): Observable<any>;
+    Syncing(data: SyncingTelegramDto): Observable<any>;
 
 }
 
@@ -181,6 +183,11 @@ export class TelegramService implements OnModuleInit {
         /** Kiểm tra user. */
         if (!me) { throw new Error('Telegram login success nhưng không lấy được user',); }
 
+
+
+        /** Lưu session Đây là credential rất nhạy cảm.  * Không trả sessionString về frontend. */
+        const sessionString = (client.session as StringSession).save();
+
         /**Convert Telegram User -> object sạch để lưu DB / trả API.*/
         const telegramUser: any = {
             id: me.id.toString(),
@@ -192,15 +199,13 @@ export class TelegramService implements OnModuleInit {
             premium: me.premium,
             bot: me.bot,
             user_id: user_id,
-            sessionId
+            sessionId: sessionString
         };
-
         /**Log user. Không log sessionString. */
         this.logger.log(`[TELEGRAM USER] ${JSON.stringify(telegramUser,)}`);
         await firstValueFrom(this.TelegramGrpcService.ConnectPageTelegram(telegramUser));
 
-        /** Lưu session Đây là credential rất nhạy cảm.  * Không trả sessionString về frontend. */
-        const sessionString = (client.session as StringSession).save();
+
         /*** Lưu trạng thái vào memory. */
         this.sessions.set(sessionId, { client, status: 'success', sessionString, telegramUser, });
 
@@ -311,5 +316,9 @@ export class TelegramService implements OnModuleInit {
         }
         this.sessions.delete(sessionId,);
         this.logger.log(`[QR] Session deleted [${sessionId}]`);
+    }
+
+    async syncing(dto: SyncingTelegramDto) {
+        return firstValueFrom(this.TelegramGrpcService.Syncing(dto));
     }
 }

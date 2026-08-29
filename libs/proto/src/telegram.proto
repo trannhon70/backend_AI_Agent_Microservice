@@ -4,8 +4,10 @@ package FANPAGE_PACKAGE;
 
 service TelegramService {
     rpc ConnectPageTelegram(ConnectTelegramRequest) returns (TelegramResponse);
+    rpc Syncing(SyncingTelegramRequest) returns (TelegramResponse);
 }
 
+// ===== Request =====
 message ConnectTelegramRequest {
     string id = 1;
     string accessHash = 2;
@@ -19,9 +21,11 @@ message ConnectTelegramRequest {
     string sessionId = 10;
 }
 
+message SyncingTelegramRequest {
+    string page_id = 1;
+}
 
-
-
+// ===== Response chuẩn theo pattern code/message/data =====
 message TelegramResponse {
     int32 code = 1;
     string message = 2;
