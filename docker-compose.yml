@@ -76,6 +76,16 @@ services:
     networks:
       - app-network
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
 
   # ================= MICROSERVICES =================
   auth-service:
@@ -92,13 +102,14 @@ services:
       DB_PASSWORD: "1q2w3e4r"
       DB_NAME: "AI_Agent"
       KAFKA_BROKER: "kafka:29092"
-      REDIS_HOST: "host.docker.internal"
+      REDIS_HOST: "redis"
       REDIS_PORT: "6379"
       JWT_SECRET: "jhdksfjhdks854769"
       JWT_REFRESH_SECRET: "qwertyuiopasdfghjklzxcvbnm1234567890"
     depends_on:
       - postgres
       - kafka
+      - redis
     networks:
       - app-network
 
@@ -116,12 +127,13 @@ services:
       DB_PASSWORD: "1q2w3e4r"
       DB_NAME: "AI_Agent"
       KAFKA_BROKER: "kafka:29092"
-      REDIS_HOST: "host.docker.internal"
+      REDIS_HOST: "redis"
       REDIS_PORT: "6379"
-      
+
     depends_on:
       - postgres
       - kafka
+      - redis
     networks:
       - app-network
 
@@ -139,11 +151,12 @@ services:
       DB_PASSWORD: "1q2w3e4r"
       DB_NAME: "AI_Agent"
       KAFKA_BROKER: "kafka:29092"
-      REDIS_HOST: "host.docker.internal"
+      REDIS_HOST: "redis"
       REDIS_PORT: "6379"
     depends_on:
       - postgres
       - kafka
+      - redis
     networks:
       - app-network
 
@@ -223,16 +236,18 @@ services:
       AUTH_GRPC_URL: "auth-service:50051"
       CHAT_GRPC_URL: "chat-service:50052"
       FANPAGE_GRPC_URL: "fanpage-service:50053"
+      TELEGRAM_BOT_TOKEN: "8940206513:AAH_5e3-JD3E9CrpXqMX8dA3lD5jRPX8Jwc"
       # FILE_GRPC_URL: "file-service:50054"
       # AI_GRPC_URL: "ai-service:50055"
       # ANALYTICS_GRPC_URL: "analytics-service:50056"
       # NOTIFICATION_GRPC_URL: "notification-service:50057"
-      REDIS_HOST: "host.docker.internal"
+      REDIS_HOST: "redis"
       REDIS_PORT: "6379"
     depends_on:
       - auth-service
       - chat-service
       - fanpage-service
+      - redis
       # - file-service
       # - ai-service
       # - analytics-service
@@ -246,3 +261,4 @@ networks:
 
 volumes:
   postgres-data:
+  redis-data:
