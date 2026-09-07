@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, OneToMany, Index } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, OneToMany, Index, Unique } from 'typeorm';
 import { Role } from './role.entity';
 import { ProviderEnum } from 'libs/common/enums/role.enum';
 
 @Entity('users')
+@Unique('uq_users', ['email', 'provider'])
 export class User {
 
     @PrimaryGeneratedColumn("increment")

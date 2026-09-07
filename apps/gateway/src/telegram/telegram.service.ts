@@ -1,9 +1,12 @@
-import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Api, TelegramClient } from 'telegram';
 import { StringSession } from 'telegram/sessions';
 import { firstValueFrom, Observable } from 'rxjs';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { SyncingTelegramDto } from 'libs/common/dto/telegram/index.dto';
+import { Telegraf } from 'telegraf';
+
 type QrStatus = | 'waiting' | 'success' | 'expired' | 'need_password' | 'error';
 
 
@@ -33,11 +36,14 @@ interface TelegramGrpcService {
 }
 
 @Injectable()
-export class TelegramService implements OnModuleInit {
+export class TelegramService implements OnModuleInit, OnModuleDestroy {
     private TelegramGrpcService!: TelegramGrpcService;
     private readonly logger = new Logger(TelegramService.name);
     private readonly apiId = Number(process.env.TELEGRAM_API_ID,);
     private readonly apiHash = String(process.env.TELEGRAM_API_HASH,);
+
+    // ===== Telegram BOT (BotFather) — client riêng, khác với GramJS user client bên dưới =====
+    private bot: Telegraf;
 
     /**Tạm thời lưu trong memory.
      * Production:
@@ -48,9 +54,48 @@ export class TelegramService implements OnModuleInit {
     private readonly sessions = new Map<string, QrSession>();
     constructor(
         @Inject('FANPAGE_PACKAGE') private readonly client: ClientGrpc,
-    ) { }
+        private readonly configService: ConfigService,
+    ) {
+        const botToken: any = this.configService.get<string>('TELEGRAM_BOT_TOKEN');
+        this.bot = new Telegraf(botToken);
+    }
+
     onModuleInit() {
         this.TelegramGrpcService = this.client.getService<TelegramGrpcService>('TelegramService');
+
+        // Đăng ký handler và khởi động bot polling
+        this.registerBotHandlers();
+        this.bot.launch();
+        this.logger.log('Telegram bot đã khởi động (polling mode)');
+    }
+
+    // Dừng bot gọn gàng khi app tắt (tránh giữ connection treo)
+    async onModuleDestroy() {
+        this.bot.stop('SIGTERM');
+    }
+
+    private registerBotHandlers() {
+        this.bot.command('start', (ctx) => {
+            ctx.reply('Chào bạn! Bot đã sẵn sàng.');
+        });
+
+        this.bot.on('text', (ctx) => {
+            this.logger.log(
+                `[BOT][${ctx.chat.id}] ${ctx.from.username ?? ctx.from.first_name}: ${ctx.message.text}`,
+            );
+            // Gọi service khác (CRM, camera alert, v.v.) ở đây nếu cần
+            ctx.reply(`Đã nhận: ${ctx.message.text}`);
+        });
+    }
+
+    // Cho phép các service khác trong app chủ động gửi tin nhắn ra ngoài qua BOT
+    // ví dụ: NotificationService gọi khi có sự kiện camera, đơn hàng mới...
+    async sendBotMessage(chatId: number | string, text: string): Promise<void> {
+        try {
+            await this.bot.telegram.sendMessage(chatId, text);
+        } catch (error: any) {
+            this.logger.error(`Gửi tin nhắn bot thất bại: ${error.message}`);
+        }
     }
 
     /** Tạo QR login*/
