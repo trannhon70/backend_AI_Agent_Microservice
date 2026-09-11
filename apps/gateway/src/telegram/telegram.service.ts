@@ -168,9 +168,13 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
             /** Telegram update handler.  */
             const handler = async (update: any,) => {
                 if (settled) { return; }
-                this.logger.debug(`[QR] Update received [${sessionId}]: ${update?.className}`,);
+                /** Bỏ qua update không phải Api update (không có className) —
+                 * GramJS đôi khi đẩy update nội bộ (reconnect, DC switch...) vào handler,
+                 * không filter thì log sẽ nhiễu "undefined" và có thể gây nhầm logic. */
+                if (!update?.className) { return; }
+                this.logger.debug(`[QR] Update received [${sessionId}]: ${update.className}`,);
                 /** Chỉ xử lý UpdateLoginToken.  */
-                if (update?.className !== 'UpdateLoginToken') { return; }
+                if (update.className !== 'UpdateLoginToken') { return; }
                 /**Chỉ xử lý một lần. */
                 settled = true;
                 clearTimeout(timeout);
@@ -262,8 +266,26 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
         this.logger.log(`[QR] Telegram requires migration [${sessionId}]`,);
         this.logger.log(`[QR] Target DC: ${result.dcId}`);
 
-        /** Switch Telegram client sang DC tương ứng.* GramJS hiện expose _switchDC nội bộ,* nên cần cast any.*/
-        await (client as any)._switchDC(result.dcId,);
+        try {
+            /** Switch Telegram client sang DC tương ứng.
+             * GramJS hiện expose _switchDC nội bộ, nên cần cast any.
+             * Bọc Promise.race với timeout để tránh treo vô thời hạn nếu IP của DC đích
+             * bị chặn/route lỗi (ví dụ do ISP chặn dải IP Telegram) — không có timeout thì
+             * _switchDC có thể đứng im mãi mãi và session kẹt ở status 'waiting'. */
+            await Promise.race([
+                (client as any)._switchDC(result.dcId,),
+                new Promise((_, reject) =>
+                    setTimeout(
+                        () => reject(new Error(`Switch DC ${result.dcId} timeout sau 15s — có thể IP của DC đang bị chặn mạng`)),
+                        15000,
+                    ),
+                ),
+            ]);
+        } catch (error: any) {
+            this.logger.error(`[QR] Switch DC failed [${sessionId}]: ${error.message}`,);
+            this.sessions.set(sessionId, { client, status: 'error', error: error.message, },);
+            return;
+        }
 
         this.logger.log(`[QR] Switched to DC ${result.dcId} [${sessionId}]`);
 

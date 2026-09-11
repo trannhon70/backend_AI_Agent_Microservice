@@ -109,11 +109,11 @@ nest g app analytics-service
 ## các bước thực hiện backup database và import database
 1. Copy file backup.dump vào container: 
   - docker cp ./backup.dump postgres:/tmp/backup.dump
-2. Restore vào database livechat: 
-  - docker exec -t postgres pg_restore -U postgres -d livechat --clean --if-exists /tmp/backup.dump
-3. Nếu database livechat chưa tồn tại, tạo trước:
-  - docker exec -t postgres createdb -U postgres livechat
-  - docker exec -t postgres pg_restore -U postgres -d livechat /tmp/backup.dump
+2. Restore vào database AI_Agent: 
+  - docker exec -t postgres pg_restore -U postgres -d AI_Agent --clean --if-exists /tmp/backup.dump
+3. Nếu database AI_Agent chưa tồn tại, tạo trước:
+  - docker exec -t postgres createdb -U postgres AI_Agent
+  - docker exec -t postgres pg_restore -U postgres -d AI_Agent /tmp/backup.dump
 
  ## Trường hợp	HTTP Status
 Email không tồn tại	404 NOT_FOUND hoặc 401 UNAUTHORIZED (để tránh lộ thông tin)
