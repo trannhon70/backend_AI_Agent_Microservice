@@ -106,7 +106,7 @@ export class TelegramService {
             role: RoleEnumUserPage.ADMIN_MANAGE,
             created_at: currentTimestamp(),
         }, { conflictPaths: ["user_id", "fanpage_id"] });
-
+        
         return;
     }
 

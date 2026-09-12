@@ -6,6 +6,7 @@ import { firstValueFrom, Observable } from 'rxjs';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { SyncingTelegramDto } from 'libs/common/dto/telegram/index.dto';
 import { Telegraf } from 'telegraf';
+import { RedisService } from 'libs/redis/redis.service';
 
 type QrStatus = | 'waiting' | 'success' | 'expired' | 'need_password' | 'error';
 
@@ -41,7 +42,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
     private readonly logger = new Logger(TelegramService.name);
     private readonly apiId = Number(process.env.TELEGRAM_API_ID,);
     private readonly apiHash = String(process.env.TELEGRAM_API_HASH,);
-
+    
     // ===== Telegram BOT (BotFather) — client riêng, khác với GramJS user client bên dưới =====
     private bot: Telegraf;
 
@@ -55,6 +56,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
     constructor(
         @Inject('FANPAGE_PACKAGE') private readonly client: ClientGrpc,
         private readonly configService: ConfigService,
+        private readonly redisService: RedisService,
     ) {
         const botToken: any = this.configService.get<string>('TELEGRAM_BOT_TOKEN');
         this.bot = new Telegraf(botToken);
@@ -386,6 +388,7 @@ export class TelegramService implements OnModuleInit, OnModuleDestroy {
     }
 
     async syncing(dto: SyncingTelegramDto) {
+        await this.redisService.del( `fanpage_id:${dto.page_id}`)
         return firstValueFrom(this.TelegramGrpcService.Syncing(dto));
     }
 }
